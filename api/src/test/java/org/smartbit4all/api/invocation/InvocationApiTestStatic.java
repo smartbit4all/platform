@@ -28,8 +28,8 @@ import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationStackItem;
 import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
+import org.smartbit4all.api.object.bean.ContextObjectData;
+import org.smartbit4all.api.object.bean.ContextObjectDataItem;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.core.object.ObjectApi;
@@ -207,8 +207,8 @@ public class InvocationApiTestStatic {
                     .propertyUri(URI.create("category:/#name")));
 
     InvocationRequest invocationRequest =
-        invocationApi.resolve(invocationRequestDefinition, new ObjectPropertyResolverContext()
-            .addObjectsItem(new ObjectPropertyResolverContextObject().name("category").uri(uri)));
+        invocationApi.resolve(invocationRequestDefinition, new ContextObjectData()
+            .addItemsItem(new ContextObjectDataItem().name("category").uri(uri)));
 
     InvocationParameter result = invocationApi.invoke(invocationRequest);
 

@@ -15,7 +15,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 
@@ -185,7 +185,7 @@ public interface InvocationApi {
    * @return
    */
   InvocationRequest resolve(InvocationRequestDefinition definition,
-      ObjectPropertyResolverContext context);
+      ContextObjectData context);
 
   /**
    * Constructs a new invocation request copy and set the parameters by position.

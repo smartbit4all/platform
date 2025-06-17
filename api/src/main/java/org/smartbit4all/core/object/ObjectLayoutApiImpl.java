@@ -15,11 +15,11 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ContextObjectData;
+import org.smartbit4all.api.object.bean.ContextObjectDataItem;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDefinitionDescriptor;
@@ -114,18 +114,18 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     if (layoutDescriptor.getConstraints() != null) {
 
       for (ObjectConstraintDescriptor constraintDescriptor : layoutDescriptor.getConstraints()) {
-        ObjectPropertyResolverContext context = constraintDescriptor.getContexts();
+        ContextObjectData context = constraintDescriptor.getContexts();
         if (context == null) {
-          context = new ObjectPropertyResolverContext();
+          context = new ContextObjectData();
           constraintDescriptor.setContexts(context);
         }
         if (sessionIsPresent()) {
-          context.addObjectsItem(sessionContext());
+          context.addItemsItem(sessionContext());
         }
         if (userIsPresent()) {
-          context.addObjectsItem(userContext());
+          context.addItemsItem(userContext());
         }
-        context.addObjectsItem(selfContext(objectUri));
+        context.addItemsItem(selfContext(objectUri));
 
         LangString displayName = null;
         if (test(constraintDescriptor.getPredicates(), context)) {
@@ -147,7 +147,7 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
 
   // if at least 1 predicate applies (by returning true), then the test is successful:
   private boolean test(List<InvocationRequestDefinition> predicateDefinitions,
-      ObjectPropertyResolverContext context) {
+      ContextObjectData context) {
     if (predicateDefinitions == null || predicateDefinitions.isEmpty()) {
       return true;
     }
@@ -172,8 +172,8 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     return sessionApi != null && sessionApi.getSessionUri() != null;
   }
 
-  private ObjectPropertyResolverContextObject sessionContext() {
-    return new ObjectPropertyResolverContextObject()
+  private ContextObjectDataItem sessionContext() {
+    return new ContextObjectDataItem()
         .name(SESSION_CONTEXT)
         .uri(sessionApi.getSessionUri());
   }
@@ -182,14 +182,14 @@ public class ObjectLayoutApiImpl implements ObjectLayoutApi {
     return sessionApi != null && sessionApi.getUserUri() != null;
   }
 
-  private ObjectPropertyResolverContextObject userContext() {
-    return new ObjectPropertyResolverContextObject()
+  private ContextObjectDataItem userContext() {
+    return new ContextObjectDataItem()
         .name(USER_CONTEXT)
         .uri(sessionApi.getUserUri());
   }
 
-  private ObjectPropertyResolverContextObject selfContext(URI objectUri) {
-    return new ObjectPropertyResolverContextObject()
+  private ContextObjectDataItem selfContext(URI objectUri) {
+    return new ContextObjectDataItem()
         .name(THIS_CONTEXT)
         .uri(objectUri);
   }

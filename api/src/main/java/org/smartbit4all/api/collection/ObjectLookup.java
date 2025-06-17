@@ -15,7 +15,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
-import org.smartbit4all.core.object.ObjectPropertyMapper;
+import org.smartbit4all.core.object.ObjectMapping;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -68,7 +68,7 @@ public abstract class ObjectLookup {
     Objects.requireNonNull(mapping);
     // TODO finish this method: filter out the incorrect data
     List<Object> resultList = new ArrayList<>();
-    ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
+    ObjectMapping mapper = objectApi.mapper().mapping(mapping);
     for (Object object : objects) {
       ObjectLookupResult lookupResult = lookup(object, parameter);
       Map<String, Object> toMap;
@@ -110,7 +110,7 @@ public abstract class ObjectLookup {
     Objects.requireNonNull(lookupString);
     Objects.requireNonNull(parameter);
     Objects.requireNonNull(mapping);
-    ObjectPropertyMapper mapper = objectApi.mapper().mapping(mapping);
+    ObjectMapping mapper = objectApi.mapper().mapping(mapping);
     ObjectLookupResult lookupResult = lookup(lookupString, parameter);
     Map<String, Object> toMap;
     if (object instanceof ObjectNode) {

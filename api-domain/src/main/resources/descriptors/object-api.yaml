@@ -417,17 +417,17 @@ components:
           type: string
         data:
           type: object
-    ObjectPropertyResolverContext:
+    ContextObjectData:
       type: object
       description: |
         The context objects of a property value resolution.
-      required: [objects]
+      required: [items]
       properties:
-        objects:
+        items:
           type: array
           items:
-            $ref: '#/components/schemas/ObjectPropertyResolverContextObject'
-    ObjectPropertyResolverContextObject:
+            $ref: '#/components/schemas/ContextObjectDataItem'
+    ContextObjectDataItem:
       type: object
       description: |
         The context object of a property value resolution with the name of the object in the given context and the uri of this.
@@ -438,10 +438,9 @@ components:
           description: The uri of the storage object to use for resolve.
           type: string
           format: uri
-        objectAsMap:
+        object:
           description: The inline object as value to use for resolve.
           type: object
-          additionalProperties: true
     BranchEntry:
       type: object
       description: |
@@ -700,7 +699,7 @@ components:
           description: |
             The condition to evaluate if the given constraint has to be enforced on the object. It can be a script that can be evaluated based on the extended object.
         contexts:
-          $ref: '#/components/schemas/ObjectPropertyResolverContext'
+          $ref: '#/components/schemas/ContextObjectData'
         predicates:
           type: array
           items:
@@ -907,9 +906,43 @@ components:
     VersionStrategy:
       enum: [LATEST, EXACT, BYDEFINITION]
 
+    ObjectContextTransformation:
+      type: object
+      description: |
+        This object is the definition of a transformation between object contexts managed by the ObjectApi and using ObjectNodes as
+        loaded context objects. The transformation can be applied if we have an input context and an output context. After the transformation
+        we will have the modified output context that can be used to any purpose. For example we can save its objects one by one. Or we can use them
+        as parameters of an invocation. The transformation can be an expression that is based on the SpEL language as a widespread solution in
+        spring based systems. Or we can call an InvocationRequest to execute the transformation where the invocation request can be a groovy script
+        for better access to the API infrastructure of the platform.
+      required: [items]
+      properties:
+        items:
+          type: array
+          description: The transformation list is an ordered list of transformation definitions.
+          items:
+            $ref: '#/components/schemas/TransformationItem'
+    TransformationItem:
+      type: object
+      description: |
+        One transformation in the ObjectContextTransformation to be applied in a given order.
+      required: [request]
+      properties:
+        outputPath:
+          description: |
+            The path of the result ob the transformation to save into. When running the transformation the successful
+            execution means that the transformed value is saved into the output context.
+          type: array
+          items:
+            type: string
+        mapping:
+          $ref: '#/components/schemas/ObjectMappingDefinition'
+          description: |
+            The object mapping definition that constructs a result value that can be set to the output path.
     ObjectMappingDefinition:
       description: |
-        This is a mapping definition that describes the mapping between two domain object.
+        This is a mapping definition that describes the mapping between two domain object. The input can be a
+        context that contains the application 
       type: object
       required: [mappings, listMappings]
       properties:
@@ -932,13 +965,42 @@ components:
       required: []
       properties:
         fromPath:
+          description: |
+            If the mapping is so simple then this from path refers to the object property. If we have a context with
+            multiple objects then the first segment of the path is the name of the object in the context.
           type: array
           items:
             type: string
+        iterationDefinition:
+          description: |
+            The iteration mapping definition is used to iterate over the list identified by the fromPath. The iteration
+            result is always a list with the same number of items then the from list has. The items are the built result of the
+            mapping. 
+          $ref: '#/components/schemas/ObjectMappingDefinition'
+        expression:
+          description: |
+            The SpEL expression that constructs the transformed value. It is necessary to have all the context objects
+            necessary to execute the expression. The expression can refer to the objects on the context directly as variable.
+            If we use expression then the from path is ignored.
+          type: string
+        scriptBody:
+          description: |
+            The script can be groovy tipically but all other script language is available that are supported by the InvocationApi.
+          type: string
+        scriptKind:
+          type: string
+          description: The script language managed by the InvocationApi. The default is the groovy.
         toPath:
+          description: |
+            Defines the path of the property to save. If it is empty then this is the mapping for the whole object, so the
+            mapping itself is a simple value.
           type: array
           items:
             type: string
+        typeClass:
+          description: |
+            Defines the forced type class of the result object implies an ObjectApi.asType.
+          type: string
     ObjectListMapping:
       description: |
         This is a mapping definition that denotes the two property.
@@ -1052,4 +1114,3 @@ components:
         refObjectUri:
           type: string
           format: uri
-    

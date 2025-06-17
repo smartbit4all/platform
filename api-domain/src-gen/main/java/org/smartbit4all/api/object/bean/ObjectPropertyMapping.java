@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -35,15 +36,35 @@ import jakarta.validation.Valid;
 @Schema(description = "This is a mapping definition that denotes the two property. ")
 @JsonPropertyOrder({
   ObjectPropertyMapping.FROM_PATH,
-  ObjectPropertyMapping.TO_PATH
+  ObjectPropertyMapping.ITERATION_DEFINITION,
+  ObjectPropertyMapping.EXPRESSION,
+  ObjectPropertyMapping.SCRIPT_BODY,
+  ObjectPropertyMapping.SCRIPT_KIND,
+  ObjectPropertyMapping.TO_PATH,
+  ObjectPropertyMapping.TYPE_CLASS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectPropertyMapping {
   public static final String FROM_PATH = "fromPath";
   private List<String> fromPath = new ArrayList<>();
 
+  public static final String ITERATION_DEFINITION = "iterationDefinition";
+  private ObjectMappingDefinition iterationDefinition;
+
+  public static final String EXPRESSION = "expression";
+  private String expression;
+
+  public static final String SCRIPT_BODY = "scriptBody";
+  private String scriptBody;
+
+  public static final String SCRIPT_KIND = "scriptKind";
+  private String scriptKind;
+
   public static final String TO_PATH = "toPath";
   private List<String> toPath = new ArrayList<>();
+
+  public static final String TYPE_CLASS = "typeClass";
+  private String typeClass;
 
   public ObjectPropertyMapping() {
   }
@@ -63,12 +84,12 @@ public class ObjectPropertyMapping {
   }
 
   /**
-   * Get fromPath
+   * If the mapping is so simple then this from path refers to the object property. If we have a context with multiple objects then the first segment of the path is the name of the object in the context. 
    * @return fromPath
    */
   @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the mapping is so simple then this from path refers to the object property. If we have a context with multiple objects then the first segment of the path is the name of the object in the context. ")
   @JsonProperty(FROM_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -81,6 +102,115 @@ public class ObjectPropertyMapping {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setFromPath(List<String> fromPath) {
     this.fromPath = fromPath;
+  }
+
+  public ObjectPropertyMapping iterationDefinition(ObjectMappingDefinition iterationDefinition) {
+    
+    this.iterationDefinition = iterationDefinition;
+    return this;
+  }
+
+  /**
+   * Get iterationDefinition
+   * @return iterationDefinition
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(ITERATION_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ObjectMappingDefinition getIterationDefinition() {
+    return iterationDefinition;
+  }
+
+
+  @JsonProperty(ITERATION_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIterationDefinition(ObjectMappingDefinition iterationDefinition) {
+    this.iterationDefinition = iterationDefinition;
+  }
+
+  public ObjectPropertyMapping expression(String expression) {
+    
+    this.expression = expression;
+    return this;
+  }
+
+  /**
+   * The SpEL expression that constructs the transformed value. It is necessary to have all the context objects necessary to execute the expression. The expression can refer to the objects on the context directly as variable. If we use expression then the from path is ignored. 
+   * @return expression
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The SpEL expression that constructs the transformed value. It is necessary to have all the context objects necessary to execute the expression. The expression can refer to the objects on the context directly as variable. If we use expression then the from path is ignored. ")
+  @JsonProperty(EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getExpression() {
+    return expression;
+  }
+
+
+  @JsonProperty(EXPRESSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExpression(String expression) {
+    this.expression = expression;
+  }
+
+  public ObjectPropertyMapping scriptBody(String scriptBody) {
+    
+    this.scriptBody = scriptBody;
+    return this;
+  }
+
+  /**
+   * The script can be groovy tipically but all other script language is available that are supported by the InvocationApi. 
+   * @return scriptBody
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The script can be groovy tipically but all other script language is available that are supported by the InvocationApi. ")
+  @JsonProperty(SCRIPT_BODY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getScriptBody() {
+    return scriptBody;
+  }
+
+
+  @JsonProperty(SCRIPT_BODY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScriptBody(String scriptBody) {
+    this.scriptBody = scriptBody;
+  }
+
+  public ObjectPropertyMapping scriptKind(String scriptKind) {
+    
+    this.scriptKind = scriptKind;
+    return this;
+  }
+
+  /**
+   * The script language managed by the InvocationApi. The default is the groovy.
+   * @return scriptKind
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The script language managed by the InvocationApi. The default is the groovy.")
+  @JsonProperty(SCRIPT_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getScriptKind() {
+    return scriptKind;
+  }
+
+
+  @JsonProperty(SCRIPT_KIND)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setScriptKind(String scriptKind) {
+    this.scriptKind = scriptKind;
   }
 
   public ObjectPropertyMapping toPath(List<String> toPath) {
@@ -98,12 +228,12 @@ public class ObjectPropertyMapping {
   }
 
   /**
-   * Get toPath
+   * Defines the path of the property to save. If it is empty then this is the mapping for the whole object, so the mapping itself is a simple value. 
    * @return toPath
    */
   @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines the path of the property to save. If it is empty then this is the mapping for the whole object, so the mapping itself is a simple value. ")
   @JsonProperty(TO_PATH)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -118,6 +248,33 @@ public class ObjectPropertyMapping {
     this.toPath = toPath;
   }
 
+  public ObjectPropertyMapping typeClass(String typeClass) {
+    
+    this.typeClass = typeClass;
+    return this;
+  }
+
+  /**
+   * Defines the forced type class of the result object implies an ObjectApi.asType. 
+   * @return typeClass
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines the forced type class of the result object implies an ObjectApi.asType. ")
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTypeClass() {
+    return typeClass;
+  }
+
+
+  @JsonProperty(TYPE_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTypeClass(String typeClass) {
+    this.typeClass = typeClass;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -128,12 +285,17 @@ public class ObjectPropertyMapping {
     }
     ObjectPropertyMapping objectPropertyMapping = (ObjectPropertyMapping) o;
     return Objects.equals(this.fromPath, objectPropertyMapping.fromPath) &&
-        Objects.equals(this.toPath, objectPropertyMapping.toPath);
+        Objects.equals(this.iterationDefinition, objectPropertyMapping.iterationDefinition) &&
+        Objects.equals(this.expression, objectPropertyMapping.expression) &&
+        Objects.equals(this.scriptBody, objectPropertyMapping.scriptBody) &&
+        Objects.equals(this.scriptKind, objectPropertyMapping.scriptKind) &&
+        Objects.equals(this.toPath, objectPropertyMapping.toPath) &&
+        Objects.equals(this.typeClass, objectPropertyMapping.typeClass);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fromPath, toPath);
+    return Objects.hash(fromPath, iterationDefinition, expression, scriptBody, scriptKind, toPath, typeClass);
   }
 
   @Override
@@ -141,7 +303,12 @@ public class ObjectPropertyMapping {
     StringBuilder sb = new StringBuilder();
     sb.append("class ObjectPropertyMapping {\n");
     sb.append("    fromPath: ").append(toIndentedString(fromPath)).append("\n");
+    sb.append("    iterationDefinition: ").append(toIndentedString(iterationDefinition)).append("\n");
+    sb.append("    expression: ").append(toIndentedString(expression)).append("\n");
+    sb.append("    scriptBody: ").append(toIndentedString(scriptBody)).append("\n");
+    sb.append("    scriptKind: ").append(toIndentedString(scriptKind)).append("\n");
     sb.append("    toPath: ").append(toIndentedString(toPath)).append("\n");
+    sb.append("    typeClass: ").append(toIndentedString(typeClass)).append("\n");
     sb.append("}");
     return sb.toString();
   }

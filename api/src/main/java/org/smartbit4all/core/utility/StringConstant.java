@@ -14,11 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
-import static java.util.stream.Collectors.joining;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.joining;
 
 /**
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
@@ -186,6 +186,10 @@ public class StringConstant {
     }
     return Arrays.stream(getInvalidCharsByOSPlusSpace())
         .noneMatch(ch -> code.contains(ch.toString()));
+  }
+
+  public static boolean isNullOrBlank(String str) {
+    return str == null || str.isBlank();
   }
 
   private static final Character[] INVALID_WINDOWS_SPECIFIC_CHARS_PLUS_SPACE =

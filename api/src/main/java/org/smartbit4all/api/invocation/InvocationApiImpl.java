@@ -35,7 +35,7 @@ import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.SessionInfoData;
@@ -303,7 +303,7 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Override
   public InvocationRequest resolve(InvocationRequestDefinition definition,
-      ObjectPropertyResolverContext context) {
+      ContextObjectData context) {
     Objects.requireNonNull(definition, "The invocation definition is null, unable to resolve");
     InvocationRequest request = definition.getRequest();
     Objects.requireNonNull(request,

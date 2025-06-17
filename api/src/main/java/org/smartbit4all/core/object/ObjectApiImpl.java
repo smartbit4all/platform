@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +44,7 @@ import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -855,6 +855,10 @@ public class ObjectApiImpl implements ObjectApi {
         }
         return value;
       }
+      if (value == null && newValue.isPresent()) {
+        value = new HashMap<>();
+        map.put(path, value);
+      }
       return continueFromFirstValue(value, newValue, paths);
     }
     return map;
@@ -913,8 +917,8 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
-  public ObjectPropertyMapper mapper() {
-    return new ObjectPropertyMapper(self);
+  public ObjectMapping mapper() {
+    return new ObjectMapping(self);
   }
 
   @Override

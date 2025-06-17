@@ -1,13 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -61,9 +53,9 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
+import org.smartbit4all.core.object.ObjectMapping;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
-import org.smartbit4all.core.object.ObjectPropertyMapper;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
@@ -73,6 +65,14 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ObjectApiTestBase {
 
@@ -609,7 +609,7 @@ public class ObjectApiTestBase {
     fromNode = objectApi.loadLatest(uriFrom);
     toNode = objectApi.loadLatest(uriTo);
 
-    ObjectPropertyMapper mapper = objectApi.mapper()
+    ObjectMapping mapper = objectApi.mapper()
         .mapping(new ObjectMappingDefinition()
             .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
             .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
@@ -634,6 +634,98 @@ public class ObjectApiTestBase {
   }
 
   @Test
+  void testObjectMapperToSingleObject() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")));
+    URI uriFrom = objectApi.save(fromNode);
+    ObjectNode toNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("To category").color(ColorEnum.GREEN)
+            .singleLink(new SampleLinkObject().linkName("to link")));
+    URI uriTo = objectApi.save(toNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+    toNode = objectApi.loadLatest(uriTo);
+
+    ObjectMapping mapper = objectApi.mapper()
+        .mapping(new ObjectMappingDefinition()
+            .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
+            .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
+            .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.NAME)
+                .addToPathItem(SampleCategory.NAME))
+            .addMappingsItem(
+                new ObjectPropertyMapping().addFromPathItem(SampleCategory.SINGLE_LINK)
+                    .addFromPathItem(SampleLinkObject.LINK_NAME)
+                    .addToPathItem(SampleCategory.SINGLE_LINK)
+                    .addToPathItem(SampleLinkObject.LINK_NAME)))
+        .set(fromNode);
+
+    Map<String, Object> expectedResult = new HashMap<>();
+    expectedResult.put(SampleCategory.NAME, fromNode.getValue(SampleCategory.NAME));
+    expectedResult.put(SampleCategory.SINGLE_LINK, Map.of(SampleLinkObject.LINK_NAME,
+        fromNode.getValue(SampleCategory.SINGLE_LINK, SampleLinkObject.LINK_NAME)));
+
+    Map<String, Object> result =
+        (Map<String, Object>) mapper.execute();
+
+    org.assertj.core.api.Assertions.assertThat(result)
+        .containsAllEntriesOf(expectedResult);
+
+  }
+
+  @Test
+  void testObjectMapperToSingleValue() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")).cost(12l)
+            .addKeyWordsItem("keyword1").addKeyWordsItem("keyword2"));
+    URI uriFrom = objectApi.save(fromNode);
+
+    fromNode = objectApi.loadLatest(uriFrom);
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)))
+          .set(fromNode.getObjectAsMap()).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Integer.class)
+          .isEqualTo(Integer.valueOf(12));
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)
+                  .typeClass(Long.class.getName())))
+          .set(fromNode).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Long.class).isEqualTo(12l);
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem(SampleCategory.KEY_WORDS)))
+          .set(fromNode).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("keyword1",
+          "keyword2");
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem(SampleCategory.KEY_WORDS)
+                      .iterationDefinition(new ObjectMappingDefinition()
+                          .addMappingsItem(new ObjectPropertyMapping().expression("'apple'")))))
+          .set(fromNode).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("apple",
+          "apple");
+    }
+
+  }
+
+  @Test
   void testObjectPropertyMapperDifferentObject() {
     ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
         new SampleCategory().name("From category").cost(Long.valueOf(100)).color(ColorEnum.BLACK)
@@ -646,7 +738,7 @@ public class ObjectApiTestBase {
     fromNode = objectApi.loadLatest(uriFrom);
     toNode = objectApi.loadLatest(uriTo);
 
-    ObjectPropertyMapper mapper = objectApi.mapper()
+    ObjectMapping mapper = objectApi.mapper()
         .mapping(new ObjectMappingDefinition()
             .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
             .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
@@ -686,7 +778,7 @@ public class ObjectApiTestBase {
     fromNode = objectApi.loadLatest(uriFrom);
     toNode = objectApi.loadLatest(uriTo);
 
-    ObjectPropertyMapper mapper = objectApi.mapper()
+    ObjectMapping mapper = objectApi.mapper()
         .mapping(new ObjectMappingDefinition()
             .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
             .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())
@@ -724,7 +816,7 @@ public class ObjectApiTestBase {
     fromNode = objectApi.loadLatest(uriFrom);
     toNode = objectApi.loadLatest(uriTo);
 
-    ObjectPropertyMapper mapper = objectApi.mapper()
+    ObjectMapping mapper = objectApi.mapper()
         .mapping(new ObjectMappingDefinition()
             .fromTypeQualifiedName(fromNode.getDefinition().getQualifiedName())
             .toTypeQualifiedName(toNode.getDefinition().getQualifiedName())

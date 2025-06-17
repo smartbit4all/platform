@@ -24,34 +24,34 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.smartbit4all.api.object.bean.ContextObjectDataItem;
+import org.smartbit4all.api.object.bean.TransformationItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * The context objects of a property value resolution. 
+ * This object is the definition of a transformation between object contexts managed by the ObjectApi and using ObjectNodes as loaded context objects. The transformation can be applied if we have an input context and an output context. After the transformation we will have the modified output context that can be used to any purpose. For example we can save its objects one by one. Or we can use them as parameters of an invocation. The transformation can be an expression that is based on the SpEL language as a widespread solution in spring based systems. Or we can call an InvocationRequest to execute the transformation where the invocation request can be a groovy script for better access to the API infrastructure of the platform. 
  */
-@Schema(description = "The context objects of a property value resolution. ")
+@Schema(description = "This object is the definition of a transformation between object contexts managed by the ObjectApi and using ObjectNodes as loaded context objects. The transformation can be applied if we have an input context and an output context. After the transformation we will have the modified output context that can be used to any purpose. For example we can save its objects one by one. Or we can use them as parameters of an invocation. The transformation can be an expression that is based on the SpEL language as a widespread solution in spring based systems. Or we can call an InvocationRequest to execute the transformation where the invocation request can be a groovy script for better access to the API infrastructure of the platform. ")
 @JsonPropertyOrder({
-  ContextObjectData.ITEMS
+  ObjectContextTransformation.ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class ContextObjectData {
+public class ObjectContextTransformation {
   public static final String ITEMS = "items";
-  private List<@Valid ContextObjectDataItem> items = new ArrayList<>();
+  private List<@Valid TransformationItem> items = new ArrayList<>();
 
-  public ContextObjectData() {
+  public ObjectContextTransformation() {
   }
 
-  public ContextObjectData items(List<@Valid ContextObjectDataItem> items) {
+  public ObjectContextTransformation items(List<@Valid TransformationItem> items) {
     
     this.items = items;
     return this;
   }
 
-  public ContextObjectData addItemsItem(ContextObjectDataItem itemsItem) {
+  public ObjectContextTransformation addItemsItem(TransformationItem itemsItem) {
     if (this.items == null) {
       this.items = new ArrayList<>();
     }
@@ -60,25 +60,25 @@ public class ContextObjectData {
   }
 
   /**
-   * Get items
+   * The transformation list is an ordered list of transformation definitions.
    * @return items
    */
   @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The transformation list is an ordered list of transformation definitions.")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<@Valid ContextObjectDataItem> getItems() {
+  public List<@Valid TransformationItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<@Valid ContextObjectDataItem> items) {
+  public void setItems(List<@Valid TransformationItem> items) {
     this.items = items;
   }
 
@@ -90,8 +90,8 @@ public class ContextObjectData {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ContextObjectData contextObjectData = (ContextObjectData) o;
-    return Objects.equals(this.items, contextObjectData.items);
+    ObjectContextTransformation objectContextTransformation = (ObjectContextTransformation) o;
+    return Objects.equals(this.items, objectContextTransformation.items);
   }
 
   @Override
@@ -102,7 +102,7 @@ public class ContextObjectData {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ContextObjectData {\n");
+    sb.append("class ObjectContextTransformation {\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("}");
     return sb.toString();

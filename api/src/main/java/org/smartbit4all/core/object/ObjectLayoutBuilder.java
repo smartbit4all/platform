@@ -15,10 +15,10 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ContextObjectData;
+import org.smartbit4all.api.object.bean.ContextObjectDataItem;
 import org.smartbit4all.api.object.bean.ObjectConstraintDescriptor;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContextObject;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentWidgetType;
@@ -485,19 +485,18 @@ public final class ObjectLayoutBuilder {
 
   public final class ObjectConstraintBuilder {
     private final ObjectConstraintDescriptor constraintDescriptor = new ObjectConstraintDescriptor()
-        .contexts(new ObjectPropertyResolverContext()
-            .objects(new ArrayList<>()));
+        .contexts(new ContextObjectData()
+            .items(new ArrayList<>()));
 
     private ObjectConstraintBuilder() {}
 
     /**
      * Sets the context objects for constraint evaluation.
      *
-     * @param context the {@link ObjectPropertyResolverContext} containing all context objects by
-     *        alias
+     * @param context the {@link ContextObjectData} containing all context objects by alias
      * @return this instance
      */
-    public ObjectConstraintBuilder context(ObjectPropertyResolverContext context) {
+    public ObjectConstraintBuilder context(ContextObjectData context) {
       constraintDescriptor.contexts(context);
       return this;
     }
@@ -512,7 +511,7 @@ public final class ObjectLayoutBuilder {
      * @return this instance
      */
     public ObjectConstraintBuilder contextObject(String name, URI contextObjectUri) {
-      constraintDescriptor.getContexts().addObjectsItem(new ObjectPropertyResolverContextObject()
+      constraintDescriptor.getContexts().addItemsItem(new ContextObjectDataItem()
           .name(name)
           .uri(contextObjectUri));
       return this;

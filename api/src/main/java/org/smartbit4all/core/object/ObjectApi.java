@@ -368,7 +368,7 @@ public interface ObjectApi {
    *
    * @return
    */
-  ObjectPropertyMapper mapper();
+  ObjectMapping mapper();
 
   /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the

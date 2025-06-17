@@ -22,8 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -34,25 +32,25 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The context object of a property value resolution with the name of the object in the given context and the uri of this. ")
 @JsonPropertyOrder({
-  ObjectPropertyResolverContextObject.NAME,
-  ObjectPropertyResolverContextObject.URI,
-  ObjectPropertyResolverContextObject.OBJECT_AS_MAP
+  ContextObjectDataItem.NAME,
+  ContextObjectDataItem.URI,
+  ContextObjectDataItem.OBJECT
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class ObjectPropertyResolverContextObject {
+public class ContextObjectDataItem {
   public static final String NAME = "name";
   private String name;
 
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String OBJECT_AS_MAP = "objectAsMap";
-  private Map<String, Object> objectAsMap = new HashMap<>();
+  public static final String OBJECT = "object";
+  private Object _object;
 
-  public ObjectPropertyResolverContextObject() {
+  public ContextObjectDataItem() {
   }
 
-  public ObjectPropertyResolverContextObject name(String name) {
+  public ContextObjectDataItem name(String name) {
     
     this.name = name;
     return this;
@@ -79,7 +77,7 @@ public class ObjectPropertyResolverContextObject {
     this.name = name;
   }
 
-  public ObjectPropertyResolverContextObject uri(URI uri) {
+  public ContextObjectDataItem uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -107,39 +105,31 @@ public class ObjectPropertyResolverContextObject {
     this.uri = uri;
   }
 
-  public ObjectPropertyResolverContextObject objectAsMap(Map<String, Object> objectAsMap) {
+  public ContextObjectDataItem _object(Object _object) {
     
-    this.objectAsMap = objectAsMap;
-    return this;
-  }
-
-  public ObjectPropertyResolverContextObject putObjectAsMapItem(String key, Object objectAsMapItem) {
-    if (this.objectAsMap == null) {
-      this.objectAsMap = new HashMap<>();
-    }
-    this.objectAsMap.put(key, objectAsMapItem);
+    this._object = _object;
     return this;
   }
 
   /**
    * The inline object as value to use for resolve.
-   * @return objectAsMap
+   * @return _object
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The inline object as value to use for resolve.")
-  @JsonProperty(OBJECT_AS_MAP)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonProperty(OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public Map<String, Object> getObjectAsMap() {
-    return objectAsMap;
+  public Object getObject() {
+    return _object;
   }
 
 
-  @JsonProperty(OBJECT_AS_MAP)
-  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
-  public void setObjectAsMap(Map<String, Object> objectAsMap) {
-    this.objectAsMap = objectAsMap;
+  @JsonProperty(OBJECT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObject(Object _object) {
+    this._object = _object;
   }
 
   @Override
@@ -150,24 +140,24 @@ public class ObjectPropertyResolverContextObject {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectPropertyResolverContextObject objectPropertyResolverContextObject = (ObjectPropertyResolverContextObject) o;
-    return Objects.equals(this.name, objectPropertyResolverContextObject.name) &&
-        Objects.equals(this.uri, objectPropertyResolverContextObject.uri) &&
-        Objects.equals(this.objectAsMap, objectPropertyResolverContextObject.objectAsMap);
+    ContextObjectDataItem contextObjectDataItem = (ContextObjectDataItem) o;
+    return Objects.equals(this.name, contextObjectDataItem.name) &&
+        Objects.equals(this.uri, contextObjectDataItem.uri) &&
+        Objects.equals(this._object, contextObjectDataItem._object);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, uri, objectAsMap);
+    return Objects.hash(name, uri, _object);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectPropertyResolverContextObject {\n");
+    sb.append("class ContextObjectDataItem {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    objectAsMap: ").append(toIndentedString(objectAsMap)).append("\n");
+    sb.append("    _object: ").append(toIndentedString(_object)).append("\n");
     sb.append("}");
     return sb.toString();
   }

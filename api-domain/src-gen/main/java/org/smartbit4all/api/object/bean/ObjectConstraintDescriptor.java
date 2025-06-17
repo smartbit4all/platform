@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.object.bean.LangString;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -96,7 +96,7 @@ public class ObjectConstraintDescriptor {
   private String condition;
 
   public static final String CONTEXTS = "contexts";
-  private ObjectPropertyResolverContext contexts;
+  private ContextObjectData contexts;
 
   public static final String PREDICATES = "predicates";
   private List<InvocationRequestDefinition> predicates = new ArrayList<>();
@@ -198,7 +198,7 @@ public class ObjectConstraintDescriptor {
     this.condition = condition;
   }
 
-  public ObjectConstraintDescriptor contexts(ObjectPropertyResolverContext contexts) {
+  public ObjectConstraintDescriptor contexts(ContextObjectData contexts) {
     
     this.contexts = contexts;
     return this;
@@ -215,14 +215,14 @@ public class ObjectConstraintDescriptor {
   @JsonProperty(CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ObjectPropertyResolverContext getContexts() {
+  public ContextObjectData getContexts() {
     return contexts;
   }
 
 
   @JsonProperty(CONTEXTS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setContexts(ObjectPropertyResolverContext contexts) {
+  public void setContexts(ContextObjectData contexts) {
     this.contexts = contexts;
   }
 

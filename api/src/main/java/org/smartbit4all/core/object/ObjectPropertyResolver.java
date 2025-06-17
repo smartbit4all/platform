@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.text.MessageFormat;
@@ -14,11 +12,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
-import org.smartbit4all.api.object.bean.ObjectPropertyResolverContext;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.lang.NonNull;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object property resolver is the central logic that can help to access the values in an
@@ -87,42 +87,7 @@ public final class ObjectPropertyResolver {
       "^redirect\\{if=\"([^\"]*)\",\\s*then=\"([^\"]*)\"}$";
   public static final Pattern REDIRECT_PTRN = Pattern.compile(REDIRECT_REGEX);
 
-  /**
-   * The context object inner structure that contains the name, uri and the loaded object node if it
-   * was already referred.
-   * 
-   * @author Peter Boros
-   */
-  private class ContextObject {
-
-    String name;
-
-    URI uri;
-
-    ObjectNode loadedObjectNode;
-
-    ContextObject(String name, URI uri) {
-      super();
-      this.name = name;
-      this.uri = uri;
-    }
-
-    ContextObject(String name, ObjectNode node) {
-      super();
-      this.name = name;
-      this.loadedObjectNode = node;
-    }
-
-    ObjectNode objectNode() {
-      if (loadedObjectNode == null) {
-        loadedObjectNode = objectApi().load(uri);
-      }
-      return loadedObjectNode;
-    }
-
-  }
-
-  private final Map<String, ContextObject> contextObjects = new HashMap<>();
+  private final Map<String, ContextObjectItem> contextObjects = new HashMap<>();
 
   /**
    * We can add context objects to the given resolver. The name uris points to the root objects of
@@ -134,8 +99,9 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObjects(Map<String, URI> context) {
     if (context != null) {
-      context.entrySet().stream().map(e -> new ContextObject(e.getKey(), e.getValue()))
-          .forEach(co -> contextObjects.putIfAbsent(co.name, co));
+      context.entrySet().stream()
+          .map(e -> new ContextObjectItem(objectApi(), e.getKey(), e.getValue()))
+          .forEach(co -> contextObjects.putIfAbsent(co.getName(), co));
     }
     return this;
   }
@@ -148,10 +114,11 @@ public final class ObjectPropertyResolver {
    * @param context
    * @return
    */
-  public ObjectPropertyResolver addContextObjects(ObjectPropertyResolverContext context) {
+  public ObjectPropertyResolver addContextObjects(ContextObjectData context) {
     if (context != null) {
-      context.getObjects().stream().map(o -> new ContextObject(o.getName(), o.getUri()))
-          .forEach(co -> contextObjects.putIfAbsent(co.name, co));
+      context.getItems().stream()
+          .map(o -> new ContextObjectItem(objectApi(), o.getName(), o.getUri()))
+          .forEach(co -> contextObjects.putIfAbsent(co.getName(), co));
     }
     return this;
   }
@@ -167,7 +134,7 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObject(String name, URI objectUri) {
     if (name != null && objectUri != null) {
-      contextObjects.putIfAbsent(name, new ContextObject(name, objectUri));
+      contextObjects.putIfAbsent(name, new ContextObjectItem(objectApi(), name, objectUri));
     }
     return this;
   }
@@ -196,7 +163,7 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObject(String name, ObjectNode node) {
     if (name != null && node != null) {
-      contextObjects.putIfAbsent(name, new ContextObject(name, node));
+      contextObjects.putIfAbsent(name, new ContextObjectItem(objectApi(), name, node));
     }
     return this;
   }
@@ -259,7 +226,7 @@ public final class ObjectPropertyResolver {
     if (propertyUri == null) {
       return null;
     }
-    ContextObject contextObject = contextObjects.get(propertyUri.getScheme());
+    ContextObjectItem contextObject = contextObjects.get(propertyUri.getScheme());
     if (contextObject == null) {
       throw new IllegalArgumentException(
           "Unable to resolve the " + propertyUri + " property because the "
@@ -349,7 +316,7 @@ public final class ObjectPropertyResolver {
   }
 
   public ObjectNode getContextObjectNode(String objectName) {
-    ContextObject contextObject = contextObjects.get(objectName);
+    ContextObjectItem contextObject = contextObjects.get(objectName);
     return contextObject != null ? contextObject.objectNode() : null;
   }
 
