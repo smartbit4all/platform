@@ -687,7 +687,7 @@ public class ObjectApiTestBase {
       Object value = objectApi.mapper()
           .mapping(new ObjectMappingDefinition()
               .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)))
-          .set(fromNode.getObjectAsMap()).execute();
+          .set(fromNode).execute();
       org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Integer.class)
           .isEqualTo(Integer.valueOf(12));
     }
@@ -721,6 +721,118 @@ public class ObjectApiTestBase {
           .set(fromNode).execute();
       org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("apple",
           "apple");
+    }
+
+  }
+
+  @Test
+  void testObjectMapperFromMapToSingleValue() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")).cost(12l)
+            .addKeyWordsItem("keyword1").addKeyWordsItem("keyword2"));
+    URI uriFrom = objectApi.save(fromNode);
+    fromNode = objectApi.loadLatest(uriFrom);
+
+    Map<String, Object> objectAsMap = fromNode.getObjectAsMap();
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)))
+          .set(objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Integer.class)
+          .isEqualTo(Integer.valueOf(12));
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem(SampleCategory.COST)
+                  .typeClass(Long.class.getName())))
+          .set(objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Long.class).isEqualTo(12l);
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem(SampleCategory.KEY_WORDS)))
+          .set(objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("keyword1",
+          "keyword2");
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem(SampleCategory.KEY_WORDS)
+                      .iterationDefinition(new ObjectMappingDefinition()
+                          .addMappingsItem(new ObjectPropertyMapping().expression("'apple'")))))
+          .set(objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("apple",
+          "apple");
+    }
+
+  }
+
+  @Test
+  void testObjectMapperFromContextToSingleValue() {
+    ObjectNode fromNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("From category").color(ColorEnum.BLACK)
+            .singleLink(new SampleLinkObject().linkName("from link")).cost(12l)
+            .addKeyWordsItem("keyword1").addKeyWordsItem("keyword2"));
+    URI uriFrom = objectApi.save(fromNode);
+    fromNode = objectApi.loadLatest(uriFrom);
+
+    Map<String, Object> objectAsMap = fromNode.getObjectAsMap();
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem("obj")
+                  .addFromPathItem(SampleCategory.COST)))
+          .set("obj", fromNode).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Integer.class)
+          .isEqualTo(Integer.valueOf(12));
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(new ObjectPropertyMapping().addFromPathItem("obj")
+                  .addFromPathItem(SampleCategory.COST)
+                  .typeClass(Long.class.getName())))
+          .set("obj", objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat(value).isInstanceOf(Long.class).isEqualTo(12l);
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem("obj")
+                      .addFromPathItem(SampleCategory.KEY_WORDS)))
+          .set("obj", fromNode).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder("keyword1",
+          "keyword2");
+    }
+
+    {
+      Object value = objectApi.mapper()
+          .mapping(new ObjectMappingDefinition()
+              .addMappingsItem(
+                  new ObjectPropertyMapping().addFromPathItem("obj")
+                      .addFromPathItem(SampleCategory.KEY_WORDS)
+                      .iterationDefinition(new ObjectMappingDefinition()
+                          .addMappingsItem(new ObjectPropertyMapping()
+                              .expression("#obj['name'] + ' ' + #listItem")))))
+          .set("obj", objectAsMap).execute();
+      org.assertj.core.api.Assertions.assertThat((List) value).containsExactlyInAnyOrder(
+          "From category keyword1",
+          "From category keyword2");
     }
 
   }
