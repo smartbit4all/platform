@@ -2,6 +2,7 @@ package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
 import java.util.List;
+import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredSequence;
 
 /**
@@ -22,6 +23,23 @@ public interface StorageApi {
    * @return The storage if it exists.
    */
   Storage get(String scheme);
+
+  /**
+   * Retrieves the effective alias for the specified <b>scheme</b>.
+   * 
+   * <p>
+   * If the application does not alias the given scheme, this method returns the input itself.
+   * 
+   * <p>
+   * <em>When constructing custom storage entries, such as - but not limited to -
+   * {@link CollectionApi} managed entities, client's should <b>always</b> call this method to
+   * acquire the effective scheme to use in their application.</em>
+   * 
+   * @param scheme a {@code String} scheme to check, not null
+   * @return the actual {@code String} scheme to use instead of the input in the application, never
+   *         null
+   */
+  String getSchemeAlias(final String scheme);
 
   /**
    * Retrieves the {@link Storage} instance responsible for persisting in the given scheme.

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
@@ -62,6 +63,9 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   @Autowired
   private ObjectDefinitionApi objectDefinitionApi;
 
+  @Autowired(required = false)
+  private StorageConfigurationProperties configProps;
+
   @Value("${storage.useSecondInUri:false}")
   private boolean useSecondInUri = false;
 
@@ -69,6 +73,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   public void afterPropertiesSet() throws Exception {
     if (storages != null) {
       for (Storage storage : storages) {
+        schemaAlias(storage).ifPresent(storage::setSchemeForAlias);
         storagesByScheme.put(storage.getScheme(), storage);
         if (storage.getUseSecondInUri() == null) {
           storage.setUseSecondInUri(useSecondInUri);
@@ -94,6 +99,16 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     }
   }
 
+  private Optional<String> schemaAlias(final Storage storage) {
+    if (configProps == null || configProps.schemaAlias() == null) {
+      return Optional.empty();
+    }
+
+    return Optional.ofNullable(configProps.schemaAlias().get(storage.getScheme()));
+
+  }
+
+
   @Override
   public Storage get(String scheme) {
     Storage storage;
@@ -113,6 +128,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
         storage = storagesByScheme.get(scheme);
         if (storage == null) {
           storage = new Storage(scheme, objectDefinitionApi, defaultObjectStorage);
+          schemaAlias(storage).ifPresent(storage::setSchemeForAlias);
           storage.setUseSecondInUri(useSecondInUri);
           storagesByScheme.put(scheme, storage);
         }
@@ -123,30 +139,16 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     return storage;
   }
 
-  // @Override
-  // public <T, R> Set<R> loadReferences(URI uri, Class<T> clazz, Class<R> typeClass) {
-  // try {
-  //
-  // Optional<ObjectReferenceList> optReferences =
-  // get(clazz).loadReferences(uri, typeClass.getName());
-  //
-  // List<URI> uriList = null;
-  // if (optReferences.isPresent()) {
-  // uriList = optReferences.get().getReferences().stream()
-  // .map(r -> URI.create(r.getReferenceId())).collect(Collectors.toList());
-  // } else {
-  // uriList = Collections.emptyList();
-  // }
-  //
-  // return new HashSet<>(
-  // get(typeClass)
-  // .load(uriList));
-  // } catch (Exception e) {
-  // throw new RuntimeException(
-  // "Unable to load referenced objects for " + uri + " typeClass = " + typeClass.getName(),
-  // e);
-  // }
-  // }
+  @Override
+  public String getSchemeAlias(String scheme) {
+    if (configProps == null || configProps.schemaAlias() == null) {
+      return scheme;
+    }
+
+    return configProps.schemaAlias().getOrDefault(scheme, scheme);
+  }
+
+
 
   @Override
   public StorageObject<?> load(URI uri) {
