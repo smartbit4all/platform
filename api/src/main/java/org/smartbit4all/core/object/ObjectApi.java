@@ -371,6 +371,14 @@ public interface ObjectApi {
   ObjectMapping mapper();
 
   /**
+   * Constructs a ContextMapping instance that can run multiple {@link #mapper()} instance to
+   * produce the values to set into an output context.
+   *
+   * @return
+   */
+  ContextMapping contextMapper();
+
+  /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the
    * lock creation. We can use this lock one time to place a lock and remove it at the end.
    *

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -20,22 +19,18 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 /**
- * The object property mapper is the central logic that can help to map values between objects.
+ * The object property mapper is the central logic that can construct a new value, a result from a
+ * set of {@link ContextObjectItem}. The context can be any a single value, a map or even an
+ * {@link ObjectNode}. The mapping produces a single value via {@link #execute()} or a list of value
+ * via {@link #iterate(List)}.
  * 
  * @author Peter Boros
  */
 public final class ObjectMapping {
 
-  private static final String NODE_POSTFIX = "Node";
-
-  private static final String OBJ_NODE = "objNode";
-
-  private static final String OBJ = "obj";
-
-  private static final String RESULT_OBJECT = "resultObject";
+  public static final String RESULT_OBJECT = "resultObject";
 
   private static final Logger log = LoggerFactory.getLogger(ObjectMapping.class);
 
@@ -43,15 +38,13 @@ public final class ObjectMapping {
 
   private ObjectMappingDefinition definition;
 
+  private final ObjectContext context;
+
   private final Map<ObjectPropertyMapping, Expression> cachedExpressions = new HashMap<>();
 
   private static final SpelExpressionParser parser = new SpelExpressionParser();
 
   private static final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
-
-  private final Map<String, ContextObjectItem> contextObjects = new HashMap<>();
-
-  private ContextObjectItem singleContextItem;
 
   /**
    * The result object that is an empty map by definition. It can be set to an existing object if it
@@ -59,10 +52,9 @@ public final class ObjectMapping {
    */
   Map<String, Object> resultObject = new HashMap<>();
 
-  private static final String SINGLE_CONTEXT_ITEM = "singleContextItem";
-
   ObjectMapping(ObjectApi objectApi) {
     super();
+    context = new ObjectContext(objectApi);
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
@@ -83,7 +75,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(String name, URI uri) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, uri));
+    context.set(name, uri);
     return this;
   }
 
@@ -96,7 +88,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(String name, Object object) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, object));
+    context.set(name, object);
     return this;
   }
 
@@ -109,7 +101,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(String name, ObjectNode node) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, node));
+    context.set(name, node);
     return this;
   }
 
@@ -120,7 +112,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(URI uri) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
+    context.set(uri);
     return this;
   }
 
@@ -132,7 +124,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(Object object) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
+    context.set(object);
     return this;
   }
 
@@ -144,7 +136,7 @@ public final class ObjectMapping {
    * @return
    */
   public ObjectMapping set(ObjectNode node) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
+    context.set(node);
     return this;
   }
 
@@ -153,9 +145,8 @@ public final class ObjectMapping {
     return this;
   }
 
-  public ObjectMapping initFrom(ObjectMapping mapping) {
-    singleContextItem = mapping.singleContextItem;
-    contextObjects.putAll(mapping.contextObjects);
+  public ObjectMapping setContext(ObjectContext context) {
+    this.context.initFrom(context);
     return this;
   }
 
@@ -201,8 +192,10 @@ public final class ObjectMapping {
       // mapping at last.
       Object value;
       if (propertyMapping.getIterationDefinition() != null) {
-        value = objectApi.mapper().mapping(propertyMapping.getIterationDefinition()).initFrom(this)
-            .iterate((List) getValueFromContext(propertyMapping.getFromPath()));
+        value =
+            objectApi.mapper().mapping(propertyMapping.getIterationDefinition())
+                .setContext(this.context)
+                .iterate((List) context.getValueFromContext(propertyMapping.getFromPath()));
       } else if (!StringConstant.isNullOrBlank(propertyMapping.getScriptBody())) {
         value = evaluateScript(propertyMapping);
       } else if (!StringConstant.isNullOrBlank(propertyMapping.getExpression())) {
@@ -210,7 +203,7 @@ public final class ObjectMapping {
         value = expression.getValue(getEvaluationContext());
       } else if (propertyMapping.getFromPath() != null
           && !propertyMapping.getFromPath().isEmpty()) {
-        value = getValueFromContext(propertyMapping.getFromPath());
+        value = context.getValueFromContext(propertyMapping.getFromPath());
       } else {
         // Error the given mapping is skipped.
         throw new IllegalStateException("The " + propertyMapping + " mapping is not correct.");
@@ -238,6 +231,12 @@ public final class ObjectMapping {
     return resultObject;
   }
 
+  private EvaluationContext getEvaluationContext() {
+    EvaluationContext result = context.getEvaluationContext();
+    result.setVariable(RESULT_OBJECT, resultObject);
+    return result;
+  }
+
   private final Object evaluateScript(ObjectPropertyMapping mapping) {
     String scriptKind = mapping.getScriptKind() == null ? "Groovy" : mapping.getScriptKind();
     ScriptEngine engine = scriptEngineManager.getEngineByName(scriptKind);
@@ -255,84 +254,10 @@ public final class ObjectMapping {
 
   }
 
-  /**
-   * Constructs an evaluation context for the {@link Expression} of the SpEL.
-   * 
-   * @return
-   */
-  private final EvaluationContext getEvaluationContext() {
-    StandardEvaluationContext result = new StandardEvaluationContext();
-    if (singleContextItem != null) {
-      // We should set the root object and also the variable.
-      result.setRootObject(singleContextItem.getValue());
-    }
-    for (ContextObjectItem contextObject : contextObjects.values()) {
-      result.setVariable(contextObject.getName(), contextObject.getValue());
-    }
-    result.setVariable(RESULT_OBJECT, resultObject);
-    return result;
-  }
-
-  /**
-   * Constructs an evaluation context for the {@link Expression} of the SpEL.
-   * 
-   * @return
-   */
-  private final Bindings getScriptBindings(ScriptEngine engine) {
-    Bindings result = engine.createBindings();
-    if (singleContextItem != null) {
-      // We should set the root object and also the variable.
-      result.put(OBJ, singleContextItem.getValue());
-      result.put(OBJ_NODE, singleContextItem.objectNode());
-    }
-    for (ContextObjectItem contextObject : contextObjects.values()) {
-      result.put(contextObject.getName(), contextObject.getValue());
-      result.put(contextObject.getName() + NODE_POSTFIX, contextObject.objectNode());
-    }
+  private Bindings getScriptBindings(ScriptEngine engine) {
+    Bindings result = context.getScriptBindings(engine);
     result.put(RESULT_OBJECT, resultObject);
     return result;
-  }
-
-  /**
-   * Get the value identified by the path from the context set to the mapping.
-   * 
-   * @param path The path of the property to get.
-   * @return The value denoted by the path.
-   */
-  private final Object getValueFromContext(List<String> path) {
-    Objects.requireNonNull(path);
-    ContextObjectItem contextObject;
-    List<String> finalPath;
-    if (singleContextItem != null) {
-      // The whole path is evaluated inside the single context object.
-      contextObject = singleContextItem;
-      finalPath = path;
-    } else {
-      // The first segment of the path identifies the context object and the rest is the path
-      // inside.
-      if (path.size() < 1) {
-        throw new IllegalArgumentException(
-            "Unable to get value from context, at least the context object must be denoted.");
-      }
-      String ctxName = path.get(0);
-      contextObject = contextObjects.get(ctxName);
-      if (contextObject == null) {
-        throw new IllegalArgumentException(
-            ctxName + " context object is not found.");
-      }
-      finalPath = path.subList(1, path.size());
-    }
-    if (finalPath.isEmpty()) {
-      // We arrived we need the context value as is.
-      return contextObject.getValue();
-    }
-    ObjectNode objectNode = contextObject.objectNode();
-    if (objectNode == null) {
-      throw new IllegalArgumentException(
-          "Unable to load the context object " + contextObject.getName()
-              + " it is not set correctly.");
-    }
-    return objectNode.getValue(StringConstant.toArray(finalPath));
   }
 
   public Map<String, Object> copyAllValues(Map<String, Object> from, Map<String, Object> to) {

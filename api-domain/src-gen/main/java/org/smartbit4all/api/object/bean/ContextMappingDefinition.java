@@ -24,7 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.smartbit4all.api.object.bean.TransformationItem;
+import org.smartbit4all.api.object.bean.ContextMappingItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -35,23 +35,23 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "This object is the definition of a transformation between object contexts managed by the ObjectApi and using ObjectNodes as loaded context objects. The transformation can be applied if we have an input context and an output context. After the transformation we will have the modified output context that can be used to any purpose. For example we can save its objects one by one. Or we can use them as parameters of an invocation. The transformation can be an expression that is based on the SpEL language as a widespread solution in spring based systems. Or we can call an InvocationRequest to execute the transformation where the invocation request can be a groovy script for better access to the API infrastructure of the platform. ")
 @JsonPropertyOrder({
-  ObjectContextTransformation.ITEMS
+  ContextMappingDefinition.ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class ObjectContextTransformation {
+public class ContextMappingDefinition {
   public static final String ITEMS = "items";
-  private List<@Valid TransformationItem> items = new ArrayList<>();
+  private List<@Valid ContextMappingItem> items = new ArrayList<>();
 
-  public ObjectContextTransformation() {
+  public ContextMappingDefinition() {
   }
 
-  public ObjectContextTransformation items(List<@Valid TransformationItem> items) {
+  public ContextMappingDefinition items(List<@Valid ContextMappingItem> items) {
     
     this.items = items;
     return this;
   }
 
-  public ObjectContextTransformation addItemsItem(TransformationItem itemsItem) {
+  public ContextMappingDefinition addItemsItem(ContextMappingItem itemsItem) {
     if (this.items == null) {
       this.items = new ArrayList<>();
     }
@@ -71,14 +71,14 @@ public class ObjectContextTransformation {
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public List<@Valid TransformationItem> getItems() {
+  public List<@Valid ContextMappingItem> getItems() {
     return items;
   }
 
 
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setItems(List<@Valid TransformationItem> items) {
+  public void setItems(List<@Valid ContextMappingItem> items) {
     this.items = items;
   }
 
@@ -90,8 +90,8 @@ public class ObjectContextTransformation {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ObjectContextTransformation objectContextTransformation = (ObjectContextTransformation) o;
-    return Objects.equals(this.items, objectContextTransformation.items);
+    ContextMappingDefinition contextMappingDefinition = (ContextMappingDefinition) o;
+    return Objects.equals(this.items, contextMappingDefinition.items);
   }
 
   @Override
@@ -102,7 +102,7 @@ public class ObjectContextTransformation {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ObjectContextTransformation {\n");
+    sb.append("class ContextMappingDefinition {\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("}");
     return sb.toString();

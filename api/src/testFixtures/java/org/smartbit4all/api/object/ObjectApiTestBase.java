@@ -20,6 +20,8 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.object.bean.BranchEntry;
+import org.smartbit4all.api.object.bean.ContextMappingDefinition;
+import org.smartbit4all.api.object.bean.ContextMappingItem;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
@@ -49,6 +51,7 @@ import org.smartbit4all.api.sample.bean.SampleProperties;
 import org.smartbit4all.api.sample.bean.SamplePropertyContainer;
 import org.smartbit4all.api.sample.bean.SamplePropertyContainerWithId;
 import org.smartbit4all.api.sample.bean.SampleStandaloneObject;
+import org.smartbit4all.core.object.ContextMapping;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -64,6 +67,7 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -958,6 +962,43 @@ public class ObjectApiTestBase {
         .assertThat(((List) result.get(SampleExtensibleObject.LINKS)).stream()
             .map(o -> ((Map) o).get(SampleLinkObject.ITEM)))
         .contains("from name", "from code");
+  }
+
+  @Test
+  void testObjectContextMapping() {
+    ObjectNode targetNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategory().name("from name"));
+    URI uriTarget = objectApi.save(targetNode);
+    ObjectNode typeNode = objectApi.create(SCHEMA_ASPECTS,
+        new SampleCategoryType().name("type name"));
+
+    targetNode = objectApi.loadLatest(uriTarget);
+
+    ContextMappingDefinition contextMappingDefinition =
+        new ContextMappingDefinition().addItemsItem(new ContextMappingItem()
+            .addOutputPathItem("target").addOutputPathItem(SampleCategory.NAME)
+            .valueMapping(new ObjectMappingDefinition()
+                .addMappingsItem(new ObjectPropertyMapping()
+                    .expression("#map1['prop1'] + ' - ' + #categoryType['name']"))));
+    try {
+      System.out
+          .println(objectApi.getDefaultSerializer().writeValueAsString(contextMappingDefinition));
+    } catch (JsonProcessingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    ContextMapping contextMapping = objectApi.contextMapper()
+        .mapping(contextMappingDefinition);
+
+    contextMapping.from().set("map1", Map.of("prop1", "map1.prop1")).set("categoryType", typeNode);
+    contextMapping.to().set("target", targetNode);
+
+    contextMapping.execute();
+
+    org.assertj.core.api.Assertions.assertThat(targetNode.getValueAsString(SampleCategory.NAME))
+        .isEqualTo("map1.prop1 - type name");
+
   }
 
   @Test

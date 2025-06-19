@@ -31,31 +31,35 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * One transformation in the ObjectContextTransformation to be applied in a given order. 
+ * One transformation in the ContextMappingDefinition to be applied in a given order. 
  */
-@Schema(description = "One transformation in the ObjectContextTransformation to be applied in a given order. ")
+@Schema(description = "One transformation in the ContextMappingDefinition to be applied in a given order. ")
 @JsonPropertyOrder({
-  TransformationItem.OUTPUT_PATH,
-  TransformationItem.MAPPING
+  ContextMappingItem.OUTPUT_PATH,
+  ContextMappingItem.MERGE,
+  ContextMappingItem.VALUE_MAPPING
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class TransformationItem {
+public class ContextMappingItem {
   public static final String OUTPUT_PATH = "outputPath";
   private List<String> outputPath = new ArrayList<>();
 
-  public static final String MAPPING = "mapping";
-  private ObjectMappingDefinition mapping;
+  public static final String MERGE = "merge";
+  private Boolean merge = true;
 
-  public TransformationItem() {
+  public static final String VALUE_MAPPING = "valueMapping";
+  private ObjectMappingDefinition valueMapping;
+
+  public ContextMappingItem() {
   }
 
-  public TransformationItem outputPath(List<String> outputPath) {
+  public ContextMappingItem outputPath(List<String> outputPath) {
     
     this.outputPath = outputPath;
     return this;
   }
 
-  public TransformationItem addOutputPathItem(String outputPathItem) {
+  public ContextMappingItem addOutputPathItem(String outputPathItem) {
     if (this.outputPath == null) {
       this.outputPath = new ArrayList<>();
     }
@@ -84,32 +88,59 @@ public class TransformationItem {
     this.outputPath = outputPath;
   }
 
-  public TransformationItem mapping(ObjectMappingDefinition mapping) {
+  public ContextMappingItem merge(Boolean merge) {
     
-    this.mapping = mapping;
+    this.merge = merge;
     return this;
   }
 
   /**
-   * Get mapping
-   * @return mapping
+   * Defines if the result of the value should be merged into the result object if it exists. If false then the result will overwrite the existing value instead of merge. 
+   * @return merge
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Defines if the result of the value should be merged into the result object if it exists. If false then the result will overwrite the existing value instead of merge. ")
+  @JsonProperty(MERGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getMerge() {
+    return merge;
+  }
+
+
+  @JsonProperty(MERGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMerge(Boolean merge) {
+    this.merge = merge;
+  }
+
+  public ContextMappingItem valueMapping(ObjectMappingDefinition valueMapping) {
+    
+    this.valueMapping = valueMapping;
+    return this;
+  }
+
+  /**
+   * Get valueMapping
+   * @return valueMapping
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(MAPPING)
+  @JsonProperty(VALUE_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ObjectMappingDefinition getMapping() {
-    return mapping;
+  public ObjectMappingDefinition getValueMapping() {
+    return valueMapping;
   }
 
 
-  @JsonProperty(MAPPING)
+  @JsonProperty(VALUE_MAPPING)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setMapping(ObjectMappingDefinition mapping) {
-    this.mapping = mapping;
+  public void setValueMapping(ObjectMappingDefinition valueMapping) {
+    this.valueMapping = valueMapping;
   }
 
   @Override
@@ -120,22 +151,24 @@ public class TransformationItem {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TransformationItem transformationItem = (TransformationItem) o;
-    return Objects.equals(this.outputPath, transformationItem.outputPath) &&
-        Objects.equals(this.mapping, transformationItem.mapping);
+    ContextMappingItem contextMappingItem = (ContextMappingItem) o;
+    return Objects.equals(this.outputPath, contextMappingItem.outputPath) &&
+        Objects.equals(this.merge, contextMappingItem.merge) &&
+        Objects.equals(this.valueMapping, contextMappingItem.valueMapping);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(outputPath, mapping);
+    return Objects.hash(outputPath, merge, valueMapping);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class TransformationItem {\n");
+    sb.append("class ContextMappingItem {\n");
     sb.append("    outputPath: ").append(toIndentedString(outputPath)).append("\n");
-    sb.append("    mapping: ").append(toIndentedString(mapping)).append("\n");
+    sb.append("    merge: ").append(toIndentedString(merge)).append("\n");
+    sb.append("    valueMapping: ").append(toIndentedString(valueMapping)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -906,7 +906,7 @@ components:
     VersionStrategy:
       enum: [LATEST, EXACT, BYDEFINITION]
 
-    ObjectContextTransformation:
+    ContextMappingDefinition:
       type: object
       description: |
         This object is the definition of a transformation between object contexts managed by the ObjectApi and using ObjectNodes as
@@ -921,11 +921,11 @@ components:
           type: array
           description: The transformation list is an ordered list of transformation definitions.
           items:
-            $ref: '#/components/schemas/TransformationItem'
-    TransformationItem:
+            $ref: '#/components/schemas/ContextMappingItem'
+    ContextMappingItem:
       type: object
       description: |
-        One transformation in the ObjectContextTransformation to be applied in a given order.
+        One transformation in the ContextMappingDefinition to be applied in a given order.
       required: [request]
       properties:
         outputPath:
@@ -935,7 +935,13 @@ components:
           type: array
           items:
             type: string
-        mapping:
+        merge:
+          description: |
+            Defines if the result of the value should be merged into the result object if it exists. If false then
+            the result will overwrite the existing value instead of merge.
+          type: boolean
+          default: true 
+        valueMapping:
           $ref: '#/components/schemas/ObjectMappingDefinition'
           description: |
             The object mapping definition that constructs a result value that can be set to the output path.
