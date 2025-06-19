@@ -188,6 +188,10 @@ components:
             The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. We can use this
             URI to resolve the data with the ObjectApi.
           example: state:/object/otherobject#property
+        definition:
+          description: |
+            The definition of the mapping is the value producer for the given parameter.
+          type: ObjectMappingDefinition
     InvocationBatchRequest:
       type: object
       description: |

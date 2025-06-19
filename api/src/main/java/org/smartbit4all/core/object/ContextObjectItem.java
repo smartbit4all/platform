@@ -23,6 +23,12 @@ class ContextObjectItem {
 
   private static final String DEFAULT_SCHEMA = "defaultSchema";
 
+  ContextObjectItem(ObjectApi objectApi, ContextObjectDataItem item) {
+    super();
+    objectApiRef = new WeakReference<>(objectApi);
+    this.data = item;
+  }
+
   ContextObjectItem(ObjectApi objectApi, String name, URI uri) {
     super();
     objectApiRef = new WeakReference<>(objectApi);

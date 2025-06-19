@@ -19,16 +19,16 @@ public final class ContextMapping {
 
   private WeakReference<ObjectApi> objectApiRef;
 
-  private final ObjectContext from;
+  private final ContextObject from;
 
-  private final ObjectContext to;
+  private final ContextObject to;
 
   private ContextMappingDefinition definition;
 
   ContextMapping(ObjectApi objectApi) {
     super();
-    this.from = new ObjectContext(objectApi);
-    this.to = new ObjectContext(objectApi);
+    this.from = new ContextObject(objectApi);
+    this.to = new ContextObject(objectApi);
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
@@ -41,11 +41,11 @@ public final class ContextMapping {
     return objectApiRef.get();
   }
 
-  public ObjectContext from() {
+  public ContextObject from() {
     return from;
   }
 
-  public ObjectContext to() {
+  public ContextObject to() {
     return to;
   }
 

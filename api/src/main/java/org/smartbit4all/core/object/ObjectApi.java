@@ -379,6 +379,13 @@ public interface ObjectApi {
   ContextMapping contextMapper();
 
   /**
+   * Constructs a ContextObject.
+   *
+   * @return
+   */
+  ContextObject contextObject();
+
+  /**
    * Get a lock object for the given URI. The URI is not necessarily exists at the moment of the
    * lock creation. We can use this lock one time to place a lock and remove it at the end.
    *

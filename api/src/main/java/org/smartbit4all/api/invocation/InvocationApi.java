@@ -16,6 +16,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.object.bean.ContextObjectData;
+import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 
@@ -186,6 +187,19 @@ public interface InvocationApi {
    */
   InvocationRequest resolve(InvocationRequestDefinition definition,
       ContextObjectData context);
+
+  /**
+   * The definition contains an prepared instance from the {@link InvocationRequest} and some
+   * mapping between the context object properties and the parameters. With this call we can
+   * initiate a new {@link InvocationRequest} ready to call by resolving the referred parameters
+   * from the objects provided in the context with the {@link ObjectPropertyResolver}.
+   *
+   * @param definition The invocation definition.
+   * @param context The object context for the resolution.
+   * @return
+   */
+  InvocationRequest resolve(InvocationRequestDefinition definition,
+      ContextObject context);
 
   /**
    * Constructs a new invocation request copy and set the parameters by position.

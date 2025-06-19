@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -34,7 +35,8 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   InvocationParameterResolver.NAME,
   InvocationParameterResolver.POSITION,
-  InvocationParameterResolver.PROPERTY_URI
+  InvocationParameterResolver.PROPERTY_URI,
+  InvocationParameterResolver.DEFINITION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationParameterResolver {
@@ -46,6 +48,9 @@ public class InvocationParameterResolver {
 
   public static final String PROPERTY_URI = "propertyUri";
   private URI propertyUri;
+
+  public static final String DEFINITION = "definition";
+  private ObjectMappingDefinition definition = null;
 
   public InvocationParameterResolver() {
   }
@@ -132,6 +137,34 @@ public class InvocationParameterResolver {
     this.propertyUri = propertyUri;
   }
 
+  public InvocationParameterResolver definition(ObjectMappingDefinition definition) {
+    
+    this.definition = definition;
+    return this;
+  }
+
+  /**
+   * The definition of the mapping is the value producer for the given parameter. 
+   * @return definition
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The definition of the mapping is the value producer for the given parameter. ")
+  @JsonProperty(DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ObjectMappingDefinition getDefinition() {
+    return definition;
+  }
+
+
+  @JsonProperty(DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDefinition(ObjectMappingDefinition definition) {
+    this.definition = definition;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -143,12 +176,13 @@ public class InvocationParameterResolver {
     InvocationParameterResolver invocationParameterResolver = (InvocationParameterResolver) o;
     return Objects.equals(this.name, invocationParameterResolver.name) &&
         Objects.equals(this.position, invocationParameterResolver.position) &&
-        Objects.equals(this.propertyUri, invocationParameterResolver.propertyUri);
+        Objects.equals(this.propertyUri, invocationParameterResolver.propertyUri) &&
+        Objects.equals(this.definition, invocationParameterResolver.definition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, position, propertyUri);
+    return Objects.hash(name, position, propertyUri, definition);
   }
 
   @Override
@@ -158,6 +192,7 @@ public class InvocationParameterResolver {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    position: ").append(toIndentedString(position)).append("\n");
     sb.append("    propertyUri: ").append(toIndentedString(propertyUri)).append("\n");
+    sb.append("    definition: ").append(toIndentedString(definition)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -35,14 +35,46 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The context objects of a property value resolution. ")
 @JsonPropertyOrder({
+  ContextObjectData.SINGLE_ITEM,
   ContextObjectData.ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ContextObjectData {
+  public static final String SINGLE_ITEM = "singleItem";
+  private ContextObjectDataItem singleItem;
+
   public static final String ITEMS = "items";
   private List<@Valid ContextObjectDataItem> items = new ArrayList<>();
 
   public ContextObjectData() {
+  }
+
+  public ContextObjectData singleItem(ContextObjectDataItem singleItem) {
+    
+    this.singleItem = singleItem;
+    return this;
+  }
+
+  /**
+   * Get singleItem
+   * @return singleItem
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(SINGLE_ITEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ContextObjectDataItem getSingleItem() {
+    return singleItem;
+  }
+
+
+  @JsonProperty(SINGLE_ITEM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSingleItem(ContextObjectDataItem singleItem) {
+    this.singleItem = singleItem;
   }
 
   public ContextObjectData items(List<@Valid ContextObjectDataItem> items) {
@@ -91,18 +123,20 @@ public class ContextObjectData {
       return false;
     }
     ContextObjectData contextObjectData = (ContextObjectData) o;
-    return Objects.equals(this.items, contextObjectData.items);
+    return Objects.equals(this.singleItem, contextObjectData.singleItem) &&
+        Objects.equals(this.items, contextObjectData.items);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(items);
+    return Objects.hash(singleItem, items);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ContextObjectData {\n");
+    sb.append("    singleItem: ").append(toIndentedString(singleItem)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("}");
     return sb.toString();

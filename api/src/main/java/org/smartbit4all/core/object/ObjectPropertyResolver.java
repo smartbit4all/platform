@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ public final class ObjectPropertyResolver {
 
   ObjectPropertyResolver(ObjectApi objectApi) {
     super();
+    this.contextObject = new ContextObject(objectApi);
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
@@ -87,7 +89,10 @@ public final class ObjectPropertyResolver {
       "^redirect\\{if=\"([^\"]*)\",\\s*then=\"([^\"]*)\"}$";
   public static final Pattern REDIRECT_PTRN = Pattern.compile(REDIRECT_REGEX);
 
-  private final Map<String, ContextObjectItem> contextObjects = new HashMap<>();
+  /**
+   * The context object for the resolver.
+   */
+  private final ContextObject contextObject;
 
   /**
    * We can add context objects to the given resolver. The name uris points to the root objects of
@@ -99,9 +104,9 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObjects(Map<String, URI> context) {
     if (context != null) {
-      context.entrySet().stream()
-          .map(e -> new ContextObjectItem(objectApi(), e.getKey(), e.getValue()))
-          .forEach(co -> contextObjects.putIfAbsent(co.getName(), co));
+      for (Entry<String, URI> entry : context.entrySet()) {
+        contextObject.set(entry.getKey(), entry.getValue());
+      }
     }
     return this;
   }
@@ -116,10 +121,13 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObjects(ContextObjectData context) {
     if (context != null) {
-      context.getItems().stream()
-          .map(o -> new ContextObjectItem(objectApi(), o.getName(), o.getUri()))
-          .forEach(co -> contextObjects.putIfAbsent(co.getName(), co));
+      contextObject.initFrom(context);
     }
+    return this;
+  }
+
+  public ObjectPropertyResolver contextObject(ContextObject context) {
+    this.contextObject.initFrom(context);
     return this;
   }
 
@@ -134,7 +142,7 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObject(String name, URI objectUri) {
     if (name != null && objectUri != null) {
-      contextObjects.putIfAbsent(name, new ContextObjectItem(objectApi(), name, objectUri));
+      contextObject.set(name, objectUri);
     }
     return this;
   }
@@ -162,8 +170,8 @@ public final class ObjectPropertyResolver {
    * @return this instance
    */
   public ObjectPropertyResolver addContextObject(String name, ObjectNode node) {
-    if (name != null && node != null) {
-      contextObjects.putIfAbsent(name, new ContextObjectItem(objectApi(), name, node));
+    if (name != null && node != null && contextObject.getItem(name) == null) {
+      contextObject.set(name, node);
     }
     return this;
   }
@@ -226,14 +234,14 @@ public final class ObjectPropertyResolver {
     if (propertyUri == null) {
       return null;
     }
-    ContextObjectItem contextObject = contextObjects.get(propertyUri.getScheme());
-    if (contextObject == null) {
+    ContextObjectItem contextObjectItem = contextObject.getItem(propertyUri.getScheme());
+    if (contextObjectItem == null) {
       throw new IllegalArgumentException(
           "Unable to resolve the " + propertyUri + " property because the "
               + propertyUri.getScheme() + " object is not defined in the context.");
     }
     String propertyUriString = propertyUri.toString();
-    return performResolution(contextObject.objectNode(),
+    return performResolution(contextObjectItem.objectNode(),
         PropertyPath.parse(propertyUriString.substring(propertyUriString.indexOf('/'))),
         language);
   }
@@ -316,13 +324,13 @@ public final class ObjectPropertyResolver {
   }
 
   public ObjectNode getContextObjectNode(String objectName) {
-    ContextObjectItem contextObject = contextObjects.get(objectName);
-    return contextObject != null ? contextObject.objectNode() : null;
+    ContextObjectItem contextObjectItem = contextObject.getItem(objectName);
+    return contextObjectItem != null ? contextObjectItem.objectNode() : null;
   }
 
   public Map<String, ObjectNode> getContextNodes() {
     final Map<String, ObjectNode> result = new HashMap<>();
-    contextObjects.forEach((k, v) -> result.put(k, v.objectNode()));
+    contextObject.getItems().forEach((k, v) -> result.put(k, v.objectNode()));
     return result;
   }
 

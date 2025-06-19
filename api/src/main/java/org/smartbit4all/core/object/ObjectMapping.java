@@ -12,6 +12,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
@@ -38,7 +39,7 @@ public final class ObjectMapping {
 
   private ObjectMappingDefinition definition;
 
-  private final ObjectContext context;
+  private final ContextObject context;
 
   private final Map<ObjectPropertyMapping, Expression> cachedExpressions = new HashMap<>();
 
@@ -54,7 +55,7 @@ public final class ObjectMapping {
 
   ObjectMapping(ObjectApi objectApi) {
     super();
-    context = new ObjectContext(objectApi);
+    context = new ContextObject(objectApi);
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
@@ -145,7 +146,12 @@ public final class ObjectMapping {
     return this;
   }
 
-  public ObjectMapping setContext(ObjectContext context) {
+  public ObjectMapping setContext(ContextObject context) {
+    this.context.initFrom(context);
+    return this;
+  }
+
+  public ObjectMapping setContext(ContextObjectData context) {
     this.context.initFrom(context);
     return this;
   }
@@ -186,6 +192,10 @@ public final class ObjectMapping {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Object execute() {
     ObjectApi objectApi = objectApi();
+    // If we have a constant value then return immediately withoput any further manipulation.
+    if (definition.getConstant() != null) {
+      return definition.getConstant();
+    }
     for (ObjectPropertyMapping propertyMapping : definition.getMappings()) {
       List<String> toPath = propertyMapping.getToPath();
       // The highest precedence is the list iteration, the script, then the expresion and the simple

@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,
+  ObjectMappingDefinition.CONSTANT,
   ObjectMappingDefinition.MAPPINGS,
   ObjectMappingDefinition.LIST_MAPPINGS
 })
@@ -48,6 +49,9 @@ public class ObjectMappingDefinition {
 
   public static final String TO_TYPE_QUALIFIED_NAME = "toTypeQualifiedName";
   private String toTypeQualifiedName;
+
+  public static final String CONSTANT = "constant";
+  private Object constant;
 
   public static final String MAPPINGS = "mappings";
   private List<@Valid ObjectPropertyMapping> mappings = new ArrayList<>();
@@ -110,6 +114,33 @@ public class ObjectMappingDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setToTypeQualifiedName(String toTypeQualifiedName) {
     this.toTypeQualifiedName = toTypeQualifiedName;
+  }
+
+  public ObjectMappingDefinition constant(Object constant) {
+    
+    this.constant = constant;
+    return this;
+  }
+
+  /**
+   * If the mapping is so simple to produce a constant value then it can be set.
+   * @return constant
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the mapping is so simple to produce a constant value then it can be set.")
+  @JsonProperty(CONSTANT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getConstant() {
+    return constant;
+  }
+
+
+  @JsonProperty(CONSTANT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstant(Object constant) {
+    this.constant = constant;
   }
 
   public ObjectMappingDefinition mappings(List<@Valid ObjectPropertyMapping> mappings) {
@@ -197,13 +228,14 @@ public class ObjectMappingDefinition {
     ObjectMappingDefinition objectMappingDefinition = (ObjectMappingDefinition) o;
     return Objects.equals(this.fromTypeQualifiedName, objectMappingDefinition.fromTypeQualifiedName) &&
         Objects.equals(this.toTypeQualifiedName, objectMappingDefinition.toTypeQualifiedName) &&
+        Objects.equals(this.constant, objectMappingDefinition.constant) &&
         Objects.equals(this.mappings, objectMappingDefinition.mappings) &&
         Objects.equals(this.listMappings, objectMappingDefinition.listMappings);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(fromTypeQualifiedName, toTypeQualifiedName, mappings, listMappings);
+    return Objects.hash(fromTypeQualifiedName, toTypeQualifiedName, constant, mappings, listMappings);
   }
 
   @Override
@@ -212,6 +244,7 @@ public class ObjectMappingDefinition {
     sb.append("class ObjectMappingDefinition {\n");
     sb.append("    fromTypeQualifiedName: ").append(toIndentedString(fromTypeQualifiedName)).append("\n");
     sb.append("    toTypeQualifiedName: ").append(toIndentedString(toTypeQualifiedName)).append("\n");
+    sb.append("    constant: ").append(toIndentedString(constant)).append("\n");
     sb.append("    mappings: ").append(toIndentedString(mappings)).append("\n");
     sb.append("    listMappings: ").append(toIndentedString(listMappings)).append("\n");
     sb.append("}");

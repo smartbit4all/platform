@@ -927,6 +927,11 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
+  public ContextObject contextObject() {
+    return new ContextObject(self);
+  }
+
+  @Override
   public Lock getLock(URI uri) {
     return retrievalApi.getLock(uri);
   }

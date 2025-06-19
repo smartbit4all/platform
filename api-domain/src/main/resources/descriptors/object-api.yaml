@@ -423,6 +423,9 @@ components:
         The context objects of a property value resolution.
       required: [items]
       properties:
+        singleItem:
+          description: The single object if there is only one object in the context.
+          $ref: '#/components/schemas/ContextObjectDataItem'
         items:
           type: array
           items:
@@ -956,6 +959,9 @@ components:
           type: string
         toTypeQualifiedName:
           type: string
+        constant:
+          description: If the mapping is so simple to produce a constant value then it can be set.
+          type: object
         mappings:
           type: array
           items:

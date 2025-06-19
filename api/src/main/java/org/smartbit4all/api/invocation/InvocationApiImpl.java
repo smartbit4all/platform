@@ -7,6 +7,7 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,6 +40,7 @@ import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
@@ -303,30 +305,70 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Override
   public InvocationRequest resolve(InvocationRequestDefinition definition,
-      ContextObjectData context) {
+      ContextObjectData contextData) {
+    Objects.requireNonNull(definition, "The invocation definition is null, unable to resolve");
+    InvocationRequest request = definition.getRequest();
+    Objects.requireNonNull(request,
+        () -> "The request in the " + definition + " must not be null.");
+    // TODO Copy new instance from request!!!!
+    if (contextData != null && definition.getResolvers() != null) {
+      ContextObject context = objectApi.contextObject().initFrom(contextData);
+      resolve(definition, request, context);
+    }
+    return request;
+  }
+
+  @Override
+  public InvocationRequest resolve(InvocationRequestDefinition definition, ContextObject context) {
     Objects.requireNonNull(definition, "The invocation definition is null, unable to resolve");
     InvocationRequest request = definition.getRequest();
     Objects.requireNonNull(request,
         () -> "The request in the " + definition + " must not be null.");
     // TODO Copy new instance from request!!!!
     if (context != null && definition.getResolvers() != null) {
-      ObjectPropertyResolver resolver = objectApi.resolver().addContextObjects(context);
-      for (InvocationParameterResolver paramResolver : definition.getResolvers()) {
-        InvocationParameter parameter = null;
-        if (request.getParameters() != null) {
-          if (paramResolver.getName() != null) {
-            parameter = request.getParameters().stream()
-                .filter(p -> paramResolver.getName().equals(p.getName())).findFirst().orElse(null);
-          } else if (paramResolver.getPosition() != null) {
-            parameter = request.getParameters().get(paramResolver.getPosition());
-          }
-        }
-        if (parameter != null) {
-          parameter.setValue(resolver.resolve(paramResolver.getPropertyUri()));
-        }
-      }
+      resolve(definition, request, context);
     }
     return request;
+  }
+
+  private final void resolve(InvocationRequestDefinition definition, InvocationRequest request,
+      ContextObject context) {
+    // If we have the same number of resolver then parameter then use the natural position of
+    // the resolvers instead of the name and position parameters.
+    if (definition.getResolvers().size() == request.getParameters().size()) {
+      ListIterator<InvocationParameter> parameterIterator =
+          request.getParameters().listIterator();
+      for (InvocationParameterResolver paramResolver : definition.getResolvers()) {
+        parameterIterator.next().setValue(resolve(context, paramResolver));
+      }
+    }
+
+    for (InvocationParameterResolver paramResolver : definition.getResolvers()) {
+      InvocationParameter parameter = null;
+      if (request.getParameters() != null) {
+        if (paramResolver.getName() != null) {
+          parameter = request.getParameters().stream()
+              .filter(p -> paramResolver.getName().equals(p.getName())).findFirst().orElse(null);
+        } else if (paramResolver.getPosition() != null) {
+          parameter = request.getParameters().get(paramResolver.getPosition());
+        }
+      }
+      if (parameter != null) {
+        parameter.setValue(resolve(context, paramResolver));
+      }
+    }
+  }
+
+  private final Object resolve(ContextObject context,
+      InvocationParameterResolver paramResolver) {
+    if (paramResolver.getDefinition() != null) {
+      return objectApi.mapper().mapping(paramResolver.getDefinition()).setContext(context)
+          .execute();
+    } else if (paramResolver.getPropertyUri() != null) {
+      ObjectPropertyResolver propertyResolver = objectApi.resolver().contextObject(context);
+      return propertyResolver.resolve(paramResolver.getPropertyUri());
+    }
+    return null;
   }
 
   @Override

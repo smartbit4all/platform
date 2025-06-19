@@ -3,20 +3,23 @@ package org.smartbit4all.core.object;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
+import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import static java.util.stream.Collectors.toMap;
 
-public class ObjectContext {
+public class ContextObject {
 
-  private final Map<String, ContextObjectItem> contextObjects = new HashMap<>();
+  private final Map<String, ContextObjectItem> items = new HashMap<>();
 
   private ContextObjectItem singleContextItem;
 
@@ -34,14 +37,23 @@ public class ObjectContext {
     return objectApiRef.get();
   }
 
-  ObjectContext(ObjectApi objectApi) {
+  ContextObject(ObjectApi objectApi) {
     super();
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
-  public ObjectContext initFrom(ObjectContext from) {
+  public ContextObject initFrom(ContextObject from) {
     singleContextItem = from.singleContextItem;
-    contextObjects.putAll(from.contextObjects);
+    items.putAll(from.items);
+    return this;
+  }
+
+  public ContextObject initFrom(ContextObjectData from) {
+    if (from.getSingleItem() != null) {
+      singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
+    }
+    items.putAll(from.getItems().stream().map(di -> new ContextObjectItem(objectApi(), di))
+        .collect(toMap(i -> i.getName(), i -> i)));
     return this;
   }
 
@@ -52,8 +64,8 @@ public class ObjectContext {
    * @param uri The uri of the object.
    * @return
    */
-  public ObjectContext set(String name, URI uri) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, uri));
+  public ContextObject set(String name, URI uri) {
+    items.put(name, new ContextObjectItem(objectApi(), name, uri));
     return this;
   }
 
@@ -65,8 +77,8 @@ public class ObjectContext {
    * @param object The object itself that can be a single value or a Map also.
    * @return
    */
-  public ObjectContext set(String name, Object object) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, object));
+  public ContextObject set(String name, Object object) {
+    items.put(name, new ContextObjectItem(objectApi(), name, object));
     return this;
   }
 
@@ -78,8 +90,8 @@ public class ObjectContext {
    * @param node The object node.
    * @return
    */
-  public ObjectContext set(String name, ObjectNode node) {
-    contextObjects.put(name, new ContextObjectItem(objectApi(), name, node));
+  public ContextObject set(String name, ObjectNode node) {
+    items.put(name, new ContextObjectItem(objectApi(), name, node));
     return this;
   }
 
@@ -89,7 +101,7 @@ public class ObjectContext {
    * @param uri The uri of the object.
    * @return
    */
-  public ObjectContext set(URI uri) {
+  public ContextObject set(URI uri) {
     singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
     return this;
   }
@@ -101,7 +113,7 @@ public class ObjectContext {
    * @param object The object itself that can be a single value or a Map also.
    * @return
    */
-  public ObjectContext set(Object object) {
+  public ContextObject set(Object object) {
     singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
     return this;
   }
@@ -113,7 +125,7 @@ public class ObjectContext {
    * @param node The object node.
    * @return
    */
-  public ObjectContext set(ObjectNode node) {
+  public ContextObject set(ObjectNode node) {
     singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
     return this;
   }
@@ -129,7 +141,7 @@ public class ObjectContext {
       // We should set the root object and also the variable.
       result.setRootObject(singleContextItem.getValue());
     }
-    for (ContextObjectItem contextObject : contextObjects.values()) {
+    for (ContextObjectItem contextObject : items.values()) {
       result.setVariable(contextObject.getName(), contextObject.getValue());
     }
     return result;
@@ -147,7 +159,7 @@ public class ObjectContext {
       result.put(OBJ, singleContextItem.getValue());
       result.put(OBJ_NODE, singleContextItem.objectNode());
     }
-    for (ContextObjectItem contextObject : contextObjects.values()) {
+    for (ContextObjectItem contextObject : items.values()) {
       result.put(contextObject.getName(), contextObject.getValue());
       result.put(contextObject.getName() + NODE_POSTFIX, contextObject.objectNode());
     }
@@ -192,7 +204,7 @@ public class ObjectContext {
             "Unable to get value from context, at least the context object must be denoted.");
       }
       String ctxName = path.get(0);
-      contextObject = contextObjects.get(ctxName);
+      contextObject = items.get(ctxName);
       if (contextObject == null) {
         throw new IllegalArgumentException(
             ctxName + " context object is not found.");
@@ -211,6 +223,14 @@ public class ObjectContext {
     if (objectNode != null) {
       objectNode.setValue(value, StringConstant.toArray(finalPath));
     }
+  }
+
+  public ContextObjectItem getItem(String name) {
+    return items.get(name);
+  }
+
+  public Map<String, ContextObjectItem> getItems() {
+    return Collections.unmodifiableMap(items);
   }
 
 }

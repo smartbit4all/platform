@@ -30,6 +30,8 @@ import org.smartbit4all.api.invocation.bean.ObjectInvocationConfig;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.object.bean.ContextObjectDataItem;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
+import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.api.sample.bean.SampleCategory;
 import org.smartbit4all.api.sample.bean.SampleCategory.ColorEnum;
 import org.smartbit4all.core.object.ObjectApi;
@@ -199,20 +201,41 @@ public class InvocationApiTestStatic {
     URI uri = objectApi.saveAsNew(INVOCATIONTEST,
         new SampleCategory().name("The first category").cost(12l).color(ColorEnum.GREEN));
 
-    InvocationRequestDefinition invocationRequestDefinition =
-        new InvocationRequestDefinition()
-            .request(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("")))
-            .addResolversItem(
-                new InvocationParameterResolver().position(0)
-                    .propertyUri(URI.create("category:/#name")));
+    {
+      InvocationRequestDefinition invocationRequestDefinition =
+          new InvocationRequestDefinition()
+              .request(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("")))
+              .addResolversItem(
+                  new InvocationParameterResolver().position(0)
+                      .propertyUri(URI.create("category:/#name")));
 
-    InvocationRequest invocationRequest =
-        invocationApi.resolve(invocationRequestDefinition, new ContextObjectData()
-            .addItemsItem(new ContextObjectDataItem().name("category").uri(uri)));
+      InvocationRequest invocationRequest =
+          invocationApi.resolve(invocationRequestDefinition, new ContextObjectData()
+              .addItemsItem(new ContextObjectDataItem().name("category").uri(uri)));
 
-    InvocationParameter result = invocationApi.invoke(invocationRequest);
+      InvocationParameter result = invocationApi.invoke(invocationRequest);
 
-    Assertions.assertEquals("The first category", result.getValue());
+      Assertions.assertEquals("The first category", result.getValue());
+    }
+    {
+      InvocationRequestDefinition invocationRequestDefinition =
+          new InvocationRequestDefinition()
+              .request(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("")))
+              .addResolversItem(
+                  new InvocationParameterResolver()
+                      .definition(new ObjectMappingDefinition().addMappingsItem(
+                          new ObjectPropertyMapping()
+                              .expression("#category['name'] + ' - ' + #text"))));
+
+      InvocationRequest invocationRequest =
+          invocationApi.resolve(invocationRequestDefinition, new ContextObjectData()
+              .addItemsItem(new ContextObjectDataItem().name("category").uri(uri))
+              .addItemsItem(new ContextObjectDataItem().name("text")._object("free text")));
+
+      InvocationParameter result = invocationApi.invoke(invocationRequest);
+
+      Assertions.assertEquals("The first category - free text", result.getValue());
+    }
 
   }
 

@@ -60,7 +60,8 @@ smartbit4all {
         "InvocationError"               : "org.smartbit4all.api.invocation.bean.InvocationError",
         "StoredCollectionDescriptor"    : "org.smartbit4all.api.collection.bean.StoredCollectionDescriptor",
         "ReferencePropertyKind"         : "org.smartbit4all.api.object.bean.ReferencePropertyKind",
-        "ObjectPropertyFormatter"       : "org.smartbit4all.api.object.bean.ObjectPropertyFormatter"
+        "ObjectPropertyFormatter"       : "org.smartbit4all.api.object.bean.ObjectPropertyFormatter",
+        "ObjectMappingDefinition"       : "org.smartbit4all.api.object.bean.ObjectMappingDefinition",
     ]
   }
 }
