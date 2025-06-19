@@ -38,6 +38,7 @@ import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageApiImpl;
 import org.smartbit4all.domain.data.storage.StorageArchiveApi;
 import org.smartbit4all.domain.data.storage.StorageArchiveApiImpl;
+import org.smartbit4all.domain.data.storage.StorageConfigurationProperties;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.CrudApiImpl;
 import org.smartbit4all.domain.service.CrudApis;
@@ -53,6 +54,7 @@ import org.smartbit4all.domain.service.transfer.TransferServiceImpl;
 import org.smartbit4all.domain.service.transfer.convert.Converter;
 import org.smartbit4all.domain.service.transfer.convert.ConverterImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -68,6 +70,7 @@ import org.springframework.context.annotation.Primary;
     CrudApiImpl.class,
     CrudApis.class
 })
+@EnableConfigurationProperties({StorageConfigurationProperties.class})
 public class DomainServiceConfig {
 
   @Bean
