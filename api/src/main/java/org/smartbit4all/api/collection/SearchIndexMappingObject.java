@@ -935,6 +935,13 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
     return existDetailExpression(fieldName, obj, objectMapping, prop -> prop.eq(obj));
   }
 
+  public static Expression existDetailBetweenExpression(String fieldName, Object lower,
+      Object upper,
+      SearchIndexMappingObject objectMapping) {
+    return existDetailExpression(fieldName, lower, objectMapping,
+        prop -> prop.between(lower, upper));
+  }
+
 
 
   public final PropertyObject propertyOf(FilterExpressionOrderBy orderBy) {

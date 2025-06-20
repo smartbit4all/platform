@@ -1281,6 +1281,8 @@ components:
           $ref: '#/components/schemas/UiActionFeedbackType'
         feedbackText:
           type: string
+        badge:
+          $ref: '#/components/schemas/BadgeDescriptor'
         upload:
           $ref: '#/components/schemas/UiActionUploadDescriptor'
         tooltip:
@@ -1391,6 +1393,13 @@ components:
       enum:
         - PRE
         - POST
+    BadgeDescriptor:
+      type: object
+      properties:
+        value:
+          type: string
+        color:
+          type: string
     UiActionFeedbackType:
       type: string
       description: |
