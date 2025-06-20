@@ -20,12 +20,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.validation.constraints.*;
-import javax.validation.Valid;
+import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 
 /**
  * BadgeDescriptor
@@ -34,8 +33,7 @@ import javax.validation.Valid;
   BadgeDescriptor.VALUE,
   BadgeDescriptor.COLOR
 })
-@JsonTypeName("BadgeDescriptor")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen")
+@jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class BadgeDescriptor {
   public static final String VALUE = "value";
   private String value;
@@ -43,7 +41,7 @@ public class BadgeDescriptor {
   public static final String COLOR = "color";
   private String color;
 
-  public BadgeDescriptor() { 
+  public BadgeDescriptor() {
   }
 
   public BadgeDescriptor value(String value) {
@@ -52,12 +50,13 @@ public class BadgeDescriptor {
     return this;
   }
 
-   /**
+  /**
    * Get value
    * @return value
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(VALUE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -72,19 +71,19 @@ public class BadgeDescriptor {
     this.value = value;
   }
 
-
   public BadgeDescriptor color(String color) {
     
     this.color = color;
     return this;
   }
 
-   /**
+  /**
    * Get color
    * @return color
-  **/
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -98,7 +97,6 @@ public class BadgeDescriptor {
   public void setColor(String color) {
     this.color = color;
   }
-
 
   @Override
   public boolean equals(Object o) {

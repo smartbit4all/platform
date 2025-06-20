@@ -21,8 +21,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import org.smartbit4all.api.view.bean.BadgeDescriptor;
 import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
@@ -440,20 +438,20 @@ public class UiActionDescriptor {
     this.feedbackText = feedbackText;
   }
 
-
   public UiActionDescriptor badge(BadgeDescriptor badge) {
     
     this.badge = badge;
     return this;
   }
 
-   /**
+  /**
    * Get badge
    * @return badge
-  **/
-  @javax.annotation.Nullable
+   */
+  @jakarta.annotation.Nullable
   @Valid
-  @ApiModelProperty(value = "")
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(BADGE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -467,7 +465,6 @@ public class UiActionDescriptor {
   public void setBadge(BadgeDescriptor badge) {
     this.badge = badge;
   }
-
 
   public UiActionDescriptor upload(UiActionUploadDescriptor upload) {
     
