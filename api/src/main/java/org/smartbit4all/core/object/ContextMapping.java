@@ -54,7 +54,7 @@ public final class ContextMapping {
    * Depending on the target context the result is available in the target context in {@link Map},
    * in Beans or in {@link ObjectNode}.
    * 
-   * @return
+   * 
    */
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void execute() {
