@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.serviceconnection;
 
+import static java.util.stream.Collectors.toList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +10,6 @@ import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
-import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -19,9 +19,7 @@ import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
 import org.smartbit4all.bff.api.utils.BffUtilsApi;
-import org.smartbit4all.domain.service.dataset.TableDataApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements ServiceConnectionEditorPageApi {
@@ -31,15 +29,11 @@ public class ServiceConnectionEditorPageApiImpl extends MDMEntryEditPageApiImpl
       GenericValue.NAME);
 
   @Autowired
-  GridModelApi gridModelApi;
+  private GridModelApi gridModelApi;
   @Autowired
-  InvocationApi invocationApi;
+  private InvocationApi invocationApi;
   @Autowired
-  TableDataApi tableDataApi;
-  @Autowired
-  LocaleSettingApi localeSettingApi;
-  @Autowired
-  BffUtilsApi bffUtilsApi;
+  private BffUtilsApi bffUtilsApi;
 
   @Override
   public Object initModel(View view) {
