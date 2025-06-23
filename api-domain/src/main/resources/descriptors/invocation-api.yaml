@@ -824,6 +824,9 @@ components:
           description: |
             The endpoint URL typically.
           type: string
+        maxThreadCount:
+          type: integer
+          format: int32
         parameters:
           type: object
           additionalProperties: true

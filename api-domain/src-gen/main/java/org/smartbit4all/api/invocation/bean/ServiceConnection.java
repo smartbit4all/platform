@@ -42,6 +42,7 @@ import jakarta.validation.Valid;
   ServiceConnection.PASSWORD,
   ServiceConnection.API_VERSION,
   ServiceConnection.ENDPOINT,
+  ServiceConnection.MAX_THREAD_COUNT,
   ServiceConnection.PARAMETERS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -69,6 +70,9 @@ public class ServiceConnection {
 
   public static final String ENDPOINT = "endpoint";
   private String endpoint;
+
+  public static final String MAX_THREAD_COUNT = "maxThreadCount";
+  private Integer maxThreadCount;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
@@ -293,6 +297,33 @@ public class ServiceConnection {
     this.endpoint = endpoint;
   }
 
+  public ServiceConnection maxThreadCount(Integer maxThreadCount) {
+    
+    this.maxThreadCount = maxThreadCount;
+    return this;
+  }
+
+  /**
+   * Get maxThreadCount
+   * @return maxThreadCount
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(MAX_THREAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getMaxThreadCount() {
+    return maxThreadCount;
+  }
+
+
+  @JsonProperty(MAX_THREAD_COUNT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMaxThreadCount(Integer maxThreadCount) {
+    this.maxThreadCount = maxThreadCount;
+  }
+
   public ServiceConnection parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -343,12 +374,13 @@ public class ServiceConnection {
         Objects.equals(this.password, serviceConnection.password) &&
         Objects.equals(this.apiVersion, serviceConnection.apiVersion) &&
         Objects.equals(this.endpoint, serviceConnection.endpoint) &&
+        Objects.equals(this.maxThreadCount, serviceConnection.maxThreadCount) &&
         Objects.equals(this.parameters, serviceConnection.parameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, name, apiName, authToken, username, password, apiVersion, endpoint, parameters);
+    return Objects.hash(uri, name, apiName, authToken, username, password, apiVersion, endpoint, maxThreadCount, parameters);
   }
 
   @Override
@@ -363,6 +395,7 @@ public class ServiceConnection {
     sb.append("    password: ").append(toIndentedString(password)).append("\n");
     sb.append("    apiVersion: ").append(toIndentedString(apiVersion)).append("\n");
     sb.append("    endpoint: ").append(toIndentedString(endpoint)).append("\n");
+    sb.append("    maxThreadCount: ").append(toIndentedString(maxThreadCount)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("}");
     return sb.toString();
