@@ -42,13 +42,13 @@ public class ContextObject {
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
-  public ContextObject initFrom(ContextObject from) {
+  public ContextObject init(ContextObject from) {
     singleContextItem = from.singleContextItem;
     items.putAll(from.items);
     return this;
   }
 
-  public ContextObject initFrom(ContextObjectData from) {
+  public ContextObject init(ContextObjectData from) {
     if (from.getSingleItem() != null) {
       singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
     }

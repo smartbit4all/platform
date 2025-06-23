@@ -147,12 +147,12 @@ public final class ObjectMapping {
   }
 
   public ObjectMapping setContext(ContextObject context) {
-    this.context.initFrom(context);
+    this.context.init(context);
     return this;
   }
 
   public ObjectMapping setContext(ContextObjectData context) {
-    this.context.initFrom(context);
+    this.context.init(context);
     return this;
   }
 

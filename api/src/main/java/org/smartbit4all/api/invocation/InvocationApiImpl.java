@@ -312,7 +312,7 @@ public class InvocationApiImpl implements InvocationApi {
         () -> "The request in the " + definition + " must not be null.");
     // TODO Copy new instance from request!!!!
     if (contextData != null && definition.getResolvers() != null) {
-      ContextObject context = objectApi.contextObject().initFrom(contextData);
+      ContextObject context = objectApi.contextObject().init(contextData);
       resolve(definition, request, context);
     }
     return request;
