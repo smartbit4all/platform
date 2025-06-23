@@ -121,13 +121,13 @@ public final class ObjectPropertyResolver {
    */
   public ObjectPropertyResolver addContextObjects(ContextObjectData context) {
     if (context != null) {
-      contextObject.initFrom(context);
+      contextObject.init(context);
     }
     return this;
   }
 
   public ObjectPropertyResolver contextObject(ContextObject context) {
-    this.contextObject.initFrom(context);
+    this.contextObject.init(context);
     return this;
   }
 
