@@ -34,12 +34,15 @@ import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
+import org.smartbit4all.api.invocation.bean.InvocationRunItem;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.SessionInfoData;
+import org.smartbit4all.core.object.ContextMapping;
 import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -620,4 +623,33 @@ public class InvocationApiImpl implements InvocationApi {
     }
     return result;
   }
+
+  @Override
+  public void run(ContextObject ctx, InvocationRun run) {
+    Objects.requireNonNull(ctx);
+    Objects.requireNonNull(run);
+    for (InvocationRunItem item : run.getItems()) {
+      if (item.getInlineRun() != null) {
+        // initiate sub context to hide away the additional context objects.
+      } else if (item.getRequestDefinition() != null) {
+        InvocationRequest invocationRequest = resolve(item.getRequestDefinition(), ctx);
+        try {
+          InvocationParameter resultParameter = invoke(invocationRequest);
+          ctx.set(ContextObject.INVOCATION_RESULT, resultParameter.getValue());
+          if (item.getRequestDefinition().getApplyResult() != null) {
+            ContextMapping mapping =
+                objectApi.contextMapper().mapping(item.getRequestDefinition().getApplyResult());
+            mapping.from().init(ctx);
+            mapping.to().init(ctx);
+            mapping.execute();
+          }
+        } catch (Exception e) {
+          if (Boolean.TRUE.equals(item.getRequestDefinition().getThrowException())) {
+            throw new IllegalArgumentException("Unable to call the " + invocationRequest, e);
+          }
+        }
+      }
+    }
+  }
+
 }

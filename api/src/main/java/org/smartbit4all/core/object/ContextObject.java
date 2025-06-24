@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,6 +15,8 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toMap;
 
 public class ContextObject {
 
@@ -30,6 +31,8 @@ public class ContextObject {
   public static final String OBJ_NODE = "objNode";
 
   public static final String OBJ = "obj";
+
+  public static final String INVOCATION_RESULT = "invocationResult";
 
   private WeakReference<ObjectApi> objectApiRef;
 
@@ -232,6 +235,7 @@ public class ContextObject {
     return contextObject;
   }
 
+  @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
     ContextObjectItem contextObject;
@@ -239,6 +243,13 @@ public class ContextObject {
     contextObject = findItem(path, finalPath);
     ObjectNode objectNode = contextObject.objectNode();
     if (objectNode != null) {
+      if (ObjectUtils.isEmpty(finalPath)) {
+        if (merge) {
+          objectNode.setValues(objectApi().asType(Map.class, value));
+        } else {
+          objectNode.setObject(value);
+        }
+      }
       objectNode.setValue(value, StringConstant.toArray(finalPath));
     }
   }

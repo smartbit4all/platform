@@ -152,6 +152,31 @@ paths:
           description: 'Error occured while fetching the downloadable item'
 components:
   schemas:
+    InvocationRun:
+      type: object
+      description: |
+        The invocation run is a list of item to run as request or an inline run to run as embedded call.
+      required: [items]
+      properties:
+        items:
+          type: array
+          description: The resolvers are used to setup parameters of the newly created invocation request.
+          items:
+            $ref: '#/components/schemas/InvocationRunItem'
+    InvocationRunItem:
+      type: object
+      description: |
+        The invocation run item can be an InvocationRequestDefinition or an inline run.
+      properties:
+        requestDefinition:
+          description: |
+            The request definition can be a step in the run. Calling the request will apply the result into the Context
+            and the subsequent item will be able to use its result.
+          $ref: '#/components/schemas/InvocationRequestDefinition'
+        inlineRun:
+          description: |
+            The inline run is a sub call sequence to execute. It can be a kind of inline lambda or similar.
+          $ref: '#/components/schemas/InvocationRequestDefinition'
     InvocationRequestDefinition:
       type: object
       description: |
@@ -161,16 +186,26 @@ components:
       required: [request]
       properties:
         request: 
-          $ref: '#/components/schemas/InvocationRequest'
           description: |
             The request as a template for initiating a new request instance. The parameters can be set by default. So if we don't define any
             input to resolve then the newly ceated invocation request is simply the copy of this template one. Else we initiate the new
             instance and resolve all the values.
+          $ref: '#/components/schemas/InvocationRequest'
         resolvers:
-          type: array
           description: The resolvers are used to setup parameters of the newly created invocation request.
+          type: array
           items:
             $ref: '#/components/schemas/InvocationParameterResolver'
+        applyResult:
+          description: |
+            The result of the invocation call (as an object) can be applied into the context.
+          type: ContextMappingDefinition
+        throwException:
+          description: |
+            If true then the exception occured in during the invocation call is thrown by the runner environment and the run will
+            be interrupted.
+          type: boolean
+          default: true
     InvocationParameterResolver:
       type: object
       description: The resolver is responsibe for defining the data uri for a given invocation parameter.
