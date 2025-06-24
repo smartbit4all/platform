@@ -13,7 +13,7 @@ import org.smartbit4all.api.object.bean.PersistableObject;
  * 
  * @author Peter Boros
  */
-class ContextObjectItem {
+public class ContextObjectItem {
 
   ContextObjectDataItem data;
 
@@ -58,7 +58,7 @@ class ContextObjectItem {
    *         object.
    */
   @SuppressWarnings("unchecked")
-  ObjectNode objectNode() {
+  public ObjectNode objectNode() {
     if (loadedObjectNode == null) {
       if (data.getUri() != null) {
         // Let's load the object identified by the uri.
