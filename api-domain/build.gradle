@@ -62,6 +62,7 @@ smartbit4all {
         "ReferencePropertyKind"         : "org.smartbit4all.api.object.bean.ReferencePropertyKind",
         "ObjectPropertyFormatter"       : "org.smartbit4all.api.object.bean.ObjectPropertyFormatter",
         "ObjectMappingDefinition"       : "org.smartbit4all.api.object.bean.ObjectMappingDefinition",
+        "ContextMappingDefinition"      : "org.smartbit4all.api.object.bean.ContextMappingDefinition",
     ]
   }
 }

@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.object.bean.ContextMappingDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -37,7 +38,9 @@ import jakarta.validation.Valid;
 @Schema(description = "The definition contains a request as a template and the definitions of the input parameters. It can be used to initiate a new InvocationRequest by resolving the necessary input parameters. The result of the invocation can be direct (the return value) and indirect, when the invocation itself modifies the related objects. ")
 @JsonPropertyOrder({
   InvocationRequestDefinition.REQUEST,
-  InvocationRequestDefinition.RESOLVERS
+  InvocationRequestDefinition.RESOLVERS,
+  InvocationRequestDefinition.APPLY_RESULT,
+  InvocationRequestDefinition.THROW_EXCEPTION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRequestDefinition {
@@ -46,6 +49,12 @@ public class InvocationRequestDefinition {
 
   public static final String RESOLVERS = "resolvers";
   private List<@Valid InvocationParameterResolver> resolvers = new ArrayList<>();
+
+  public static final String APPLY_RESULT = "applyResult";
+  private ContextMappingDefinition applyResult = null;
+
+  public static final String THROW_EXCEPTION = "throwException";
+  private Boolean throwException = true;
 
   public InvocationRequestDefinition() {
   }
@@ -115,6 +124,61 @@ public class InvocationRequestDefinition {
     this.resolvers = resolvers;
   }
 
+  public InvocationRequestDefinition applyResult(ContextMappingDefinition applyResult) {
+    
+    this.applyResult = applyResult;
+    return this;
+  }
+
+  /**
+   * The result of the invocation call (as an object) can be applied into the context. 
+   * @return applyResult
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The result of the invocation call (as an object) can be applied into the context. ")
+  @JsonProperty(APPLY_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ContextMappingDefinition getApplyResult() {
+    return applyResult;
+  }
+
+
+  @JsonProperty(APPLY_RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setApplyResult(ContextMappingDefinition applyResult) {
+    this.applyResult = applyResult;
+  }
+
+  public InvocationRequestDefinition throwException(Boolean throwException) {
+    
+    this.throwException = throwException;
+    return this;
+  }
+
+  /**
+   * If true then the exception occured in during the invocation call is thrown by the runner environment and the run will be interrupted. 
+   * @return throwException
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If true then the exception occured in during the invocation call is thrown by the runner environment and the run will be interrupted. ")
+  @JsonProperty(THROW_EXCEPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getThrowException() {
+    return throwException;
+  }
+
+
+  @JsonProperty(THROW_EXCEPTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setThrowException(Boolean throwException) {
+    this.throwException = throwException;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -125,12 +189,14 @@ public class InvocationRequestDefinition {
     }
     InvocationRequestDefinition invocationRequestDefinition = (InvocationRequestDefinition) o;
     return Objects.equals(this.request, invocationRequestDefinition.request) &&
-        Objects.equals(this.resolvers, invocationRequestDefinition.resolvers);
+        Objects.equals(this.resolvers, invocationRequestDefinition.resolvers) &&
+        Objects.equals(this.applyResult, invocationRequestDefinition.applyResult) &&
+        Objects.equals(this.throwException, invocationRequestDefinition.throwException);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(request, resolvers);
+    return Objects.hash(request, resolvers, applyResult, throwException);
   }
 
   @Override
@@ -139,6 +205,8 @@ public class InvocationRequestDefinition {
     sb.append("class InvocationRequestDefinition {\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("    resolvers: ").append(toIndentedString(resolvers)).append("\n");
+    sb.append("    applyResult: ").append(toIndentedString(applyResult)).append("\n");
+    sb.append("    throwException: ").append(toIndentedString(throwException)).append("\n");
     sb.append("}");
     return sb.toString();
   }
