@@ -303,7 +303,6 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(HTML_MIMETYPE, HTML_EXT);
     extensionsByMimeType.put(PNG_MIMETYPE, PNG_EXT);
     extensionsByMimeType.put(JPEG_MIMETYPE, JPG_EXT);
-    extensionsByMimeType.put(JPG_EXT, JPG_EXT);
     extensionsByMimeType.put(GIF_MIMETYPE, GIF_EXT);
     extensionsByMimeType.put(XLSX_MIMETYPE, XLSX_EXT);
     extensionsByMimeType.put(XLS_MIMETYPE, XLS_EXT);
@@ -344,7 +343,7 @@ public class MimeTypeApi implements InitializingBean {
     extensionsByMimeType.put(ODP_MIMETYPE, ODP_EXT);
     extensionsByMimeType.put(GLTF_MIMETYPE, GLTF_EXT);
     extensionsByMimeType.put(FLAC_MIMETYPE, FLAC_EXT);
-    extensionsByMimeType.put(M4A_EXT, M4A_EXT);
+    extensionsByMimeType.put(M4A_MIMETYPE, M4A_EXT);
     extensionsByMimeType.put(GPP2_MIMETYPE, GPP2_EXT);
     extensionsByMimeType.put(M4V_MIMETYPE, M4V_EXT);
     extensionsByMimeType.put(GPP_MIMETYPE, GPP_EXT);
@@ -425,8 +424,9 @@ public class MimeTypeApi implements InitializingBean {
 
       final int lastDot = filename.lastIndexOf('.');
       if (lastDot > 0) {
-
-        final String ext = filename.substring(lastDot + 1);
+        String extSubStr = filename.substring(lastDot + 1);
+        final String ext =
+            aliasExts.containsKey(extSubStr) ? aliasExts.get(extSubStr) : extSubStr;
         if (!Strings.isNullOrEmpty(ext)) {
 
           return extensionsByMimeType.entrySet().stream()
@@ -439,6 +439,8 @@ public class MimeTypeApi implements InitializingBean {
     }
     return Optional.empty();
   }
+
+  private static final Map<String, String> aliasExts = Map.of(JPEG_EXT, JPG_EXT);
 
   /**
    * Retrieves the file extension for the given MIME type.
