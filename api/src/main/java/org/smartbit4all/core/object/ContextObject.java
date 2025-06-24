@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -15,7 +16,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
-import static java.util.stream.Collectors.toMap;
 
 public class ContextObject {
 
@@ -55,6 +55,24 @@ public class ContextObject {
     items.putAll(from.getItems().stream().map(di -> new ContextObjectItem(objectApi(), di))
         .collect(toMap(i -> i.getName(), i -> i)));
     return this;
+  }
+
+  /**
+   * Converts this instance from a single context object item to a multi one.
+   * 
+   * @param name the {@link String} name to set for the context object item held exclusively in this
+   *        instance for the new one
+   * @return a new {@link ContextObject} holding the previously held context item with the provided
+   *         name
+   */
+  public ContextObject toNamed(final String name) {
+    if (!isSingleItemContext()) {
+      throw new IllegalStateException("This instance holds multiple items already!");
+    }
+
+    final var ctx = new ContextObject(objectApi());
+    ctx.items.put(name, singleContextItem);
+    return ctx;
   }
 
   /**
@@ -229,7 +247,20 @@ public class ContextObject {
     return items.get(name);
   }
 
+  /**
+   * Checks whether this context object houses multiple or a singular item.
+   * 
+   * @return true, if there is an unnamed singular item being wrapped, false otherwise
+   */
+  public boolean isSingleItemContext() {
+    return singleContextItem != null;
+  }
+
   public Map<String, ContextObjectItem> getItems() {
+    if (isSingleItemContext()) {
+      return Collections.singletonMap(StringConstant.EMPTY, singleContextItem);
+    }
+
     return Collections.unmodifiableMap(items);
   }
 
