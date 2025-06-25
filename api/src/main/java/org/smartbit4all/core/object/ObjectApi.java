@@ -501,6 +501,13 @@ public interface ObjectApi {
   Map<String, Object> toMapObject(Object o);
 
   /**
+   * @param o
+   * @return Return true if the o is null or the o is included in the
+   *         {@link ObjectDefinitionApi#defaultAsValueClasses} set.
+   */
+  boolean isValue(Object o);
+
+  /**
    * Enable read cache for the current thread. When enabled, all object loads and
    * lastModified/exists checks will be cached until the cache is disabled or a save operation
    * occurs. The cache is thread-local, so each thread has its own cache.

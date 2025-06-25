@@ -267,7 +267,7 @@ public class ContextObject {
     contextObject = findItem(path, finalPath);
     ObjectNode objectNode = contextObject.objectNode();
     if (objectNode != null) {
-      if (merge) {
+      if (merge && !objectApi().isValue(value)) {
         objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
       } else {
         if (ObjectUtils.isEmpty(finalPath)) {

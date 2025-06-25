@@ -761,6 +761,11 @@ public class ObjectApiImpl implements ObjectApi {
   }
 
   @Override
+  public boolean isValue(Object o) {
+    return objectDefinitionApi.isValue(o);
+  }
+
+  @Override
   public <E> List<E> asList(Class<E> clazz, List<?> value) {
     if (value == null) {
       return new ArrayList<>();
