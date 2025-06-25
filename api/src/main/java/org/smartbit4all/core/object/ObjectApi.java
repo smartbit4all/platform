@@ -493,6 +493,14 @@ public interface ObjectApi {
   <T> T fromString(String s, Class<T> clazz);
 
   /**
+   * Can be used to convert any Java object to a Map<>.
+   *
+   * @param o The object to serialize
+   * @return The result string. Typical JSON like mapping. Returns null if the object is null.
+   */
+  Map<String, Object> toMapObject(Object o);
+
+  /**
    * Enable read cache for the current thread. When enabled, all object loads and
    * lastModified/exists checks will be cached until the cache is disabled or a save operation
    * occurs. The cache is thread-local, so each thread has its own cache.

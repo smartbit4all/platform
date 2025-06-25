@@ -600,4 +600,13 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     return typeClass;
   }
 
+  @Override
+  public Map<String, Object> toMapObject(Object o) {
+    if (o == null) {
+      return new HashMap<>();
+    }
+    ObjectDefinition<? extends Object> definition = definition(o.getClass());
+    return definition.toMap(o);
+  }
+
 }

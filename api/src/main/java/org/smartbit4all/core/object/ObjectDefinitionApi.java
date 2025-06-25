@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.Map;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
@@ -71,5 +72,14 @@ public interface ObjectDefinitionApi {
    * @return If not found then the String.class is returned.
    */
   Class<?> getTypeOfProperty(ObjectDefinition<?> definition, Class<?> defaultType, String... path);
+
+  /**
+   * Can be used to convert any Java object to a Map<String, Object>.
+   *
+   * @param o The object to convert
+   * @return The result Map. Typical JSON like mapping. Returns null if the object is null. If the
+   *         object is null, then an empty map will be returned.
+   */
+  Map<String, Object> toMapObject(Object o);
 
 }

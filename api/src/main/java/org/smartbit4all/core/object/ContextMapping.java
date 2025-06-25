@@ -19,9 +19,9 @@ public final class ContextMapping {
 
   private WeakReference<ObjectApi> objectApiRef;
 
-  private final ContextObject from;
+  private ContextObject from;
 
-  private final ContextObject to;
+  private ContextObject to;
 
   private ContextMappingDefinition definition;
 
@@ -47,6 +47,14 @@ public final class ContextMapping {
 
   public ContextObject to() {
     return to;
+  }
+
+  public void setFrom(ContextObject from) {
+    this.from = from;
+  }
+
+  public void setTo(ContextObject to) {
+    this.to = to;
   }
 
   /**

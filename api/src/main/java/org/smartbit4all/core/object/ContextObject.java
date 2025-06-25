@@ -211,6 +211,10 @@ public class ContextObject {
     return objectNode.getValue(StringConstant.toArray(finalPath));
   }
 
+  private ContextObjectItem findItem(String itemName) {
+    return items.get(itemName);
+  }
+
   private ContextObjectItem findItem(List<String> path, List<String> finalPath) {
     ContextObjectItem contextObject;
     if (singleContextItem != null) {
@@ -238,6 +242,26 @@ public class ContextObject {
   @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
+    if (path.size() == 1) {
+      // Set a context object itself
+      String itemName = path.get(0);
+      ContextObjectItem item = findItem(itemName);
+      if (item != null) {
+        ObjectNode objectNode = item.objectNode();
+        if (objectNode != null) {
+          if (merge) {
+            objectNode.setValues(objectApi().toMapObject(value));
+          } else {
+            objectNode.setObject(value);
+          }
+        } else {
+          set(itemName, value);
+        }
+      } else {
+        set(itemName, value);
+      }
+      return;
+    }
     ContextObjectItem contextObject;
     List<String> finalPath = new ArrayList<>();
     contextObject = findItem(path, finalPath);
@@ -245,7 +269,7 @@ public class ContextObject {
     if (objectNode != null) {
       if (ObjectUtils.isEmpty(finalPath)) {
         if (merge) {
-          objectNode.setValues(objectApi().asType(Map.class, value));
+          objectNode.setValues(objectApi().toMapObject(value));
         } else {
           objectNode.setObject(value);
         }
