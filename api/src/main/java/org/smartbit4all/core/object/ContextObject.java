@@ -267,15 +267,36 @@ public class ContextObject {
     contextObject = findItem(path, finalPath);
     ObjectNode objectNode = contextObject.objectNode();
     if (objectNode != null) {
-      if (ObjectUtils.isEmpty(finalPath)) {
-        if (merge) {
-          objectNode.setValues(objectApi().toMapObject(value));
-        } else {
+      if (merge) {
+        objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
+      } else {
+        if (ObjectUtils.isEmpty(finalPath)) {
           objectNode.setObject(value);
+        } else {
+          objectNode.setValue(value, StringConstant.toArray(finalPath));
         }
       }
-      objectNode.setValue(value, StringConstant.toArray(finalPath));
     }
+  }
+
+  private final Map<String, Object> getMergeMap(List<String> finalPath,
+      Map<String, Object> values) {
+    if (finalPath == null) {
+      return values;
+    }
+    Map<String, Object> result = new HashMap<>();
+    Map<String, Object> currMap = result;
+    for (int i = 0; i < finalPath.size(); i++) {
+      String path = finalPath.get(i);
+      if (i == (finalPath.size() - 1)) {
+        currMap.put(path, values);
+      } else {
+        Map<String, Object> myMap = new HashMap<>();
+        currMap.put(path, myMap);
+        currMap = myMap;
+      }
+    }
+    return result;
   }
 
   public ContextObjectItem getItem(String name) {

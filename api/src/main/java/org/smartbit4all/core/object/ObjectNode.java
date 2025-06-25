@@ -306,6 +306,35 @@ public class ObjectNode {
     return this;
   }
 
+  /**
+   * Merge the values into the data and constructs the mising Maps if necessary.
+   *
+   * @param values The map of values.
+   */
+  public ObjectNode mergeValues(Map<String, Object> values) {
+    if (values != null) {
+      mergeValuesRec(getObjectAsMap(), values);
+      setModified();
+    }
+    return this;
+  }
+
+  @SuppressWarnings("unchecked")
+  private final void mergeValuesRec(Map<String, Object> baseline,
+      Map<String, Object> values) {
+    for (Entry<String, Object> entry : values.entrySet()) {
+      // All value is set except the map that causes a recursion.
+      if (entry.getValue() instanceof Map) {
+        Object innerMap = baseline.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
+        if (innerMap instanceof Map) {
+          mergeValuesRec((Map) innerMap, (Map) entry.getValue());
+        }
+      } else {
+        baseline.put(entry.getKey(), entry.getValue());
+      }
+    }
+  }
+
   public ObjectNode setValuesWithReference(Map<String, Object> values) {
     if (values != null) {
       Map<String, Object> myValues = new HashMap<>(values);
