@@ -1,6 +1,15 @@
 package org.smartbit4all.core.object;
 
+import java.math.BigDecimal;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.Date;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
@@ -12,6 +21,23 @@ import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
  *
  */
 public interface ObjectDefinitionApi {
+
+  /**
+   * The set contains the types (classes) of the properties that must be assumed as value and not as
+   * embedded object. This is the default set that is used if it is not set manually.
+   */
+  Set<Class<?>> defaultAsValueClasses = Set.of(BigDecimal.class, Boolean.class, Date.class,
+      java.sql.Date.class, Double.class, Integer.class, LocalDate.class, LocalDateTime.class,
+      LocalTime.class, OffsetDateTime.class, Long.class, String.class, URI.class, UUID.class);
+
+  /**
+   * Check if the given object is a value object that shouldn't be converted to a map or used as
+   * Bean.
+   * 
+   * @param o
+   * @return
+   */
+  boolean isValue(Object o);
 
   /**
    * Get the definition for the given Class.
@@ -71,5 +97,14 @@ public interface ObjectDefinitionApi {
    * @return If not found then the String.class is returned.
    */
   Class<?> getTypeOfProperty(ObjectDefinition<?> definition, Class<?> defaultType, String... path);
+
+  /**
+   * Can be used to convert any Java object to a Map<String, Object>.
+   *
+   * @param o The object to convert
+   * @return The result Map. Typical JSON like mapping. Returns null if the object is null. If the
+   *         object is null, then an empty map will be returned.
+   */
+  Map<String, Object> toMapObject(Object o);
 
 }

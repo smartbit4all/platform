@@ -600,4 +600,22 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     return typeClass;
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public Map<String, Object> toMapObject(Object o) {
+    if (o == null) {
+      return new HashMap<>();
+    }
+    if (o instanceof Map) {
+      return (Map<String, Object>) o;
+    }
+    ObjectDefinition<? extends Object> definition = definition(o.getClass());
+    return definition.toMap(o);
+  }
+
+  @Override
+  public boolean isValue(Object o) {
+    return o == null ? true : defaultAsValueClasses.contains(o.getClass());
+  }
+
 }

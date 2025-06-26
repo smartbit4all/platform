@@ -670,8 +670,8 @@ public class InvocationApiImpl implements InvocationApi {
           if (item.getRequestDefinition().getApplyResult() != null) {
             ContextMapping mapping =
                 objectApi.contextMapper().mapping(item.getRequestDefinition().getApplyResult());
-            mapping.from().init(ctx);
-            mapping.to().init(ctx);
+            mapping.setFrom(ctx);
+            mapping.setTo(ctx);
             mapping.execute();
           }
         } catch (Exception e) {

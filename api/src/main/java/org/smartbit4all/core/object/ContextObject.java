@@ -211,6 +211,10 @@ public class ContextObject {
     return objectNode.getValue(StringConstant.toArray(finalPath));
   }
 
+  private ContextObjectItem findItem(String itemName) {
+    return items.get(itemName);
+  }
+
   private ContextObjectItem findItem(List<String> path, List<String> finalPath) {
     ContextObjectItem contextObject;
     if (singleContextItem != null) {
@@ -238,20 +242,61 @@ public class ContextObject {
   @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
+    if (path.size() == 1) {
+      // Set a context object itself
+      String itemName = path.get(0);
+      ContextObjectItem item = findItem(itemName);
+      if (item != null) {
+        ObjectNode objectNode = item.objectNode();
+        if (objectNode != null) {
+          if (merge) {
+            objectNode.setValues(objectApi().toMapObject(value));
+          } else {
+            objectNode.setObject(value);
+          }
+        } else {
+          set(itemName, value);
+        }
+      } else {
+        set(itemName, value);
+      }
+      return;
+    }
     ContextObjectItem contextObject;
     List<String> finalPath = new ArrayList<>();
     contextObject = findItem(path, finalPath);
     ObjectNode objectNode = contextObject.objectNode();
     if (objectNode != null) {
-      if (ObjectUtils.isEmpty(finalPath)) {
-        if (merge) {
-          objectNode.setValues(objectApi().asType(Map.class, value));
-        } else {
+      if (merge && !objectApi().isValue(value)) {
+        objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
+      } else {
+        if (ObjectUtils.isEmpty(finalPath)) {
           objectNode.setObject(value);
+        } else {
+          objectNode.setValue(value, StringConstant.toArray(finalPath));
         }
       }
-      objectNode.setValue(value, StringConstant.toArray(finalPath));
     }
+  }
+
+  private final Map<String, Object> getMergeMap(List<String> finalPath,
+      Map<String, Object> values) {
+    if (finalPath == null) {
+      return values;
+    }
+    Map<String, Object> result = new HashMap<>();
+    Map<String, Object> currMap = result;
+    for (int i = 0; i < finalPath.size(); i++) {
+      String path = finalPath.get(i);
+      if (i == (finalPath.size() - 1)) {
+        currMap.put(path, values);
+      } else {
+        Map<String, Object> myMap = new HashMap<>();
+        currMap.put(path, myMap);
+        currMap = myMap;
+      }
+    }
+    return result;
   }
 
   public ContextObjectItem getItem(String name) {
