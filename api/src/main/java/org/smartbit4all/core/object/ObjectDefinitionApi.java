@@ -6,7 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -28,7 +31,8 @@ public interface ObjectDefinitionApi {
    */
   Set<Class<?>> defaultAsValueClasses = Set.of(BigDecimal.class, Boolean.class, Date.class,
       java.sql.Date.class, Double.class, Integer.class, LocalDate.class, LocalDateTime.class,
-      LocalTime.class, OffsetDateTime.class, Long.class, String.class, URI.class, UUID.class);
+      LocalTime.class, OffsetDateTime.class, Long.class, String.class, URI.class, UUID.class,
+      List.class, ArrayList.class, LinkedList.class);
 
   /**
    * Check if the given object is a value object that shouldn't be converted to a map or used as
