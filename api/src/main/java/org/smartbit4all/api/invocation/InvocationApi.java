@@ -65,6 +65,13 @@ public interface InvocationApi {
   AsyncInvocationBuilder asyncBuilder();
 
   /**
+   * Used to configure an {@link InvocationRun} with a simpler build interface.
+   * 
+   * @return
+   */
+  InvocationRunBuilder runBuilder();
+
+  /**
    * The generic api call executed synchronously. BE CAREFUL! If it is a script then it must be
    * prepared previously in this case the args won't be applied.
    *

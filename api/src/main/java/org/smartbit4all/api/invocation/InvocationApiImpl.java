@@ -283,6 +283,11 @@ public class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
+  public InvocationRunBuilder runBuilder() {
+    return new InvocationRunBuilder();
+  }
+
+  @Override
   public void invokeAsync(InvocationRequest request, String channel) {
     invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, null);
   }
