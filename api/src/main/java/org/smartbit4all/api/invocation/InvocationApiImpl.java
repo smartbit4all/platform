@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -52,7 +53,8 @@ import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.base.Strings;
 
 /**
@@ -112,6 +114,10 @@ public class InvocationApiImpl implements InvocationApi {
   @Autowired
   @Lazy
   private InvocationStackApi stackApi;
+
+  @Autowired(required = false)
+  @Lazy
+  private PlatformTransactionManager transactionManager;
 
   /**
    * By default the platform uses the rest client to access and call the api of a module over the
@@ -562,66 +568,91 @@ public class InvocationApiImpl implements InvocationApi {
     }
   }
 
-  @Transactional
   @Override
   public InvocationResult executeAsyncInvocationRequest(AsyncInvocationRequestEntry requestEntry) {
     AsyncInvocationRequest request = requestEntry.request;
     InvocationResult result = new InvocationResult().startTime(OffsetDateTime.now());
+
+    AtomicBoolean methodInvokeSucceeded = new AtomicBoolean(false);
+
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+
     try {
-      if (log.isDebugEnabled()) {
-        log.debug("Executing: {}", requestEntry.toLog());
-      }
-      result.returnValue(self.invoke(request.getRequest()).getValue());
-    } catch (Exception e) {
-      log.warn("Exception occured while executing the " + requestEntry, e);
+      transaction.executeWithoutResult(status -> {
+        try {
+          if (log.isDebugEnabled()) {
+            log.debug("Executing: {}", requestEntry.toLog());
+          }
+          result.returnValue(self.invoke(request.getRequest()).getValue());
+          doFinallyLogic(requestEntry, request, result);
+          methodInvokeSucceeded.set(true);
+        } catch (Exception e) {
+          status.setRollbackOnly();
+          throw new RuntimeException("Invocation failed", e);
+        }
+      });
+    } catch (RuntimeException runtime) {
+      Throwable e = runtime.getCause() == null ? runtime : runtime.getCause();
+      log.warn("Exception occurred while executing the " + requestEntry, e);
       result.error(
           new InvocationError().definition(e.getClass().getName()).message(e.getMessage()));
     } finally {
-      result.endTime(OffsetDateTime.now());
-      // Let's make a decision about the next step
-      InvocationResultDecision decision = null;
-      InvocationRequest evaluate = request.getEvaluate();
-      if (evaluate != null) {
-        // We set the request and the result parameters for the call when they are present in the
-        // signature.
-        for (InvocationParameter parameter : evaluate.getParameters()) {
-          if (AsyncInvocationRequest.class.getName().equals(parameter.getTypeClass())) {
-            parameter.setValue(request);
-          } else if (InvocationResult.class.getName().equals(parameter.getTypeClass())) {
-            parameter.setValue(result);
-          }
-        }
-        try {
-          // TODO This is an object read it with ObjectDefinition!
-          decision = (InvocationResultDecision) self.invoke(evaluate).getValue();
-        } catch (Exception e) {
-          log.error("Exception occured while trying to evaluate the " + result + " for the "
-              + request, e);
-        }
+      if (!methodInvokeSucceeded.get()) {
+        transaction = new TransactionTemplate(transactionManager);
+        transaction.executeWithoutResult(status -> {
+          doFinallyLogic(requestEntry, request, result);
+        });
       }
-      if (decision == null) {
-        // Make a hard wired decision if there was error then abort, if we have andThen then
-        // continue.
-        decision = new InvocationResultDecision()
-            .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
-      } else {
-        int size = request.getResults() == null ? 0
-            : request.getResults().size();
-        int gradient = size / 50;
-        gradient = gradient * gradient;
-        OffsetDateTime now = OffsetDateTime.now();
-        OffsetDateTime requiredScheduledAt = now.plusSeconds(gradient * 5);
-        if ((decision.getScheduledAt() != null
-            && requiredScheduledAt.isAfter(decision.getScheduledAt()))
-            || decision.getScheduledAt() == null) {
-          decision.scheduledAt(requiredScheduledAt);
-        }
-      }
-      result.decision(decision);
-      // Save the result into the asynchronous request. It will result a call to the listeners.
-      invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
     }
     return result;
+  }
+
+  private void doFinallyLogic(AsyncInvocationRequestEntry requestEntry,
+      AsyncInvocationRequest request,
+      InvocationResult result) {
+    result.endTime(OffsetDateTime.now());
+    // Let's make a decision about the next step
+    InvocationResultDecision decision = null;
+    InvocationRequest evaluate = request.getEvaluate();
+    if (evaluate != null) {
+      // We set the request and the result parameters for the call when they are present in the
+      // signature.
+      for (InvocationParameter parameter : evaluate.getParameters()) {
+        if (AsyncInvocationRequest.class.getName().equals(parameter.getTypeClass())) {
+          parameter.setValue(request);
+        } else if (InvocationResult.class.getName().equals(parameter.getTypeClass())) {
+          parameter.setValue(result);
+        }
+      }
+      try {
+        // TODO This is an object read it with ObjectDefinition!
+        decision = (InvocationResultDecision) self.invoke(evaluate).getValue();
+      } catch (Exception e) {
+        log.error("Exception occured while trying to evaluate the " + result + " for the "
+            + request, e);
+      }
+    }
+    if (decision == null) {
+      // Make a hard wired decision if there was error then abort, if we have andThen then
+      // continue.
+      decision = new InvocationResultDecision()
+          .decision(result.getError() == null ? DecisionEnum.CONTINUE : DecisionEnum.ABORT);
+    } else {
+      int size = request.getResults() == null ? 0
+          : request.getResults().size();
+      int gradient = size / 50;
+      gradient = gradient * gradient;
+      OffsetDateTime now = OffsetDateTime.now();
+      OffsetDateTime requiredScheduledAt = now.plusSeconds(gradient * 5);
+      if ((decision.getScheduledAt() != null
+          && requiredScheduledAt.isAfter(decision.getScheduledAt()))
+          || decision.getScheduledAt() == null) {
+        decision.scheduledAt(requiredScheduledAt);
+      }
+    }
+    result.decision(decision);
+    // Save the result into the asynchronous request. It will result a call to the listeners.
+    invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
   }
 
   @Override

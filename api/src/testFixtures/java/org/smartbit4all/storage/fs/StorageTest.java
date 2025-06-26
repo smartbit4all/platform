@@ -1,6 +1,8 @@
 package org.smartbit4all.storage.fs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -29,6 +31,7 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredList;
 import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
+import org.smartbit4all.api.invocation.AsyncCompletableFuture;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -910,6 +913,35 @@ public class StorageTest {
     StorageObject<FSTestBean> optLoaded = storage.load(uri, FSTestBean.class);
     assertEquals(testText, optLoaded.getObject().getTitle());
     return uri;
+  }
+
+  @Test
+  void testAsyncRequestWithoutException() throws Exception {
+    String value = "test-value-no-exception";
+    InvocationRequest request =
+        invocationApi.builder(StorageTestApi.class).build(a -> a.setFutureValue(value, false));
+
+    AsyncCompletableFuture future = new AsyncCompletableFuture();
+    invocationApi.invokeAsyncAndWait(request, StorageTestConfig.GLOBAL_ASYNC_CHANNEL, future);
+    future.get(); // wait for invocation
+    URI uri = StorageTestApi.futureValue.get();
+    assertNotNull(uri);
+    String title = objectApi.load(uri).getObject(FSTestBean.class).getTitle();
+    Assertions.assertEquals(value, title);
+  }
+
+  @Test
+  void testAsyncRequestWithException() throws Exception {
+    String value = "test-value-with-exception";
+    InvocationRequest request =
+        invocationApi.builder(StorageTestApi.class).build(a -> a.setFutureValue(value, true));
+
+    AsyncCompletableFuture future = new AsyncCompletableFuture();
+    invocationApi.invokeAsyncAndWait(request, StorageTestConfig.GLOBAL_ASYNC_CHANNEL, future);
+    future.get(); // wait for invocation
+    URI uri = StorageTestApi.futureValue.get();
+    assertNotNull(uri);
+    assertThrows(ObjectNotFoundException.class, () -> objectApi.load(uri));
   }
 
 }

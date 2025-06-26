@@ -25,4 +25,8 @@ public class StorageTestFS extends StorageTest {
     });
   }
 
+  @Override
+  void testAsyncRequestWithException() throws Exception {
+    // nop
+  }
 }

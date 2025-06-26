@@ -1,6 +1,8 @@
 package org.smartbit4all.storage.fs;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.invocation.AsyncInvocationChannel;
+import org.smartbit4all.api.invocation.AsyncInvocationChannelImpl;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
@@ -20,6 +22,8 @@ public class StorageTestConfig {
   public static final String TESTSCHEME = "testscheme";
 
   public static final String TESTSCHEMESINGLE = "testschemesingle";
+
+  public static final String GLOBAL_ASYNC_CHANNEL = "global";
 
   @Bean
   public Storage testStorageScheme(ObjectDefinitionApi objectDefinitionApi,
@@ -46,5 +50,11 @@ public class StorageTestConfig {
       StorageTestApi api) {
     return Invocations.asProvider(StorageTestApi.class, api);
   }
+
+  @Bean
+  public AsyncInvocationChannel globalChannel() {
+    return new AsyncInvocationChannelImpl(GLOBAL_ASYNC_CHANNEL);
+  }
+
 
 }

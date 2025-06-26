@@ -25,4 +25,8 @@ public class StorageTestFSNoCache extends StorageTest {
     });
   }
 
+  @Override
+  void testAsyncRequestWithException() throws Exception {
+    // nop
+  }
 }

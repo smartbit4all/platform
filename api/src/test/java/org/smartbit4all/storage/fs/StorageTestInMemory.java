@@ -24,4 +24,8 @@ public class StorageTestInMemory extends StorageTest {
 
   }
 
+  @Override
+  void testAsyncRequestWithException() throws Exception {
+    // nop
+  }
 }

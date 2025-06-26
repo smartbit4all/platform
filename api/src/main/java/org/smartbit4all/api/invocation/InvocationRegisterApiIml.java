@@ -844,7 +844,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
             .map(cUri -> objectApi.loadLatest(cUri))
             .orElseThrow(
                 // no channel found in local nor in external runtimes -> exception
-                () -> new IllegalStateException("There is no channel available: " + channel));
+                () -> new IllegalStateException("There is no channel available: " + channel.name));
         channel.uri = objectApi.getLatestUri(channelNode.getObjectUri());
         channel.runtimeUri = channelNode.getValue(URI.class, RuntimeAsyncChannel.RUNTIME_URI);
         channelInfos.put(channel.name, channel);

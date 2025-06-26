@@ -1,5 +1,7 @@
 package org.smartbit4all.storage.fs;
 
+import java.net.URI;
+import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.TransactionalStorage;
@@ -15,6 +17,9 @@ public class StorageTestApiImpl implements StorageTestApi {
   @Autowired
   @Lazy
   StorageTestApi self;
+
+  @Autowired
+  ObjectApi objectApi;
 
   @Override
   @TransactionalStorage
@@ -45,6 +50,16 @@ public class StorageTestApiImpl implements StorageTestApi {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  @Override
+  public void setFutureValue(String p1, Boolean error) {
+    URI uri = objectApi.saveAsNew(StorageTestConfig.TESTSCHEME, new FSTestBean(p1));
+    if (Boolean.TRUE == error) {
+      StorageTestApi.futureValue.setValue(uri);
+      throw new RuntimeException("Error in setFutureValue");
+    }
+    StorageTestApi.futureValue.setValue(uri);
   }
 
 }
