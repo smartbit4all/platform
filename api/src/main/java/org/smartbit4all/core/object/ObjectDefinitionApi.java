@@ -29,10 +29,13 @@ public interface ObjectDefinitionApi {
    * The set contains the types (classes) of the properties that must be assumed as value and not as
    * embedded object. This is the default set that is used if it is not set manually.
    */
-  Set<Class<?>> defaultAsValueClasses = Set.of(BigDecimal.class, Boolean.class, Date.class,
-      java.sql.Date.class, Double.class, Integer.class, LocalDate.class, LocalDateTime.class,
-      LocalTime.class, OffsetDateTime.class, Long.class, String.class, URI.class, UUID.class,
-      List.class, ArrayList.class, LinkedList.class);
+  Set<Class<?>> defaultAsValueClasses =
+      Set.of(BigDecimal.class, Byte.class, Boolean.class, Date.class,
+          java.sql.Date.class, Double.class, Float.class, Integer.class, LocalDate.class,
+          LocalDateTime.class,
+          LocalTime.class, OffsetDateTime.class, Long.class, Short.class, String.class, URI.class,
+          UUID.class,
+          List.class, ArrayList.class, LinkedList.class);
 
   /**
    * Check if the given object is a value object that shouldn't be converted to a map or used as
