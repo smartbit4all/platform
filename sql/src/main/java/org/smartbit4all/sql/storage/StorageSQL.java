@@ -51,7 +51,6 @@ import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -72,7 +71,6 @@ import org.smartbit4all.sql.storage.StorageSQLExtensionApi.ManagedObject;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.Ordered;
 import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.TransactionDefinition;
@@ -140,10 +138,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired(required = false)
   private StorageSQLCacheConfig cacheConfig;
-
-  @Autowired
-  @Lazy
-  private StorageApi storageApi;
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -409,6 +403,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             objectVersionDef.operation(),
             objectVersionDef.rebasedFromUri(),
             objectVersionDef.transactionId());
+    BinaryData objectContent = object.serializeMapAware();
+    BinaryData aspectContent = object.serializeAspects();
     if (objectRow != null) {
       // It is an already existing object so it is an update
       OffsetDateTime now = OffsetDateTime.now();
@@ -417,15 +413,16 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         Long newVersion = FIRST_VERSION;
         String versionId = createVersionId(objectRow.get(objectEntryDef.id()), newVersion);
         Long newRefVersion = relationBinaryData != null ? FIRST_VERSION : null;
+
         TableData<ObjectVersionDef> objectVersion = builderVersion
             .addRow()
             .set(objectVersionDef.versionId(), versionId)
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), objectRow.get(objectVersionDef.createdAt()))
-            .set(objectVersionDef.objectContent(), object.serializeMapAware())
+            .set(objectVersionDef.objectContent(), objectContent)
             .set(objectVersionDef.refContent(), relationBinaryData)
-            .set(objectVersionDef.aspectContent(), object.serializeAspects())
+            .set(objectVersionDef.aspectContent(), aspectContent)
             .set(objectVersionDef.commonAncestorUri(), null)
             .set(objectVersionDef.createdBy(), null)
             .set(objectVersionDef.createdByUri(), null)
@@ -462,9 +459,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.entryId(), objectRow.get(objectEntryDef.id()))
             .set(objectVersionDef.version(), newVersion)
             .set(objectVersionDef.createdAt(), now)
-            .set(objectVersionDef.objectContent(), object.serializeMapAware())
+            .set(objectVersionDef.objectContent(), objectContent)
             .set(objectVersionDef.refContent(), relationBinaryData)
-            .set(objectVersionDef.aspectContent(), object.serializeAspects())
+            .set(objectVersionDef.aspectContent(), aspectContent)
             .set(objectVersionDef.commonAncestorUri(), null)
             .set(objectVersionDef.createdBy(), null)
             .set(objectVersionDef.createdByUri(), null)
@@ -520,9 +517,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.version(), newVersion)
           .set(objectVersionDef.createdAt(),
               object.getCreatedAt() != null ? object.getCreatedAt() : now)
-          .set(objectVersionDef.objectContent(), object.serializeMapAware())
+          .set(objectVersionDef.objectContent(), objectContent)
           .set(objectVersionDef.refContent(), relationBinaryData)
-          .set(objectVersionDef.aspectContent(), object.serializeAspects())
+          .set(objectVersionDef.aspectContent(), aspectContent)
           .set(objectVersionDef.commonAncestorUri(), null)
           .set(objectVersionDef.createdBy(), null)
           .set(objectVersionDef.createdByUri(), null)
@@ -1207,7 +1204,6 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     private Map<String, TableData<ObjectVersionDef>> objectVersionsToUpdate = new HashMap<>();
 
     boolean isCompleted = false;
-    boolean isCommit = false;
 
     public void addVersionToCachedInTransaction(String versionId, String className) {
       cachedKeysPerClass
@@ -1285,28 +1281,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     @Override
     public void beforeCommit(boolean readOnly) {
-      // after beforeCommit async request can be created, we should execute in beforeCompletion
-      isCommit = true;
-
-    }
-
-    private <T extends EntityDefinition> TableData<T> append(
-        T entityDef,
-        Map<String, TableData<T>> tableDatas) {
-      TableData<T> tabledata = TableDatas
-          .builder(entityDef, entityDef.allProperties())
-          .build();
-      tableDatas.values().forEach(td -> TableDatas.append(tabledata, td));
-      if (!useTransactionCache) {
-        log.warn("StorageTransactionHandler in use but useTransactionCache = false");
-      }
-      log.trace("Appended {} rows ({})", tabledata.size(), entityDef.entityDefName());
-      return tabledata;
-    }
-
-    @Override
-    public void beforeCompletion() {
-      if (isCommit) {
+      try {
         if (!objectEntriesToInsert.isEmpty()) {
           Crud.create(append(objectEntryDef, objectEntriesToInsert));
           objectEntriesToInsert.clear();
@@ -1323,12 +1298,27 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           Crud.update(append(objectVersionDef, objectVersionsToUpdate));
           objectVersionsToUpdate.clear();
         }
+      } finally {
+        isCompleted = true;
+        clearIfEmpty(objectEntriesToInsert, "objectEntriesToInsert");
+        clearIfEmpty(objectEntriesToUpdate, "objectEntriesToUpdate");
+        clearIfEmpty(objectVersionsToInsert, "objectVersionsToInsert");
+        clearIfEmpty(objectVersionsToUpdate, "objectVersionsToUpdate");
       }
-      clearIfEmpty(objectEntriesToInsert, "objectEntriesToInsert");
-      clearIfEmpty(objectEntriesToUpdate, "objectEntriesToUpdate");
-      clearIfEmpty(objectVersionsToInsert, "objectVersionsToInsert");
-      clearIfEmpty(objectVersionsToUpdate, "objectVersionsToUpdate");
-      isCompleted = true;
+    }
+
+    private <T extends EntityDefinition> TableData<T> append(
+        T entityDef,
+        Map<String, TableData<T>> tableDatas) {
+      TableData<T> tabledata = TableDatas
+          .builder(entityDef, entityDef.allProperties())
+          .build();
+      tableDatas.values().forEach(td -> TableDatas.append(tabledata, td));
+      if (!useTransactionCache) {
+        log.warn("StorageTransactionHandler in use but useTransactionCache = false");
+      }
+      log.trace("Appended {} rows ({})", tabledata.size(), entityDef.entityDefName());
+      return tabledata;
     }
 
     private void clearIfEmpty(Map<?, ?> map, String mapName) {
