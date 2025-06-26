@@ -30,7 +30,7 @@ public interface ObjectDefinitionApi {
    * embedded object. This is the default set that is used if it is not set manually.
    */
   Set<Class<?>> defaultAsValueClasses =
-      Set.of(BigDecimal.class, Byte.class, Boolean.class, Date.class,
+      Set.of(BigDecimal.class, Byte.class, Boolean.class, Character.class, Date.class,
           java.sql.Date.class, Double.class, Float.class, Integer.class, LocalDate.class,
           LocalDateTime.class,
           LocalTime.class, OffsetDateTime.class, Long.class, Short.class, String.class, URI.class,
