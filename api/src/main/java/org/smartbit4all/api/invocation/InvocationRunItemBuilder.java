@@ -37,6 +37,9 @@ public class InvocationRunItemBuilder {
   }
 
   public InvocationRunItemBuilder applyResult(List<String> outputPath, List<String> fromPath) {
+    if (fromPath == null || outputPath == null) {
+      return this;
+    }
     ObjectMappingDefinition mapping = new ObjectMappingDefinition();
     ObjectPropertyMapping propertyMapping = new ObjectPropertyMapping();
     for (String path : fromPath) {
