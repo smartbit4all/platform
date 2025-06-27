@@ -967,6 +967,12 @@ public class PlatformApiConfig {
   }
 
   @Bean
+  public ProviderApiInvocationHandler<EmbeddingApi> embeddingManagementApiProvider(
+      EmbeddingApi api) {
+    return Invocations.asProvider(EmbeddingApi.class, api);
+  }
+
+  @Bean
   public Storage viewContextServiceStorage(@Autowired(required = false) ObjectStorage objectStorage,
       ObjectDefinitionApi objectDefinitionApi) {
     Storage storage = new Storage(ViewContextService.SCHEMA, objectDefinitionApi, objectStorage);

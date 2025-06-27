@@ -15,7 +15,6 @@ paths:
       responses:
         '200':
           description: nope
-
 components:
   schemas:
     StoredMapData:
@@ -235,3 +234,19 @@ components:
         object:
           description: The object itself alternatively if it can be defined.
           type: object
+    EntityLookupParameter:
+      type: object
+      required : [vectorCollection,dataToLookup,lookupParameter,mappingDefinition]
+      properties:
+        vectorCollection:
+          $ref: '#/components/schemas/VectorCollectionDescriptor'
+        dataToLookup:
+          type: array
+          items: 
+            type: object
+        lookupTemplate:
+          type: string
+        lookupParameter:
+          type: ObjectLookupParameter
+        mappingDefinition:
+          type: ObjectMappingDefinition

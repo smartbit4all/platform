@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.collection.bean.EntityLookupParameter;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
@@ -61,6 +62,23 @@ public final class EmbeddingApiImpl extends PrimaryApiImpl<EmbeddingContribution
     Map<String, Object> obj = new LinkedHashMap<>();
     obj.put(TEXT_PROPERTY, text);
     return embed(serviceConnectionName, obj);
+  }
+
+  @Override
+  public List<Object> lookupEntities(String serviceConnectionName,
+      EntityLookupParameter parameter) {
+    ServiceConnection serviceConnection = getEmbeddingConnection(serviceConnectionName);
+    if (serviceConnection == null) {
+      throw new IllegalArgumentException(
+          "There service connection named " + serviceConnectionName + " is missing!");
+    }
+    EmbeddingContributionApi api = getContributionApi(serviceConnection.getApiName());
+    if (api == null) {
+      throw new IllegalArgumentException(
+          "The contribution api \"" + serviceConnection.getApiName()
+              + "\" is not registered in the application context");
+    }
+    return api.lookupEntities(serviceConnection, parameter);
   }
 
   private ServiceConnection getEmbeddingConnection(String serviceConnectionName) {

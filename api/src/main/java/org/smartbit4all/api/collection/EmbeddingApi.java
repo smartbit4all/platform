@@ -2,6 +2,7 @@ package org.smartbit4all.api.collection;
 
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.collection.bean.EntityLookupParameter;
 import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApi;
 
@@ -32,5 +33,7 @@ public interface EmbeddingApi extends PrimaryApi<EmbeddingContributionApi> {
    * @return
    */
   VectorValue embed(String serviceConnectionName, String text);
+
+  List<Object> lookupEntities(String serviceConnectionName, EntityLookupParameter parameter);
 
 }
