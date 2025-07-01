@@ -898,3 +898,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationStackItem'
+    ScriptSetting:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        name:
+          type: string
+        settings:
+          type: string

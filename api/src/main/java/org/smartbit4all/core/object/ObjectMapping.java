@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static org.smartbit4all.api.invocation.ScriptEngineMgmtApi.SCRIPT_KIND_GROOVY;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -248,7 +249,8 @@ public final class ObjectMapping {
   }
 
   private final Object evaluateScript(ObjectPropertyMapping mapping) {
-    String scriptKind = mapping.getScriptKind() == null ? "Groovy" : mapping.getScriptKind();
+    String scriptKind = mapping.getScriptKind() == null ? SCRIPT_KIND_GROOVY
+        : mapping.getScriptKind();
     ScriptEngine engine = scriptEngineManager.getEngineByName(scriptKind);
     if (engine == null) {
       throw new IllegalArgumentException("Unable to load the " + scriptKind + " script engine.");

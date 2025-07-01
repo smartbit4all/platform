@@ -29,12 +29,15 @@ import org.smartbit4all.api.invocation.InvocationStackApi;
 import org.smartbit4all.api.invocation.InvocationStackApiImpl;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
+import org.smartbit4all.api.invocation.ScriptEngineMgmtApi;
+import org.smartbit4all.api.invocation.ScriptEngineMgmtApiImpl;
 import org.smartbit4all.api.invocation.ServiceConnectionApi;
 import org.smartbit4all.api.invocation.ServiceConnectionApiImpl;
 import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
+import org.smartbit4all.api.invocation.bean.ScriptSetting;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
@@ -218,6 +221,11 @@ public class PlatformApiConfig {
   @Bean
   public InvocationStackApi invocationStackApi() {
     return new InvocationStackApiImpl();
+  }
+
+  @Bean
+  public ScriptEngineMgmtApi scriptEngineMgmtApi() {
+    return new ScriptEngineMgmtApiImpl();
   }
 
   @Bean
@@ -738,7 +746,6 @@ public class PlatformApiConfig {
                   .addPathItem(LayoutDefinitionDescriptor.NAME));
       result.addDescriptor(entry);
     }
-
     {
       MDMEntryDescriptor entry = new MDMEntryDescriptor()
           .schema(SearchConfigHierarchyApi.SCHEMA)
@@ -760,7 +767,6 @@ public class PlatformApiConfig {
               .addPathItem(SearchConfigHierarchy.CODE));
       result.addDescriptor(entry);
     }
-
     {
       MDMEntryDescriptor entry = new MDMEntryDescriptor()
           .schema(MasterDataManagementApi.SCHEMA)
@@ -796,6 +802,27 @@ public class PlatformApiConfig {
               new MDMTableColumnDescriptor()
                   .name("passwordReminderDays")
                   .addPathItem(UserSecurityPolicy.PASSWORD_REMINDER_DAYS));
+      result.addDescriptor(entry);
+    }
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(ScriptEngineMgmtApi.SCHEMA)
+          .publishedListName(ScriptEngineMgmtApi.SCRIPT_SETTINGS_LIST)
+          .name(ScriptEngineMgmtApi.SCRIPT_SETTINGS_LIST)
+          .adminGroupName(PlatformSecurityOption.scriptSettingEditor.getName())
+          .displayNameList(new LangString().defaultValue("Script settings")
+              .putValueByLocaleItem(Locales.L_HU, "Script beállítások")
+              .putValueByLocaleItem(Locales.L_EN, "Script settings"))
+          .displayNameForm(new LangString().defaultValue("Script settings")
+              .putValueByLocaleItem(Locales.L_HU, "Script beállítások")
+              .putValueByLocaleItem(Locales.L_EN, "Script settings"))
+          .order(7L)
+          .typeQualifiedName(ScriptSetting.class.getName())
+          .uniquePropertyPaths(Arrays.asList(Arrays.asList(ScriptSetting.NAME)))
+          .addTableColumnsItem(new MDMTableColumnDescriptor()
+              .name(localeSettingApi.get(ScriptSetting.class.getName(),
+                  ScriptSetting.NAME))
+              .addPathItem(ScriptSetting.NAME));
       result.addDescriptor(entry);
     }
     return result;

@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -118,6 +119,9 @@ public class InvocationApiImpl implements InvocationApi {
   @Autowired(required = false)
   @Lazy
   private PlatformTransactionManager transactionManager;
+
+  @Autowired
+  private ScriptEngineMgmtApi scriptEngineMgmtApi;
 
   /**
    * By default the platform uses the rest client to access and call the api of a module over the
@@ -238,17 +242,17 @@ public class InvocationApiImpl implements InvocationApi {
 
   private final InvocationParameter invokeScript(InvocationRequest request)
       throws ApiNotFoundException {
-    final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
     // Set all the parameters to the script as global variable.
     List<Object> parameterObjects = Invocations.getParameterObjects(objectApi, request);
     int i = 0;
-    for (InvocationParameter p : request.getParameters()) {
-      // We must ensure that the parameters are converted to the referred types.
-      scriptEngineManager.put(p.getName(), parameterObjects.get(i++));
-    }
-    ScriptEngine engine = scriptEngineManager.getEngineByName(request.getScriptKind());
+    ScriptEngine engine = scriptEngineMgmtApi.getEngine(request.getScriptKind());
     if (engine == null) {
       throw new ApiNotFoundException(request);
+    }
+    Bindings bindings = engine.createBindings();
+    for (InvocationParameter p : request.getParameters()) {
+      // We must ensure that the parameters are converted to the referred types.
+      bindings.put(p.getName(), parameterObjects.get(i++));
     }
     try {
       Object result = engine.eval(request.getScriptBody());

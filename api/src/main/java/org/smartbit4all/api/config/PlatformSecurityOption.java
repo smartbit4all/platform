@@ -1,8 +1,8 @@
 package org.smartbit4all.api.config;
 
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import org.smartbit4all.api.org.SecurityGroup;
 import org.smartbit4all.api.org.SecurityOption;
-import static org.smartbit4all.core.utility.StringConstant.joinDot;
 
 public class PlatformSecurityOption implements SecurityOption {
 
@@ -118,6 +118,11 @@ public class PlatformSecurityOption implements SecurityOption {
           .description("Platform storage archive configuration editor")
           .subgroup(admin)
           .builtIn(true);
-
+  public static final SecurityGroup scriptSettingEditor =
+      SecurityGroup.of(name("scriptSettingEditor"))
+          .title("Script setting edtior")
+          .description("Script setting edtior")
+          .subgroup(admin)
+          .builtIn(true);
 
 }

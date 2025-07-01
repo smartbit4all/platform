@@ -72,12 +72,13 @@ public class EntityLookupParameter {
    * Get vectorCollection
    * @return vectorCollection
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(VECTOR_COLLECTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public VectorCollectionDescriptor getVectorCollection() {
     return vectorCollection;
@@ -85,7 +86,7 @@ public class EntityLookupParameter {
 
 
   @JsonProperty(VECTOR_COLLECTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setVectorCollection(VectorCollectionDescriptor vectorCollection) {
     this.vectorCollection = vectorCollection;
   }
@@ -108,11 +109,12 @@ public class EntityLookupParameter {
    * Get dataToLookup
    * @return dataToLookup
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(DATA_TO_LOOKUP)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<Object> getDataToLookup() {
     return dataToLookup;
@@ -120,7 +122,7 @@ public class EntityLookupParameter {
 
 
   @JsonProperty(DATA_TO_LOOKUP)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setDataToLookup(List<Object> dataToLookup) {
     this.dataToLookup = dataToLookup;
   }
@@ -162,12 +164,13 @@ public class EntityLookupParameter {
    * Get lookupParameter
    * @return lookupParameter
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(LOOKUP_PARAMETER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public ObjectLookupParameter getLookupParameter() {
     return lookupParameter;
@@ -175,7 +178,7 @@ public class EntityLookupParameter {
 
 
   @JsonProperty(LOOKUP_PARAMETER)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setLookupParameter(ObjectLookupParameter lookupParameter) {
     this.lookupParameter = lookupParameter;
   }
@@ -190,12 +193,13 @@ public class EntityLookupParameter {
    * Get mappingDefinition
    * @return mappingDefinition
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(MAPPING_DEFINITION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public ObjectMappingDefinition getMappingDefinition() {
     return mappingDefinition;
@@ -203,7 +207,7 @@ public class EntityLookupParameter {
 
 
   @JsonProperty(MAPPING_DEFINITION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setMappingDefinition(ObjectMappingDefinition mappingDefinition) {
     this.mappingDefinition = mappingDefinition;
   }
