@@ -222,6 +222,11 @@ public final class LocaleSettingApi implements InitializingBean {
       }
       return sourceLiteral;
     }
+
+    if (messageSource == null) {
+      return key;
+    }
+
     try {
       return messageSource.getMessage(key, null, key, locale);
     } catch (NoSuchMessageException e) {
