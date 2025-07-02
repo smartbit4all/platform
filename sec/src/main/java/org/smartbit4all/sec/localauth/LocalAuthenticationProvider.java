@@ -46,7 +46,9 @@ public class LocalAuthenticationProvider implements AuthenticationProvider {
     String password = authentication.getCredentials().toString();
 
     User user = orgApi.getUserByUsername(username);
-
+    if (user == null) {
+      throw new BadCredentialsException(LOGIN_FAILED);
+    }
     if (userSecurityCheckerApi.isUserBlocked(user.getUri())) {
       log.debug(
           "Login attempt has failed because user blocked [{}].",

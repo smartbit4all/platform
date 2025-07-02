@@ -20,23 +20,20 @@ public class KerberosAuthenticationApiDelegateImpl implements KerberosAuthentica
 
   @Override
   public ResponseEntity<Void> login(KerberosAuthenticationLoginRequest request) throws Exception {
-
-
     String username = request.getUsername();
     String password = request.getPassword();
-
     if (ObjectUtils.isEmpty(username) || ObjectUtils.isEmpty(password)) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
     try {
       kerberosAuthentication.login(username, password);
     } catch (BadCredentialsException e) {
+      log.error(e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     } catch (Exception e) {
       log.error(e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
     return ResponseEntity.ok().build();
   }
 
