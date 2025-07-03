@@ -70,6 +70,9 @@ public interface ObjectVersionDef extends EntityDefinition {
   String MERGED_WITH_URI = "mergedWithUri";
   String MERGED_WITH_URI_COL = "MERGEDWITHURI";
 
+  String OBJECT_CONTENT_COMPRESSION_TYPE = "objectContentCompressionType";
+  String OBJECT_CONTENT_COMPRESSION_TYPE_COL = "OBJECT_CONTENT_COMPRESS_TYPE";
+
   String OBJECT_CONTENT = "objectcontent";
   String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
 
@@ -115,6 +118,11 @@ public interface ObjectVersionDef extends EntityDefinition {
 
   @OwnProperty(name = OBJECT_CONTENT, columnName = OBJECT_CONTENT_COL, mandatory = true)
   Property<BinaryData> objectContent();
+
+  @OwnProperty(name = OBJECT_CONTENT_COMPRESSION_TYPE,
+      columnName = OBJECT_CONTENT_COMPRESSION_TYPE_COL,
+      mandatory = false)
+  Property<String> objectContentCompressionType();
 
   @OwnProperty(name = REF_CONTENT, columnName = REF_CONTENT_COL, mandatory = true)
   Property<BinaryData> refContent();
