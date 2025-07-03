@@ -121,7 +121,7 @@ public class TableDataApiImpl implements TableDataApi {
       try (FileOutputStream os = new FileOutputStream(fileByUri)) {
         TableDataSerializer.save(tableData, os, objectApi);
         if (!isStorageFs && storageApi != null) {
-          BinaryDataObject data = new BinaryData(fileByUri).asObject();
+          BinaryDataObject data = new BinaryData(fileByUri).asObject(true);
           data.setUri(uri);
           URI newUri = storageApi.getStorage(uri).saveAsNew(data);
           File newFileByUri = FileIO.getFileByUri(rootFolder, newUri, TABLEDATAFILEEXTESION);
@@ -278,10 +278,11 @@ public class TableDataApiImpl implements TableDataApi {
     for (SortOrderProperty sortProp : sortProperties) {
       if (tableData.getColumn(sortProp.property) == null) {
         Property<?> complexColumn = getComplexColumn(tableData, sortProp.property.getName());
-        if (complexColumn == null || tableData.getColumn(complexColumn) == null)
+        if (complexColumn == null || tableData.getColumn(complexColumn) == null) {
           throw new IllegalArgumentException(
               "The given TableData has no property with the descibed SortOrderProperty: ["
                   + sortProp.property.getUri() + "]!");
+        }
 
       }
     }

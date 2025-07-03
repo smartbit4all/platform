@@ -10,9 +10,9 @@ import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
-import org.smartbit4all.domain.data.storage.TransactionalStorage;
+import org.springframework.transaction.annotation.Transactional;
 
-@TransactionalStorage
+@Transactional
 public interface TestApi {
 
   public static FutureValue<String> futureValue = new FutureValue<>();

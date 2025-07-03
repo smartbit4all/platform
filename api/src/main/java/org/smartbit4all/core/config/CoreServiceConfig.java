@@ -89,8 +89,17 @@ public class CoreServiceConfig {
 
       @Override
       public BinaryData serialize(Object obj, Class<?> clazz, int memorylimit) {
-        return obj instanceof Map ? (BinaryData) ((Map<String, Object>) obj).get("binaryData")
-            : ((BinaryDataObject) obj).getBinaryData();
+        if (obj instanceof BinaryDataObject bdo) {
+          // compressOnSave set by BinaryObjectData constructor
+          return bdo.getBinaryData();
+        }
+        if (obj instanceof Map map) {
+          BinaryData result = (BinaryData) map.get("binaryData");
+          // we don't have info in map -> set to don't compress
+          result.setCompressOnSave(false);
+          return result;
+        }
+        throw new IllegalStateException("Failed to serialize object, not BinaryDataObject or Map");
       }
 
       @Override

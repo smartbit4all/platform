@@ -3,13 +3,13 @@ package org.smartbit4all.storage.fs;
 import org.smartbit4all.core.io.TestFileUtil;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
-import org.smartbit4all.domain.data.storage.Storage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -27,9 +27,9 @@ public class StorageFSTestConfig {
     // new File("z:/test-fs")
   }
 
-  @Bean(Storage.STORAGETX)
-  public StorageTransactionManagerFS transactionManager(StorageFS storageFS) {
-    return new StorageTransactionManagerFS(storageFS);
+  @Bean
+  public TransactionManager transactionManager() {
+    return new StorageTransactionManagerFS();
   }
 
   @EventListener(ContextRefreshedEvent.class)

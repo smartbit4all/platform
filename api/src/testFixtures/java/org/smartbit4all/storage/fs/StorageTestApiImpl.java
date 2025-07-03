@@ -4,10 +4,10 @@ import java.net.URI;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class StorageTestApiImpl implements StorageTestApi {
 
@@ -22,7 +22,7 @@ public class StorageTestApiImpl implements StorageTestApi {
   ObjectApi objectApi;
 
   @Override
-  @TransactionalStorage
+  @Transactional
   public FSTestBean saveAndLoad(Storage storage, String testText) {
     try {
       Thread.sleep(50);
@@ -42,7 +42,7 @@ public class StorageTestApiImpl implements StorageTestApi {
 
 
   @Override
-  @TransactionalStorage(propagation = Propagation.REQUIRES_NEW)
+  @Transactional(propagation = Propagation.REQUIRES_NEW)
   public void doSomething() {
     try {
       Thread.sleep(50);
@@ -52,6 +52,7 @@ public class StorageTestApiImpl implements StorageTestApi {
     }
   }
 
+  @Transactional
   @Override
   public void setFutureValue(String p1, Boolean error) {
     URI uri = objectApi.saveAsNew(StorageTestConfig.TESTSCHEME, new FSTestBean(p1));
