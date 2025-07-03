@@ -28,6 +28,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataCompressionUtil;
+import org.smartbit4all.api.binarydata.BinaryDataCompressionUtil.CompressionType;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
@@ -138,6 +140,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired(required = false)
   private StorageSQLCacheConfig cacheConfig;
+
+  @Value("${storageSql.enableCompression:false}")
+  private boolean enableCompression;
+
+  @Value("${storageSql.compressionType:gzip}")
+  private String compressionTypeString;
+
+  private CompressionType compressionType;
+
 
   public StorageSQL(ObjectDefinitionApi objectDefinitionApi) {
     super(objectDefinitionApi);
@@ -402,8 +413,11 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             objectVersionDef.mergedWithUri(),
             objectVersionDef.operation(),
             objectVersionDef.rebasedFromUri(),
-            objectVersionDef.transactionId());
-    BinaryData objectContent = object.serializeMapAware();
+            objectVersionDef.transactionId(),
+            objectVersionDef.objectContentCompressionType());
+    BinaryData objectContent = compressContent(object, object.serializeMapAware());
+    boolean doCompress = objectContent != null && Boolean.TRUE.equals(objectContent.isCompressed());
+    String objectContentCompressionType = doCompress ? compressionTypeString : null;
     BinaryData aspectContent = object.serializeAspects();
     if (objectRow != null) {
       // It is an already existing object so it is an update
@@ -430,6 +444,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.operation(), null)
             .set(objectVersionDef.rebasedFromUri(), null)
             .set(objectVersionDef.transactionId(), null)
+            .set(objectVersionDef.objectContentCompressionType(), objectContentCompressionType)
             .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
@@ -469,6 +484,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
             .set(objectVersionDef.operation(), null)
             .set(objectVersionDef.rebasedFromUri(), null)
             .set(objectVersionDef.transactionId(), null)
+            .set(objectVersionDef.objectContentCompressionType(), objectContentCompressionType)
             .build();
         objectRow.set(objectEntryDef.version(), newVersion);
         objectRow.set(objectEntryDef.refVersion(), newRefVersion);
@@ -527,6 +543,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           .set(objectVersionDef.operation(), null)
           .set(objectVersionDef.rebasedFromUri(), null)
           .set(objectVersionDef.transactionId(), null)
+          .set(objectVersionDef.objectContentCompressionType(), objectContentCompressionType)
           .build();
       if (useTransactionCache && trHandler != null
           && !classesToSkipInsertCache.contains(object.definition().getQualifiedName())) {
@@ -1672,7 +1689,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   private final BinaryData readObjectContentFromRow(DataRow objectRow) {
-    return objectRow.get(objectVersionDef.objectContent());
+    BinaryData content = objectRow.get(objectVersionDef.objectContent());
+    String rowCompressionType = objectRow.get(objectVersionDef.objectContentCompressionType());
+
+    if (!ObjectUtils.isEmpty(rowCompressionType)) {
+      // we don't check enableCompression, because if it is compressed, we must decompress is
+      return decompressContent(content, getCompressionType(rowCompressionType));
+    }
+    return content;
   }
 
   private final BinaryData readAspectContentFromRow(DataRow objectRow) {
@@ -1859,4 +1883,46 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
     return null;
   }
+
+  private CompressionType getCompressionType() {
+    if (compressionType == null) {
+      compressionType = getCompressionType(compressionTypeString);
+    }
+    return compressionType;
+  }
+
+  private CompressionType getCompressionType(String compressionTypeString) {
+    switch (compressionTypeString) {
+      case "zlib":
+        return CompressionType.ZLIB;
+      case "gzip":
+      default:
+        return CompressionType.GZIP;
+    }
+  }
+
+  private BinaryData compressContent(StorageObject<?> object, BinaryData objectContent) {
+    if (enableCompression && objectContent != null && objectContent.isCompressOnSave()) {
+      try {
+        objectContent = BinaryDataCompressionUtil.compress(objectContent, getCompressionType());
+      } catch (IOException e) {
+        log.warn("Failed to compress object content for {}, saving uncompressed",
+            object.getUri(), e);
+      }
+    }
+    return objectContent;
+  }
+
+  private BinaryData decompressContent(BinaryData content, CompressionType compressionType) {
+    if (content != null) {
+      try {
+        content = BinaryDataCompressionUtil.decompress(content, compressionType);
+      } catch (IOException e) {
+        log.error("Failed to decompress object content, this might indicate data corruption", e);
+      }
+    }
+    return content;
+  }
+
+
 }

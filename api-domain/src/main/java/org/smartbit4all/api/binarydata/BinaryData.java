@@ -136,6 +136,17 @@ public class BinaryData {
   static long DELAY_OF_DELETE = 60 * 1000;
 
   /**
+   * If true then StorageSQL will compress the data on save. By default we enable BinaryData-s to
+   * compress.
+   */
+  private boolean compressOnSave = true;
+
+  /**
+   * If true, StorageSQL handles this BinaryData as compressed.
+   */
+  private boolean compressed = false;
+
+  /**
    * The reference queue for queuing the temp files to delete after finalizing the
    * {@link BinaryData} itself.
    */
@@ -544,6 +555,10 @@ public class BinaryData {
     return new BinaryDataObject(this);
   }
 
+  public BinaryDataObject asObject(boolean compressOnSave) {
+    return new BinaryDataObject(this, compressOnSave);
+  }
+
   /**
    * If it's true then the {@link #dataFile} if any is removed after loosing the reference to
    * {@link BinaryData} itself. The removal is scheduled so the deletion of the file is not
@@ -616,6 +631,22 @@ public class BinaryData {
       return DATA_FILE + dataFile;
     }
     return N_A;
+  }
+
+  public boolean isCompressOnSave() {
+    return compressOnSave;
+  }
+
+  public void setCompressOnSave(boolean compressOnSave) {
+    this.compressOnSave = compressOnSave;
+  }
+
+  public boolean isCompressed() {
+    return compressed;
+  }
+
+  public void setCompressed(boolean compressed) {
+    this.compressed = compressed;
   }
 
 }

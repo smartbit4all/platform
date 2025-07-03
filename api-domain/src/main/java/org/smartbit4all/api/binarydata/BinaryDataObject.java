@@ -19,9 +19,21 @@ public class BinaryDataObject {
    */
   private URI uri;
 
+  /**
+   * If true then StorageSQL will compress the data on save. By default we DONT enable
+   * BinaryDataObject-s to compress, since these are typically files.
+   */
+  private final boolean compressOnSave;
+
   public BinaryDataObject(BinaryData binaryData) {
+    this(binaryData, false);
+  }
+
+  public BinaryDataObject(BinaryData binaryData, boolean compressOnSave) {
     super();
     this.binaryData = binaryData;
+    this.compressOnSave = compressOnSave;
+    this.binaryData.setCompressOnSave(this.compressOnSave);
   }
 
   public final BinaryData getBinaryData() {
@@ -38,6 +50,10 @@ public class BinaryDataObject {
 
   public final void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public boolean isCompressOnSave() {
+    return compressOnSave;
   }
 
 }
