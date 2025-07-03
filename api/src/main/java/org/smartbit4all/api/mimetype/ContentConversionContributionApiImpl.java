@@ -8,6 +8,7 @@ import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
@@ -79,8 +80,15 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
           objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class)
               .getBinaryData().asObject());
     }
+    BinaryData binaryData = convertInternal(content, toMimeType, parameters);
+    if (binaryData == null) {
+      throw new BusinessLogicException(
+          String.format("The conversion of the file %s from %s to %s has failed!",
+              content.getFileName(),
+              content.getMimeType(), toMimeType));
+    }
     return objectApi.saveAsNew(logicalSchema,
-        convertInternal(content, toMimeType, parameters).asObject());
+        binaryData.asObject());
   }
 
 }
