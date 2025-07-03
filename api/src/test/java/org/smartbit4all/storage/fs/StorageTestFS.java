@@ -2,6 +2,8 @@ package org.smartbit4all.storage.fs;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -26,7 +28,9 @@ public class StorageTestFS extends StorageTest {
   }
 
   @Override
+  @Test
+  @Disabled
   void testAsyncRequestWithException() throws Exception {
-    // nop
+    super.testAsyncRequestWithException();
   }
 }
