@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.script.Bindings;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -254,6 +255,7 @@ public class InvocationApiImpl implements InvocationApi {
       // We must ensure that the parameters are converted to the referred types.
       bindings.put(p.getName(), parameterObjects.get(i++));
     }
+    engine.setBindings(bindings, ScriptContext.GLOBAL_SCOPE);
     try {
       Object result = engine.eval(request.getScriptBody());
       return new InvocationParameter().value(result)
