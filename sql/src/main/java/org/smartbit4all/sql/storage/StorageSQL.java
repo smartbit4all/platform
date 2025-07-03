@@ -1211,7 +1211,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         StorageCacheTransactionHandler::new);
   }
 
-  protected final class StorageCacheTransactionHandler implements TransactionSynchronization {
+  public void ensureTransactionHandler() {
+    getOrRegisterStorageCacheTransactionHandler();
+  }
+
+  protected final class StorageCacheTransactionHandler
+      implements TransactionSynchronization {
 
     private Map<String, Set<String>> cachedKeysPerClass = new HashMap<>();
 
