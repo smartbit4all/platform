@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -44,7 +45,6 @@ import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -198,11 +198,11 @@ public class ObjectApiImpl implements ObjectApi {
       ReadCache cache = readCache.get();
       if (cache != null) {
         cache.enabledCount++;
-        log.debug("Read cache already enabled for thread: {} - increasing level to {}",
+        log.trace("Read cache already enabled for thread: {} - increasing level to {}",
             Thread.currentThread().getName(), cache.enabledCount);
       } else {
         readCache.set(new ReadCache());
-        log.debug("Read cache enabled for thread: {}", Thread.currentThread().getName());
+        log.trace("Read cache enabled for thread: {}", Thread.currentThread().getName());
       }
     }
   }
@@ -223,13 +223,13 @@ public class ObjectApiImpl implements ObjectApi {
       if (cache != null) {
         if (cache.enabledCount > 0 && !force) {
           cache.enabledCount--;
-          log.debug("Read cache level decreased for thread: {} - new level: {}",
+          log.trace("Read cache level decreased for thread: {} - new level: {}",
               Thread.currentThread().getName(), cache.enabledCount);
         } else {
           // Clear the cache and remove the thread-local reference
           cache.clear();
           readCache.remove();
-          log.debug("Read cache disabled for thread: {} - {}",
+          log.trace("Read cache disabled for thread: {} - {}",
               Thread.currentThread().getName(), cache.getDebugInfo());
         }
       }
