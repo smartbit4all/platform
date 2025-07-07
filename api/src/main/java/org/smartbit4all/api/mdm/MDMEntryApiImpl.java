@@ -892,7 +892,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
         vectorCollection.ensureExist();
       }
       ObjectPropertyFormatter formatter = vectorCollectionDescriptor.getFormatter();
-      getList().nodesFromCache().forEach(n -> {
+      getList().nodesFromCache().parallel().forEach(n -> {
         ObjectPropertyResolver resolver = objectApi.resolver();
         resolver.addContextObject("object", n);
         String formattedString = resolver.resolve(formatter);

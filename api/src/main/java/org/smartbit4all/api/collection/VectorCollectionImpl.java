@@ -3,6 +3,7 @@ package org.smartbit4all.api.collection;
 import static java.util.stream.Collectors.toList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -92,7 +93,9 @@ public class VectorCollectionImpl implements VectorCollection {
     if (vectorValue == null) {
       throw new IllegalArgumentException("The embedding failed on object: " + value);
     }
-    vectorValue.setInputObject(additionalData);
+    Map<String, Object> inputObj = new HashMap<>(additionalData);
+    inputObj.put("EMBEDDING_VALUE", value);
+    vectorValue.setInputObject(inputObj);
     return vectorDBApi.addPoint(vectorDBService, collectionName, vectorValue);
   }
 
