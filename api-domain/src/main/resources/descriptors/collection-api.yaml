@@ -250,3 +250,6 @@ components:
           type: ObjectLookupParameter
         mappingDefinition:
           type: ObjectMappingDefinition
+        distinct:
+          type: boolean
+          default: true

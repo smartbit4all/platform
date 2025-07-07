@@ -40,7 +40,8 @@ import jakarta.validation.Valid;
   EntityLookupParameter.DATA_TO_LOOKUP,
   EntityLookupParameter.LOOKUP_TEMPLATE,
   EntityLookupParameter.LOOKUP_PARAMETER,
-  EntityLookupParameter.MAPPING_DEFINITION
+  EntityLookupParameter.MAPPING_DEFINITION,
+  EntityLookupParameter.DISTINCT
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class EntityLookupParameter {
@@ -58,6 +59,9 @@ public class EntityLookupParameter {
 
   public static final String MAPPING_DEFINITION = "mappingDefinition";
   private ObjectMappingDefinition mappingDefinition = null;
+
+  public static final String DISTINCT = "distinct";
+  private Boolean distinct = true;
 
   public EntityLookupParameter() {
   }
@@ -212,6 +216,33 @@ public class EntityLookupParameter {
     this.mappingDefinition = mappingDefinition;
   }
 
+  public EntityLookupParameter distinct(Boolean distinct) {
+    
+    this.distinct = distinct;
+    return this;
+  }
+
+  /**
+   * Get distinct
+   * @return distinct
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(DISTINCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getDistinct() {
+    return distinct;
+  }
+
+
+  @JsonProperty(DISTINCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDistinct(Boolean distinct) {
+    this.distinct = distinct;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -225,12 +256,13 @@ public class EntityLookupParameter {
         Objects.equals(this.dataToLookup, entityLookupParameter.dataToLookup) &&
         Objects.equals(this.lookupTemplate, entityLookupParameter.lookupTemplate) &&
         Objects.equals(this.lookupParameter, entityLookupParameter.lookupParameter) &&
-        Objects.equals(this.mappingDefinition, entityLookupParameter.mappingDefinition);
+        Objects.equals(this.mappingDefinition, entityLookupParameter.mappingDefinition) &&
+        Objects.equals(this.distinct, entityLookupParameter.distinct);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(vectorCollection, dataToLookup, lookupTemplate, lookupParameter, mappingDefinition);
+    return Objects.hash(vectorCollection, dataToLookup, lookupTemplate, lookupParameter, mappingDefinition, distinct);
   }
 
   @Override
@@ -242,6 +274,7 @@ public class EntityLookupParameter {
     sb.append("    lookupTemplate: ").append(toIndentedString(lookupTemplate)).append("\n");
     sb.append("    lookupParameter: ").append(toIndentedString(lookupParameter)).append("\n");
     sb.append("    mappingDefinition: ").append(toIndentedString(mappingDefinition)).append("\n");
+    sb.append("    distinct: ").append(toIndentedString(distinct)).append("\n");
     sb.append("}");
     return sb.toString();
   }
