@@ -11,8 +11,17 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 
 public class InvocationRunItemBuilder {
-  private final InvocationRunItem item = new InvocationRunItem();
-  private final InvocationRequestDefinition requestDefinition = new InvocationRequestDefinition();
+  private final InvocationRunItem item;
+  private final InvocationRequestDefinition requestDefinition;
+
+  private InvocationRunItemBuilder() {
+    item = new InvocationRunItem();
+    requestDefinition = new InvocationRequestDefinition();
+  }
+
+  public static InvocationRunItemBuilder builder() {
+    return new InvocationRunItemBuilder();
+  }
 
   public static InvocationRunItemBuilder withRequest(InvocationRequest request) {
     InvocationRunItemBuilder result = new InvocationRunItemBuilder();
