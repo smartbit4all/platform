@@ -188,6 +188,9 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Autowired
   private CacheService cacheService;
 
+  @Autowired(required = false)
+  private ViewContextExtensionApi viewContextExtensionApi;
+
   public static boolean collectExecution = false;
 
   /**
@@ -623,7 +626,7 @@ public class ViewContextServiceImpl implements ViewContextService {
                 && Duration.between(c.getTimeOfLastRequest(), OffsetDateTime.now())
                     .toSeconds() > refreshTimeoutMins * 60
                 && refreshTimeoutMins >= 0)
-                || sessionApi.getUserUri() == null) {
+                || getExtensionSessionExpired(c)) {
               sessionManagementApi.updateSession(sessionApi.getSessionUri(),
                   s -> s.expiration(null).refreshExpiration(null));
               authenticationService.logout();
@@ -664,6 +667,13 @@ public class ViewContextServiceImpl implements ViewContextService {
         lock.unlock();
       }
     }
+  }
+
+  private boolean getExtensionSessionExpired(ViewContext c) {
+    if (viewContextExtensionApi != null) {
+      return viewContextExtensionApi.isSessionExpired(c);
+    }
+    return false;
   }
 
   @Override
