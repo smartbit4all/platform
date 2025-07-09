@@ -93,21 +93,25 @@ public class ActionDefinitionApiImpl implements ActionDefinitionApi {
     final MDMEntryApi actionDefinitionApi = masterDataManagementApi.getApiSafe(
         MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
         ActionDefinitionApi.MDM_ACTION_DEFINITIONS);
-    final Collection<ActionDefinition> actionsToRender = actionDefinitionApi.getList()
-        .uris().stream()
-        .map(objectApi::loadLatest)
-        .map(it -> it.getObject(ActionDefinition.class))
-        .filter(it -> canBePresentOnView(it, viewEvaluationContext))
-        .collect(Collectors.toMap(
-            it -> it.getAction().getCode(),
-            Function.identity(),
-            (a, b) -> {
-              final int aPrecedence = unbox(a.getPrecedenceOrder(), 0);
-              final int bPrecedence = unbox(b.getPrecedenceOrder(), 0);
-              return ((aPrecedence - bPrecedence) > 0) ? b : a;
-            }))
-        .values();
-    return new ArrayList<>(actionsToRender);
+    objectApi.enableReadCache();
+    try {
+      final Collection<ActionDefinition> actionsToRender = actionDefinitionApi.getList()
+          .nodesFromCache()
+          .map(it -> it.getObject(ActionDefinition.class))
+          .filter(it -> canBePresentOnView(it, viewEvaluationContext))
+          .collect(Collectors.toMap(
+              it -> it.getAction().getCode(),
+              Function.identity(),
+              (a, b) -> {
+                final int aPrecedence = unbox(a.getPrecedenceOrder(), 0);
+                final int bPrecedence = unbox(b.getPrecedenceOrder(), 0);
+                return ((aPrecedence - bPrecedence) > 0) ? b : a;
+              }))
+          .values();
+      return new ArrayList<>(actionsToRender);
+    } finally {
+      objectApi.disableReadCache();
+    }
   }
 
   private boolean canBePresentOnView(ActionDefinition actionDefinition,
