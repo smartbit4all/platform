@@ -1,5 +1,13 @@
 package org.smartbit4all.api.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -69,14 +77,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class ObjectApiTestBase {
 
@@ -1123,6 +1123,23 @@ public class ObjectApiTestBase {
     node = objectApi.load(uri1);
     node.setValue("Root2", SampleCategory.NAME);
     URI uri2 = objectApi.save(node);
+
+    objectApi.enableReadCache();
+    ObjectNode node0 = objectApi.load(uri0);
+    ObjectNode nodeLatest = objectApi.loadLatest(uri0);
+    assertEquals(uri0, node0.getObjectUri());
+    assertEquals(uri2, nodeLatest.getObjectUri());
+    objectApi.disableReadCache();
+
+    objectApi.enableReadCache();
+    node0 = objectApi.load(uri0);
+    List<ObjectNode> nodesLatest = objectApi.loadLatestBatch(List.of(uri0));
+    assertNotNull(nodesLatest);
+    assertEquals(1, nodesLatest.size());
+    nodeLatest = nodesLatest.get(0);
+    assertEquals(uri0, node0.getObjectUri());
+    assertEquals(uri2, nodeLatest.getObjectUri());
+    objectApi.disableReadCache();
 
     objectApi.enableReadCache();
     assertTrue(objectApi.isReadCacheEnabled());

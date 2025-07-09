@@ -332,6 +332,9 @@ public class ObjectApiImpl implements ObjectApi {
       if (cachedVersionedUri != null) {
         effectiveUri = cachedVersionedUri;
         log.trace("Using cached versioned URI {} for latest URI {}", cachedVersionedUri, latestUri);
+      } else {
+        // we don't know yet, which version is the latest, load the latest
+        effectiveUri = latestUri;
       }
     }
 
@@ -389,6 +392,9 @@ public class ObjectApiImpl implements ObjectApi {
         URI cachedVersionedUri = cache.getLatestMapping(latestUri);
         if (cachedVersionedUri != null) {
           effectiveUri = cachedVersionedUri;
+        } else {
+          // we don't know yet, which version is the latest, load the latest
+          effectiveUri = latestUri;
         }
       }
 
@@ -400,7 +406,7 @@ public class ObjectApiImpl implements ObjectApi {
       } else {
         uncachedUris.add(uri);
         uriToIndex
-            .computeIfAbsent(effectiveUri, k -> new ArrayList<>())
+            .computeIfAbsent(uri, k -> new ArrayList<>())
             .add(i);
         results.add(null); // Placeholder
       }
