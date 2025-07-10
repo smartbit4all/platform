@@ -92,6 +92,10 @@ public class ObjectPropertyMappingBuilder {
     return this;
   }
 
+  public ObjectPropertyMappingBuilder constant() {
+    return this;
+  }
+
   /**
    * Defines an iteration-based mapping for handling list properties.
    * <p>

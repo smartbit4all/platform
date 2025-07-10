@@ -54,6 +54,11 @@ public class InvocationRunItemBuilder {
     return result;
   }
 
+  public InvocationRunItemBuilder request(InvocationRequest request) {
+    requestDefinition.setRequest(request);
+    return this;
+  }
+
   /**
    * Adds a resolver to the run item using a predefined {@link ObjectMappingDefinition}.
    * <p>

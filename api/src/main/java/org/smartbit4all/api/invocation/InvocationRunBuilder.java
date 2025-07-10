@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.bean.InvocationRun;
 
 public class InvocationRunBuilder {
@@ -7,6 +8,13 @@ public class InvocationRunBuilder {
 
   public InvocationRunBuilder addItem(InvocationRunItemBuilder itemBuilder) {
     invocationRun.addItemsItem(itemBuilder.build());
+    return this;
+  }
+
+  public InvocationRunBuilder addItem(Consumer<InvocationRunItemBuilder> itemBuilder) {
+    InvocationRunItemBuilder builder = InvocationRunItemBuilder.builder();
+    itemBuilder.accept(builder);
+    invocationRun.addItemsItem(builder.build());
     return this;
   }
 
