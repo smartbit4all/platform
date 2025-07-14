@@ -67,7 +67,7 @@ public class InvocationRunItemBuilder {
    * @param mappingDef the object mapping definition to use as a resolver
    * @return the builder instance
    */
-  public InvocationRunItemBuilder addResolver(ObjectMappingDefinition mappingDef) {
+  private final InvocationRunItemBuilder addResolver(ObjectMappingDefinition mappingDef) {
     InvocationParameterResolver resolver = new InvocationParameterResolver().definition(mappingDef);
     this.requestDefinition.addResolversItem(resolver);
     return this;
