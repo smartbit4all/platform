@@ -772,14 +772,17 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
         actionRequestHelper(request).get(UiActions.INPUT, UploadedFile.class);
     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
         new BufferedInputStream(uploadedFile.getData().inputStream()), Charset.defaultCharset()));
+    String entryDescriptorSeparator = context.getEntryDescriptor().getCsvSeparator();
+    String separator = ObjectUtils.isEmpty(entryDescriptorSeparator) ? StringConstant.COMMA
+        : entryDescriptorSeparator;
     List<Map<String, String>> items = new ArrayList<>();
     int index = 1;
     try {
       String line = bufferedReader.readLine();
-      List<String> keySet = Arrays.asList(line.split(StringConstant.COMMA));
+      List<String> keySet = Arrays.asList(line.split(separator));
       line = bufferedReader.readLine();
       while (line != null) {
-        String[] fields = line.split(StringConstant.COMMA);
+        String[] fields = line.split(separator);
         Map<String, String> item = new HashMap<>();
         for (int i = 0; i < fields.length; ++i) {
           item.put(keySet.get(i), fields[i]);

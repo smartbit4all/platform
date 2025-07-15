@@ -26,6 +26,8 @@ components:
         importable:
           type: boolean
           default: false
+        csvSeparator:
+          type: string
         formatter:
           type: string
     MDMEntryChangesPageModel:

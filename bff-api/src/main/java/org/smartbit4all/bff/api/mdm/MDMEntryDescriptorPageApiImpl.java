@@ -1,5 +1,9 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.toggle;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
@@ -36,7 +40,6 @@ import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewConstraint;
 import org.smartbit4all.bff.api.mdm.bean.MDMEntryDescriptorPageModel;
 import org.smartbit4all.bff.api.mdm.util.MDMVectorCollectionUtil;
-import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.core.utility.StringConstant;
@@ -171,30 +174,33 @@ public class MDMEntryDescriptorPageApiImpl
                 MDMEntryDescriptorPageModel.CODE))
             .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition()
-            .key(ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+            .key(widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
             .label(localeSettingApi.get(
                 VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
             .type(SmartFormWidgetType.TEXT_FIELD),
         MDMVectorCollectionUtil.getEmbeddingConnectionWidget(
-            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+            widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION),
             localeSettingApi.get(
                 VectorCollectionDescriptor.EMBEDDING_CONNECTION),
             masterDataManagementApi),
         MDMVectorCollectionUtil.getVectorDbConnectionWidget(
-            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+            widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
             localeSettingApi.get(
                 VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
             masterDataManagementApi),
-        ObjectLayoutBuilder.textbox(
-            ObjectLayoutBuilder.widgetKey(MDMEntryDescriptorPageModel.FORMATTER),
+        textbox(
+            widgetKey(MDMEntryDescriptorPageModel.FORMATTER),
             localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 VectorCollectionDescriptor.FORMATTER)),
-        ObjectLayoutBuilder.toggle(MDMEntryDescriptorPageModel.IMPORTABLE, LAYOUT)
-            .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                MDMEntryDescriptorPageModel.IMPORTABLE))));
+        toggle(MDMEntryDescriptorPageModel.IMPORTABLE,
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                MDMEntryDescriptorPageModel.IMPORTABLE)),
+        textfield(MDMEntryDescriptorPageModel.CSV_SEPARATOR,
+            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                MDMEntryDescriptorPageModel.CSV_SEPARATOR))));
   }
 
   protected ViewConstraint getViewConstraint(UUID viewUuid) {
@@ -203,7 +209,7 @@ public class MDMEntryDescriptorPageApiImpl
     if (ObjectUtils.isEmpty(vectorDBApi.getContributionApis())) {
       viewConstraint
           .addComponentConstraintsItem(
-              new ComponentConstraint().dataName(ObjectLayoutBuilder.widgetKey(
+              new ComponentConstraint().dataName(widgetKey(
                   MDMEntryDescriptorPageModel.VECTOR_COLLECTION, StringConstant.DOUBLE_ASTERISK))
                   .enabled(false).visible(false).mandatory(false))
           .addComponentConstraintsItem(
@@ -267,7 +273,8 @@ public class MDMEntryDescriptorPageApiImpl
               .displayNameForm(new LangString().defaultValue(name))
               .displayNameList(new LangString().defaultValue(name))
               .vectorCollection(vectorCollectionDescriptor)
-              .importable(Boolean.TRUE.equals(clientModel.getImportable()));
+              .importable(Boolean.TRUE.equals(clientModel.getImportable()))
+              .csvSeparator(clientModel.getCsvSeparator());
       masterDataManagementApi.modifyEntry(ctx.getDefinition().getName(), entryDescriptorToEdit,
           ctx.getMdmBranch());
     }
@@ -316,6 +323,7 @@ public class MDMEntryDescriptorPageApiImpl
               .isValueSet(Boolean.TRUE)
               .vectorCollection(vectorCollectionDescriptor)
               .importable(Boolean.TRUE.equals(clientModel.getImportable()))
+              .csvSeparator(clientModel.getCsvSeparator())
               .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
       MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       return descriptor;

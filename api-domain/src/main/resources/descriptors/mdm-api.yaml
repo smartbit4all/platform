@@ -230,6 +230,8 @@ components:
           description: Tells if the records in the entry are importable from a file or not.
           type: boolean
           default: false
+        csvSeparator:
+          type: string
         hidden:
           description: This flag decides it the described entry could be edited on the ui.
           type: boolean

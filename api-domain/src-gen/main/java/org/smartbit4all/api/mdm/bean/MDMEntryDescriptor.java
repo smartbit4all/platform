@@ -69,6 +69,7 @@ import jakarta.validation.Valid;
   MDMEntryDescriptor.FILTER_MODEL,
   MDMEntryDescriptor.FILTER_MODEL_ADMIN,
   MDMEntryDescriptor.IMPORTABLE,
+  MDMEntryDescriptor.CSV_SEPARATOR,
   MDMEntryDescriptor.HIDDEN,
   MDMEntryDescriptor.DISPLAY_NAME_PROPERTY_PATH,
   MDMEntryDescriptor.EDITOR_PARAMETERS
@@ -149,6 +150,9 @@ public class MDMEntryDescriptor {
 
   public static final String IMPORTABLE = "importable";
   private Boolean importable = false;
+
+  public static final String CSV_SEPARATOR = "csvSeparator";
+  private String csvSeparator;
 
   public static final String HIDDEN = "hidden";
   private Boolean hidden = false;
@@ -901,6 +905,33 @@ public class MDMEntryDescriptor {
     this.importable = importable;
   }
 
+  public MDMEntryDescriptor csvSeparator(String csvSeparator) {
+    
+    this.csvSeparator = csvSeparator;
+    return this;
+  }
+
+  /**
+   * Get csvSeparator
+   * @return csvSeparator
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(CSV_SEPARATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCsvSeparator() {
+    return csvSeparator;
+  }
+
+
+  @JsonProperty(CSV_SEPARATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCsvSeparator(String csvSeparator) {
+    this.csvSeparator = csvSeparator;
+  }
+
   public MDMEntryDescriptor hidden(Boolean hidden) {
     
     this.hidden = hidden;
@@ -1032,6 +1063,7 @@ public class MDMEntryDescriptor {
         Objects.equals(this.filterModel, mdMEntryDescriptor.filterModel) &&
         Objects.equals(this.filterModelAdmin, mdMEntryDescriptor.filterModelAdmin) &&
         Objects.equals(this.importable, mdMEntryDescriptor.importable) &&
+        Objects.equals(this.csvSeparator, mdMEntryDescriptor.csvSeparator) &&
         Objects.equals(this.hidden, mdMEntryDescriptor.hidden) &&
         Objects.equals(this.displayNamePropertyPath, mdMEntryDescriptor.displayNamePropertyPath) &&
         Objects.equals(this.editorParameters, mdMEntryDescriptor.editorParameters);
@@ -1039,7 +1071,7 @@ public class MDMEntryDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, hidden, displayNamePropertyPath, editorParameters);
+    return Objects.hash(name, displayNameList, displayNameForm, order, adminGroupName, typeQualifiedName, publishedListName, inactiveMgmt, uniquePropertyPaths, constraints, tableColumns, editorViewName, listPageGridViews, searchIndexForEntries, schema, uriConstructor, eventHandlersBeforeSave, isValueSet, branchingStrategy, selfContainedRefList, vectorCollection, propertyMappings, filterModel, filterModelAdmin, importable, csvSeparator, hidden, displayNamePropertyPath, editorParameters);
   }
 
   @Override
@@ -1071,6 +1103,7 @@ public class MDMEntryDescriptor {
     sb.append("    filterModel: ").append(toIndentedString(filterModel)).append("\n");
     sb.append("    filterModelAdmin: ").append(toIndentedString(filterModelAdmin)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
+    sb.append("    csvSeparator: ").append(toIndentedString(csvSeparator)).append("\n");
     sb.append("    hidden: ").append(toIndentedString(hidden)).append("\n");
     sb.append("    displayNamePropertyPath: ").append(toIndentedString(displayNamePropertyPath)).append("\n");
     sb.append("    editorParameters: ").append(toIndentedString(editorParameters)).append("\n");

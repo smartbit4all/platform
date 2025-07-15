@@ -35,6 +35,7 @@ import jakarta.validation.Valid;
   MDMEntryDescriptorPageModel.NAME,
   MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
   MDMEntryDescriptorPageModel.IMPORTABLE,
+  MDMEntryDescriptorPageModel.CSV_SEPARATOR,
   MDMEntryDescriptorPageModel.FORMATTER
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -50,6 +51,9 @@ public class MDMEntryDescriptorPageModel {
 
   public static final String IMPORTABLE = "importable";
   private Boolean importable = false;
+
+  public static final String CSV_SEPARATOR = "csvSeparator";
+  private String csvSeparator;
 
   public static final String FORMATTER = "formatter";
   private String formatter;
@@ -166,6 +170,33 @@ public class MDMEntryDescriptorPageModel {
     this.importable = importable;
   }
 
+  public MDMEntryDescriptorPageModel csvSeparator(String csvSeparator) {
+    
+    this.csvSeparator = csvSeparator;
+    return this;
+  }
+
+  /**
+   * Get csvSeparator
+   * @return csvSeparator
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(CSV_SEPARATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getCsvSeparator() {
+    return csvSeparator;
+  }
+
+
+  @JsonProperty(CSV_SEPARATOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCsvSeparator(String csvSeparator) {
+    this.csvSeparator = csvSeparator;
+  }
+
   public MDMEntryDescriptorPageModel formatter(String formatter) {
     
     this.formatter = formatter;
@@ -206,12 +237,13 @@ public class MDMEntryDescriptorPageModel {
         Objects.equals(this.name, mdMEntryDescriptorPageModel.name) &&
         Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection) &&
         Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable) &&
+        Objects.equals(this.csvSeparator, mdMEntryDescriptorPageModel.csvSeparator) &&
         Objects.equals(this.formatter, mdMEntryDescriptorPageModel.formatter);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, vectorCollection, importable, formatter);
+    return Objects.hash(code, name, vectorCollection, importable, csvSeparator, formatter);
   }
 
   @Override
@@ -222,6 +254,7 @@ public class MDMEntryDescriptorPageModel {
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    vectorCollection: ").append(toIndentedString(vectorCollection)).append("\n");
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
+    sb.append("    csvSeparator: ").append(toIndentedString(csvSeparator)).append("\n");
     sb.append("    formatter: ").append(toIndentedString(formatter)).append("\n");
     sb.append("}");
     return sb.toString();
