@@ -859,7 +859,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
           AsyncInvocationRequest request = ((AsyncInvocationRequestEntry) obj).request;
           ChannelInfo channel = channelInfos.get(request.getChannel());
           request.runtimeUri(channel.runtimeUri);
-          request.uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, request));
+          request.uri(objectApi.saveAsNew(Invocations.ASYNCINVOCATION_SCHEME, request));
           channel.requestsToAdd.add(objectApi.getLatestUri(request.getUri()));
         } else if (obj instanceof ObjectNode) {
           ObjectNode request = (ObjectNode) obj;
@@ -1193,7 +1193,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     AsyncInvocationRequest asyncInvocationRequest =
         new AsyncInvocationRequest().request(request);
     asyncInvocationRequest
-        .uri(objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, asyncInvocationRequest));
+        .uri(objectApi.saveAsNew(Invocations.ASYNCINVOCATION_SCHEME, asyncInvocationRequest));
 
     scheduleAsyncInvocationRequest(channel.getName(),
         Arrays.asList(asyncInvocationRequest.getUri()),
