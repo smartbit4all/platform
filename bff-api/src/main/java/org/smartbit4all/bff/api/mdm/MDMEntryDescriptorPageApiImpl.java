@@ -141,7 +141,8 @@ public class MDMEntryDescriptorPageApiImpl
     view.putLayoutsItem(LAYOUT, getLayout());
     view.constraint(getViewConstraint(view.getUuid()));
 
-    VectorCollectionDescriptor vectorCollection = ctx.getEntryDescriptor().getVectorCollection();
+    MDMEntryDescriptor currentEntryDescriptor = ctx.getEntryDescriptor();
+    VectorCollectionDescriptor vectorCollection = currentEntryDescriptor.getVectorCollection();
     if (vectorCollection == null) {
       vectorCollection = new VectorCollectionDescriptor();
     }
@@ -157,10 +158,11 @@ public class MDMEntryDescriptorPageApiImpl
 
     return new MDMEntryDescriptorPageModel()
         .name(Boolean.TRUE.equals(ctx.isNewEntry) ? StringConstant.EMPTY
-            : ctx.getEntryDescriptor().getDisplayNameForm().getDefaultValue())
+            : currentEntryDescriptor.getDisplayNameForm().getDefaultValue())
         .vectorCollection(vectorCollection)
         .formatter(formatter)
-        .importable(Boolean.TRUE.equals(ctx.getEntryDescriptor().getImportable()));
+        .importable(Boolean.TRUE.equals(currentEntryDescriptor.getImportable()))
+        .csvSeparator(currentEntryDescriptor.getCsvSeparator());
   }
 
   private SmartLayoutDefinition getLayout() {
