@@ -29,7 +29,7 @@ public final class Values {
    * @param value
    * @return
    */
-  private static String getDisplayValue(Value value) {
+  public static String getDisplayValue(Value value) {
     if (value == null) {
       return "";
     }
