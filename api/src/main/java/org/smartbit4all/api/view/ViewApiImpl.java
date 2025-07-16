@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -126,6 +126,9 @@ public class ViewApiImpl implements ViewApi {
           showView(parentView);
         }
         view.containerUuid(parentView.getUuid());
+        if (parentView.getModule() != null && view.getModule() == null) {
+          view.module(parentView.getModule());
+        }
       }
       List<View> children = getChildrenOfParentView(context, parentView);
       if (children.isEmpty()) {
@@ -159,7 +162,12 @@ public class ViewApiImpl implements ViewApi {
       }
     } else {
       if (view.getContainerUuid() == null && context.getCurrentRequest() != null) {
-        view.setContainerUuid(context.getCurrentRequest().getViewUuid());
+        UUID viewUuid = context.getCurrentRequest().getViewUuid();
+        view.setContainerUuid(viewUuid);
+        View parentView = getView(viewUuid);
+        if (parentView != null && parentView.getModule() != null && view.getModule() == null) {
+          view.module(parentView.getModule());
+        }
       }
       view.setState(ViewState.TO_OPEN);
     }
