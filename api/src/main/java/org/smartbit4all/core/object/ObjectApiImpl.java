@@ -248,8 +248,13 @@ public class ObjectApiImpl implements ObjectApi {
     if (useReadCache) {
       ReadCache cache = readCache.get();
       if (cache != null) {
-        log.warn("Read cache is being cleared due to a save operation. Disabling read cache. {}",
-            cache.getDebugInfo());
+        if (log.isDebugEnabled()) {
+          log.debug("Read cache is being cleared due to a save operation. Disabling read cache. {}",
+              cache.getDebugInfo(), new RuntimeException());
+        } else if (log.isWarnEnabled()) {
+          log.warn("Read cache is being cleared due to a save operation. Disabling read cache. {}",
+              cache.getDebugInfo());
+        }
         disableReadCacheInternal(true);
       }
     }

@@ -379,8 +379,14 @@ public class ViewContextServiceImpl implements ViewContextService {
         }
         return null;
       }
-      modelObject = ((PageApi<?>) api).initModel(view);
+      objectApi.enableReadCache();
+      try {
+        modelObject = ((PageApi<?>) api).initModel(view);
+      } finally {
+        objectApi.disableReadCache();
+      }
       view.setModel(modelObject);
+      ((PageApi<?>) api).afterInitModel(view);
     }
     if (clazz.isInstance(modelObject)) {
       if (modelWasEmpty) {
