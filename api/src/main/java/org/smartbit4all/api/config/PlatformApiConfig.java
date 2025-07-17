@@ -207,6 +207,8 @@ public class PlatformApiConfig {
 
   public static final String SCHEMA_SEARCH_INDEX_FILTER_HIERARCHY = "si-filter-hierarchy";
 
+  public static final String SCHEMA_TEMP = "temp";
+
   /**
    * This constant is usually used for the definition of the ACL subject model. It contains all the
    * grouping mechanism that helps to define the access control lists.
