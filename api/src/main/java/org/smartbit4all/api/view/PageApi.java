@@ -22,11 +22,23 @@ public interface PageApi<M> {
    * This method will be called when a view's model is needed but not present yet. It receives a
    * {@link View} containing all information available to initialize model, and must return the
    * model Object.
+   * 
+   * When calling this method, platform will assume that initializing the model only uses read
+   * operations, so it will enable ObjectApi caching. If any save operation is need during
+   * initModel, it should be deferred to {@link #afterInitModel(View)}.
    *
    * @param view
    * @return
    */
   M initModel(View view);
+
+  /**
+   * This method is called when initModel is completed. Typical usage is to save the page's object
+   * to a recent accessed object list.
+   * 
+   * @param view
+   */
+  default void afterInitModel(View view) {};
 
   /**
    * Returns the page's model's class.
