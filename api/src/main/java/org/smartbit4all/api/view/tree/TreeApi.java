@@ -49,7 +49,13 @@ public interface TreeApi {
   void refreshNode(UiTreeState treeState, UiTreeNode node);
 
   // for calling with viewUuid and treeId
-  <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall);
+  default <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
+    // default readOnly = true
+    return executeTreeCall(viewUuid, treeId, treeCall, true);
+  }
+
+  <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall,
+      boolean readOnly);
 
   /**
    * Expands and selects tree specified by objectPath. First URI will be searched in rootNodes.

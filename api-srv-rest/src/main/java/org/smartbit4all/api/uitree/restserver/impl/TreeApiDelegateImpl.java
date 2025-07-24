@@ -110,7 +110,8 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
   public ResponseEntity<List<SmartTreeNode>> performAction(UUID viewUuid, String treeId,
       String nodeId, UiActionRequest request) throws Exception {
     return ResponseEntity.ok(treeApi.executeTreeCall(viewUuid, treeId,
-        treeState -> treeApi.performAction(treeState, nodeId, request)));
+        treeState -> treeApi.performAction(treeState, nodeId, request),
+        false));
   }
 
   @Override
@@ -119,7 +120,8 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
     return ResponseEntity.ok(
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
-                treeState -> treeApi.performAction(treeState, nodeId, request)),
+                treeState -> treeApi.performAction(treeState, nodeId, request),
+                false),
             "performMainAction"));
   }
 
@@ -127,7 +129,8 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
   public ResponseEntity<List<SmartTreeNode>> performMainAction(UUID viewUuid, String treeId,
       UiActionRequest request) throws Exception {
     return ResponseEntity.ok(treeApi.executeTreeCall(viewUuid, treeId,
-        treeState -> treeApi.performAction(treeState, null, request)));
+        treeState -> treeApi.performAction(treeState, null, request),
+        false));
   }
 
   @Override
@@ -136,7 +139,8 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
     return ResponseEntity.ok(
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
-                treeState -> treeApi.performAction(treeState, null, request)),
+                treeState -> treeApi.performAction(treeState, null, request),
+                false),
             "performMainAction"));
   }
 

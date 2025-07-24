@@ -378,14 +378,25 @@ public class TreeApiImpl implements TreeApi {
   }
 
   @Override
-  public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall) {
+  public <T> T executeTreeCall(UUID viewUuid, String treeId, Function<UiTreeState, T> treeCall,
+      boolean readOnly) {
     UiTreeState treeState = viewApi.getWidgetModelFromView(UiTreeState.class, viewUuid, treeId);
     if (treeState == null) {
       return null;
     }
     treeState.setVars(new HashMap<>());
     treeState.setViewUuid(viewUuid);
-    T result = treeCall.apply(treeState);
+    if (readOnly) {
+      objectApi.enableReadCache();
+    }
+    T result;
+    try {
+      result = treeCall.apply(treeState);
+    } finally {
+      if (readOnly) {
+        objectApi.disableReadCache();
+      }
+    }
     treeState.setVars(null);
     viewApi.setWidgetModelInView(UiTreeState.class, viewUuid, treeId, treeState);
     return result;
