@@ -37,6 +37,8 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
+import org.smartbit4all.api.invocation.bean.InvocationScheduledJobState;
+import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScriptSetting;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.mdm.MDMConstants;
@@ -1073,7 +1075,12 @@ public class PlatformApiConfig {
             ApiKey.SCOPE,
             ApiKeyScope.class,
             ReferencePropertyKind.LIST,
-            AggregationKind.SHARED);
+            AggregationKind.SHARED)
+        .ref(ScheduledJobDefinition.class,
+            ScheduledJobDefinition.STATE,
+            InvocationScheduledJobState.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE);
   }
 
   @Bean

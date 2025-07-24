@@ -908,3 +908,59 @@ components:
           type: string
         settings:
           type: string
+    ScheduledJobDefinition:
+      type: object
+      required: [id, name, schedule, task]
+      description: |
+        The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the
+        definitions are managed by the InvocationApi. 
+      properties:
+        id:
+          type: string
+          description: |
+            Unique identifier of the scheduled job that must be set by the administrator and must be unique in an application.
+        name:
+          type: string
+          description: Human readable name of the scheduled job.
+        description:
+          type: string
+          description: Human-readable description of the scheduled job.
+        cronExpression:
+          type: string
+          description: |
+            Cron expression defining the execution frequency of the job. Example: "0 0 * * *".
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobParameter'
+        task:
+          type: InvocationRun
+        state:
+          type: string
+          format: uri
+    InvocationScheduledJobState:
+      type: object
+      required: [id, name, schedule, task]
+      properties:
+        state:
+          enum: [SCHEDULED, RUNNING]
+          description: |
+            The state of the scheduled job.
+        nextScheduledAt:
+          type: string
+          format: date-time
+          description: Human readable name of the scheduled job.
+    JobParameter:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [value, collection]
+          description: Type of the parameter.
+        key:
+          type: string
+          description: The key of the given parameter.
+        value:
+          type: object
+          description: Default value of the parameter.
