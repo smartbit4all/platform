@@ -77,6 +77,7 @@ import org.smartbit4all.api.object.CompareContributionApiStorageImpl;
 import org.smartbit4all.api.object.CopyApi;
 import org.smartbit4all.api.object.CopyApiImpl;
 import org.smartbit4all.api.object.CopyContributionApiStorageImpl;
+import org.smartbit4all.api.object.DataSourceContextTemplate;
 import org.smartbit4all.api.object.ModifyApi;
 import org.smartbit4all.api.object.ModifyApiImpl;
 import org.smartbit4all.api.object.ModifyContributionApiStorageImpl;
@@ -1167,6 +1168,11 @@ public class PlatformApiConfig {
   @Bean
   public PlatformEventApi platformEventApi() {
     return new PlatformEventApiImpl();
+  }
+
+  @Bean
+  public DataSourceContextTemplate dataSourceContextTemplate() {
+    return new DataSourceContextTemplate();
   }
 
 }

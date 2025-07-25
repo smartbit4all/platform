@@ -35,6 +35,8 @@ import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
 import org.smartbit4all.api.collection.bean.StoredSequenceData;
+import org.smartbit4all.api.object.DataSourceContextHolder;
+import org.smartbit4all.api.object.DataSourceContextTemplate;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
@@ -112,6 +114,9 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
   @Autowired
   public IdentifierService identifierService;
+
+  @Autowired
+  protected DataSourceContextTemplate dataSourceContextTemplate;
 
   @Autowired(required = false)
   List<StorageSQLExtensionApi> extensions;
@@ -207,16 +212,19 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     if (isUriInInsertCache(objectUri)) {
       return new StorageObjectPhysicalLock(objectUri, true);
     }
-    if (transactionManager == null) {
-      // if no transactionManager just do it (won't happen, sql always have trManager)
-      return lockPhysicalObjectInNewTransaction(objectUri, waitUntil);
-    }
-    // if there's a trManager, physical lock should be acquired in a separate transaction
-    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-    transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-    return transaction
-        .execute(
-            status -> lockPhysicalObjectInNewTransaction(objectUri, waitUntil));
+
+    return dataSourceContextTemplate.executeWith(DataSourceContextHolder.DATASOURCE_LOCK, () -> {
+      if (transactionManager == null) {
+        // if no transactionManager just do it (won't happen, sql always have trManager)
+        return lockPhysicalObjectInNewTransaction(objectUri, waitUntil);
+      }
+      // if there's a trManager, physical lock should be acquired in a separate transaction
+      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+      transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+      return transaction
+          .execute(
+              status -> lockPhysicalObjectInNewTransaction(objectUri, waitUntil));
+    });
   }
 
   private StorageObjectPhysicalLock lockPhysicalObjectInNewTransaction(URI objectUri,
@@ -295,17 +303,20 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Override
   public void unlockPhysicalObject(StorageObjectPhysicalLock lock) {
     if (lock != null && !lock.isInMemory()) {
-      if (transactionManager == null) {
-        // no transactionManager or already in transaction
-        unlockPhysicalObjectInTransaction(lock);
-        return;
-      }
+      dataSourceContextTemplate.executeWith(DataSourceContextHolder.DATASOURCE_LOCK, () -> {
+        if (transactionManager == null) {
+          // no transactionManager or already in transaction
+          unlockPhysicalObjectInTransaction(lock);
+          return;
+        }
 
-      TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-      transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-      transaction
-          .executeWithoutResult(
-              status -> unlockPhysicalObjectInTransaction(lock));
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transaction
+            .executeWithoutResult(
+                status -> unlockPhysicalObjectInTransaction(lock));
+
+      });
     }
   }
 

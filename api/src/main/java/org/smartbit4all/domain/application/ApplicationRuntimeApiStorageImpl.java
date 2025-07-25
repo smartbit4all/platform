@@ -17,6 +17,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
+import org.smartbit4all.api.object.DataSourceContextHolder;
+import org.smartbit4all.api.object.DataSourceContextTemplate;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -100,6 +102,9 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   @Autowired
   private Environment environment;
 
+  @Autowired
+  private DataSourceContextTemplate dataSourceContextTemplate;
+
   private CountDownLatch maintainLatch = new CountDownLatch(1);
 
   @Override
@@ -135,6 +140,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       return;
     }
     long currentTimeMillis = System.currentTimeMillis();
+    DataSourceContextHolder.setSystem();
     if (!self.isDone()) {
       // Save the self and set as self. From that time the runtime is officially registered.
       ApplicationRuntimeData runtimeData = myRuntime.getData();
@@ -164,6 +170,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     if (storageCluster == null) {
       return;
     }
+    DataSourceContextHolder.setSystem();
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     if (self.isDone()) {
@@ -180,8 +187,25 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
         });
       }
       self.get().getData().setLastTouchTime(currentTimeMillis);
-    } else {
     }
+    maintainLatch.countDown();
+  }
+
+  @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
+      fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}",
+      scheduler = "applicationRuntimeScheduler")
+  public void refreshRuntimes() throws InterruptedException, ExecutionException {
+    if (storageCluster == null) {
+      return;
+    }
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
+    DataSourceContextHolder.setSystem();
+    // TODO sync the times!
+    long currentTimeMillis = System.currentTimeMillis();
     // If we successfully saved ourself then read all the active runtime we have in this register.
     List<ApplicationRuntimeData> activeRuntimes =
         storageCluster.readAll(SET_ACTIVE, ApplicationRuntimeData.class);
@@ -189,7 +213,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
     Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
     for (ApplicationRuntimeData runtimeData : activeRuntimes) {
-      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 5)) {
+      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 5)
+          && !Objects.equals(runtimeData.getUri(), runtimeUri)) {
         // This is an invalid runtime. Remove it from the list and from the set.
         invalidRuntimes.add(runtimeData);
       } else {
@@ -202,7 +227,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     for (ApplicationRuntimeData invalidRuntime : invalidRuntimes) {
       storageCluster.archive(invalidRuntime.getUri());
     }
-    maintainLatch.countDown();
   }
 
   @Override
