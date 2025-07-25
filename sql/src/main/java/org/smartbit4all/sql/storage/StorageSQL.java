@@ -57,6 +57,7 @@ import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
 import org.smartbit4all.domain.data.storage.StorageObjectHistoryEntry;
+import org.smartbit4all.domain.data.storage.StorageObjectLock;
 import org.smartbit4all.domain.data.storage.StorageObjectPhysicalLock;
 import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
@@ -65,6 +66,7 @@ import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
+import org.smartbit4all.domain.service.modify.DeleteOutput;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CachePolicy;
@@ -262,6 +264,21 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  @Override
+  protected boolean ownsRequiredLocks(List<StorageObjectLock> locksToUnlock) {
+    UUID currentRuntime = runtimeApi().self().getUuid();
+
+    List<String> lockUris = locksToUnlock.stream()
+        .map(lock -> getUriString(getUriWithoutVersion(lock.getObjectURI())))
+        .collect(toList());
+    TableData<ObjectEntryLockDef> locksNotOwned = Crud.read(objectEntryLockDef)
+        .select(objectEntryLockDef.allProperties())
+        .where(objectEntryLockDef.objectUri().in(lockUris)
+            .AND(objectEntryLockDef.applicationRuntime().noteq(currentRuntime.toString())))
+        .listData();
+    return locksNotOwned.isEmpty();
+  }
+
   private TableData<ObjectEntryLockDef> createLockRecord(String objectUriString,
       UUID currentRuntime) {
     return TableDatas
@@ -293,13 +310,15 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   private void unlockPhysicalObjectInTransaction(StorageObjectPhysicalLock lock) {
+    UUID uuid = runtimeApi().self().getUuid();
     try {
-      Crud.delete(TableDatas
-          .builder(objectEntryLockDef, objectEntryLockDef.objectUri())
-          .addRow()
-          .set(objectEntryLockDef.objectUri(),
-              getUriString(getUriWithoutVersion(lock.getObjectUri())))
-          .build());
+      DeleteOutput delete = Crud.delete(objectEntryLockDef,
+          objectEntryLockDef.objectUri().eq(getUriString(getUriWithoutVersion(lock.getObjectUri())))
+              .AND(objectEntryLockDef.applicationRuntime().eq(uuid.toString())));
+      if (delete.getUpdateCount() == 0) {
+        log.warn("Couldn't find the {} lock to delete for {} runtime", lock.getObjectUri(),
+            uuid.toString());
+      }
     } catch (Exception e) {
       throw new IllegalStateException("Unable to unlock object " + lock.getObjectUri(), e);
     }

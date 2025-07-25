@@ -982,6 +982,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
 
     @Override
+    public void beforeCommit(boolean readOnly) {
+      if (!ownsRequiredLocks(locksToUnlock)) {
+        throw new IllegalStateException("The lock is not owned by current runtime!");
+      }
+    }
+
+    @Override
     public void afterCompletion(int status) {
       if (log.isTraceEnabled()) {
         String lockTrace = locksToUnlock.stream()
@@ -1008,6 +1015,11 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         CollectionApiStorageImpl.constructGlobalUri(schema, name, CollectionApi.STOREDSEQ),
         name);
   }
+
+  protected boolean ownsRequiredLocks(List<StorageObjectLock> locksToUnlock) {
+    return true;
+  }
+
 
   @Override
   public StoredSequence getSequence(URI scopeObjectUri, String schema, String name) {
