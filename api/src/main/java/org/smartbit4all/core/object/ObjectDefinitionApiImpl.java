@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
-import org.smartbit4all.core.utility.PathUtility;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,7 +36,6 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toMap;
 import jakarta.validation.constraints.NotNull;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
@@ -272,8 +272,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     if (objectUri == null || objectUri.getPath() == null) {
       return null;
     }
-    String rootPath = PathUtility.getRootPath(objectUri.getPath());
-    return definitionByAlias(rootPath);
+    String className = UriUtils.getClassName(objectUri);
+    return definitionByAlias(className);
   }
 
   @Override

@@ -501,7 +501,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
   }
 
   @Override
-  public boolean move(URI uri, URI targetUri) {
+  public boolean move(Storage storage, URI uri, URI targetUri) {
     // By default it won't return anything. The management of the set is an extra functionality.
     return false;
   }

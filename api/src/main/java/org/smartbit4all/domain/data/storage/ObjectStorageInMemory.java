@@ -96,8 +96,9 @@ public class ObjectStorageInMemory extends ObjectStorageImpl {
     return (StorageObject<T>) copy;
   }
 
+
   @Override
-  public boolean exists(URI uri) {
+  public boolean exists(Storage storage, URI uri) {
     return objectsByURI.containsKey(uri);
   }
 

@@ -283,6 +283,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         unlockPhysicalObjectInTransaction(lock);
         return;
       }
+
       TransactionTemplate transaction = new TransactionTemplate(transactionManager);
       transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
       transaction
@@ -770,11 +771,19 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  public boolean exists(URI uri) {
+  public boolean exists(Storage storage, URI uri) {
     DataRow objectRow;
     try {
       if (log.isTraceEnabled()) {
         log.trace("exists: uri={}", uri);
+      }
+      ObjectDefinition<?> definition = objectDefinitionApi.definition(uri);
+      if (definition != null) {
+        StorageSQLExtensionApi extensionApi =
+            getExtensionApi(storage.getScheme(), definition.getQualifiedName());
+        if (extensionApi != null) {
+          return extensionApi.exists(uri);
+        }
       }
       objectRow =
           queryObjectEntry(uri, false, new PropertySet(Arrays.asList(objectEntryDef.uri())));
@@ -1522,7 +1531,16 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   @Override
-  public boolean move(URI uri, URI targetUri) {
+  public boolean move(Storage storage, URI uri, URI targetUri) {
+    ObjectDefinition<?> definition = objectDefinitionApi.definition(uri);
+    if (definition != null) {
+      StorageSQLExtensionApi extensionApi =
+          getExtensionApi(storage.getScheme(), definition.getQualifiedName());
+      if (extensionApi != null) {
+        return extensionApi.move(uri, targetUri);
+      }
+    }
+
     // It is a simple update...
     DataRow objectEntryRow = queryObjectEntry(uri, true, null);
     if (objectEntryRow != null) {

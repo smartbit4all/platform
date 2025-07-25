@@ -352,7 +352,7 @@ public final class Storage {
   public URI moveToSet(URI uri, String setName) {
     if (uri != null && exists(uri)) {
       URI movedUri = constructUriForSet(uri, setName);
-      return objectStorage.move(uri, movedUri) ? movedUri
+      return objectStorage.move(this, uri, movedUri) ? movedUri
           : null;
     }
     return null;
@@ -542,11 +542,11 @@ public final class Storage {
   }
 
   public boolean exists(URI uri) {
-    return objectStorage.exists(uri);
+    return objectStorage.exists(this, uri);
   }
 
   public boolean existsAll(List<URI> uris) {
-    return !(uris.stream().anyMatch(uri -> !objectStorage.exists(uri)));
+    return !(uris.stream().anyMatch(uri -> !objectStorage.exists(this, uri)));
   }
 
   public List<URI> findExistings(List<URI> uris) {
@@ -592,7 +592,7 @@ public final class Storage {
   public URI archive(URI uri) {
     if (uri != null && exists(uri)) {
       URI constructArchiveUri = constructUriForSet(uri, ARCHIVE);
-      return objectStorage.move(uri, constructArchiveUri) ? constructArchiveUri
+      return objectStorage.move(this, uri, constructArchiveUri) ? constructArchiveUri
           : null;
     }
     return null;
@@ -605,7 +605,7 @@ public final class Storage {
   public URI restoreArchived(URI uri) {
     URI constructArchiveUri = constructUriForSet(uri, ARCHIVE);
     if (uri != null && exists(constructArchiveUri)) {
-      return objectStorage.move(constructArchiveUri, uri) ? uri
+      return objectStorage.move(this, constructArchiveUri, uri) ? uri
           : null;
     }
     return null;
@@ -653,7 +653,7 @@ public final class Storage {
    */
   public final URI settingsUri() {
     URI uri = getSettingsUri();
-    if (!objectStorage.exists(uri)) {
+    if (!objectStorage.exists(this, uri)) {
       constructSettingsObject(uri);
     }
     return uri;

@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -61,7 +62,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.fasterxml.jackson.core.JsonParseException;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -551,7 +551,7 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public boolean exists(URI uri) {
+  public boolean exists(Storage storage, URI uri) {
     if (uri == null) {
       return false;
     }
@@ -777,7 +777,7 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   @Override
-  public boolean move(URI uri, URI targetUri) {
+  public boolean move(Storage storage, URI uri, URI targetUri) {
     // TODO For the first time we implement only the single version.
     File sourceObjectFile = getObjectDataFile(uri);
     File targetObjectFile = getObjectDataFile(targetUri);

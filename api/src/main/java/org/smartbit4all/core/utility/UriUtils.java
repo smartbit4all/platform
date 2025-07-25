@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -24,8 +26,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
+import org.smartbit4all.domain.data.storage.Storage;
 
 public abstract class UriUtils {
 
@@ -178,7 +179,11 @@ public abstract class UriUtils {
     if (path != null && path.startsWith("/")) {
       String[] pathParts = path.substring(1).split("/");
       if (pathParts.length > 0) {
-        return pathParts[0];
+        String className = pathParts[0];
+        if (Storage.ARCHIVE.equals(className)) {
+          className = pathParts[1];
+        }
+        return className;
       }
     }
     return StringConstant.EMPTY;

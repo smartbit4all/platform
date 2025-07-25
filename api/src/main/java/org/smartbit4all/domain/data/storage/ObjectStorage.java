@@ -191,11 +191,12 @@ public interface ObjectStorage {
   /**
    * Move the given object inside the object storage.
    *
+   * @param storage The logical storage of the given operation.
    * @param uri The uri of the object.
    * @param targetUri The archive uri of the object.
    * @return true if the move was successful.
    */
-  boolean move(URI uri, URI targetUri);
+  boolean move(Storage storage, URI uri, URI targetUri);
 
   /**
    * Removes the given uris with all their versions.
@@ -214,11 +215,12 @@ public interface ObjectStorage {
   /**
    * Perform a quick check for existence of a given uri.
    *
+   * @param storage The logical storage of the given operation.
    * @param uri The object uri to check.
    * @return Return true if the given entry exists. Doesn't check the consistency of the data
    *         because it's not loading data itself.
    */
-  boolean exists(URI uri);
+  boolean exists(Storage storage, URI uri);
 
   /**
    * Retrieves the last modification date (time) for the given object.

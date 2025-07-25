@@ -83,4 +83,21 @@ public interface StorageSQLExtensionApi {
    */
   Long saveObject(StorageObject<?> object, BinaryData relationBinaryData);
 
+  /**
+   * Perform a quick check for existence of a given uri.
+   * 
+   * @param uri
+   * @return
+   */
+  boolean exists(URI uri);
+
+  /**
+   * Move the given object inside the object storage.
+   * 
+   * @param uri The uri of the object.
+   * @param targetUri The target uri to move of the object.
+   * @return true if the move was successful.
+   */
+  boolean move(URI uri, URI targetUri);
+
 }

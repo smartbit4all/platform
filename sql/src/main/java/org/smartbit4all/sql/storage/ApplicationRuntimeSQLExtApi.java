@@ -1,5 +1,6 @@
 package org.smartbit4all.sql.storage;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
@@ -31,7 +33,6 @@ import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.sql.storage.StorageSQL.UriInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import static java.util.stream.Collectors.toList;
 
 public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
 
@@ -200,6 +201,47 @@ public class ApplicationRuntimeSQLExtApi implements StorageSQLExtensionApi {
           .build());
     }
     return StorageSQL.FIRST_VERSION;
+  }
+
+  @Override
+  public boolean exists(URI uri) {
+    String uriWithoutVersion = StorageSQL.getUriString(
+        StorageSQL.getUriWithoutVersion(uri));
+    try {
+      return Crud.read(applicationRuntimeDef)
+          .select(applicationRuntimeDef.allProperties())
+          .where(applicationRuntimeDef.uri().eq(uriWithoutVersion))
+          .listData()
+          .size() > 0;
+    } catch (Exception e) {
+      log.error("Failed to check exist for application runtime: " + uri, e);
+      return false;
+    }
+  }
+
+  @Override
+  public boolean move(URI uri, URI targetUri) {
+    String uriWithoutVersion = StorageSQL.getUriString(
+        StorageSQL.getUriWithoutVersion(uri));
+    String targetUriWithoutVersion = StorageSQL.getUriString(
+        StorageSQL.getUriWithoutVersion(targetUri));
+
+    try {
+      Optional<DataRow> applicationRuntimeRow = Crud.read(applicationRuntimeDef)
+          .select(applicationRuntimeDef.allProperties())
+          .where(applicationRuntimeDef.uri().eq(uriWithoutVersion))
+          .firstRow();
+      if (applicationRuntimeRow.isPresent()) {
+        applicationRuntimeRow.get().set(applicationRuntimeDef.uri(), targetUriWithoutVersion);
+        Crud.update(applicationRuntimeRow.get().tableData());
+        return true;
+      }
+    } catch (Exception e) {
+      log.error("Failed to move application runtime: " + uri + " to " + targetUri, e);
+      return false;
+    }
+
+    return false;
   }
 
 }

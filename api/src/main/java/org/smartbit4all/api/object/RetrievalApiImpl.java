@@ -486,7 +486,8 @@ public final class RetrievalApiImpl implements RetrievalApi {
   @Override
   public boolean exists(URI uri, BranchEntry branchEntry) {
     URI uriToRead = getUriToRead(uri, true, branchEntry);
-    return storageApi.getDefaultObjectStorage().exists(uriToRead);
+    Storage storage = storageApi.getStorage(uri);
+    return storageApi.getDefaultObjectStorage().exists(storage, uriToRead);
   }
 
 }
