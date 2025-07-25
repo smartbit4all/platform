@@ -18,11 +18,26 @@ package org.smartbit4all.domain.service.modify;
 
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Expression;
 
 public class DeleteInput<E extends EntityDefinition> extends GenericModifyInput<E> {
 
+  /**
+   * The condition of the delete.
+   */
+  protected Expression where;
+
   public DeleteInput(TableData<E> tableData) {
     super(tableData);
+  }
+
+  public DeleteInput(E entityDefinition, Expression where) {
+    super(entityDefinition);
+    this.where = where;
+  }
+
+  public Expression where() {
+    return where;
   }
 
 }

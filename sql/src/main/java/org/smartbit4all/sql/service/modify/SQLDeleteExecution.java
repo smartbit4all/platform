@@ -96,54 +96,68 @@ public class SQLDeleteExecution<E extends EntityDefinition> {
     delete = new SQLDeleteStatement(tableNode);
 
     // Set the where to have the criterion for the delete.
-    Expression deleteCriterion = null;
 
-    List<PropertyOwned<?>> identifiedBy = input.identifiedBy();
-    final List<Expression> identifierExpressions = new ArrayList<>(identifiedBy.size());
-    for (PropertyOwned<?> property : identifiedBy) {
-      Expression exp = property.eq(null);
-      identifierExpressions.add(exp);
-      if (deleteCriterion == null) {
-        deleteCriterion = exp;
-      } else {
-        deleteCriterion = deleteCriterion.AND(exp);
+    int totalCount = 0;
+
+    if (input.where() != null) {
+      if (input.size() > 0) {
+        throw new IllegalArgumentException(
+            "Cannot use both expression and identifier at the same time for delete operation!");
       }
-    }
+      SQLWhere where = new SQLWhere(input.where());
+      delete.setWhere(where);
+      delete.render(builder);
 
-    // Add the where to the delete statement.
-    SQLWhere where = new SQLWhere(deleteCriterion);
-    delete.setWhere(where);
-    delete.render(builder);
+      SQLPreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, delete);
+      totalCount += jdbcTemplate.update(psc);
+      return new DeleteOutput(totalCount);
+    } else {
+      Expression deleteCriterion = null;
+      List<PropertyOwned<?>> identifiedBy = input.identifiedBy();
+      final List<Expression> identifierExpressions = new ArrayList<>(identifiedBy.size());
+      for (PropertyOwned<?> property : identifiedBy) {
+        Expression exp = property.eq(null);
+        identifierExpressions.add(exp);
+        if (deleteCriterion == null) {
+          deleteCriterion = exp;
+        } else {
+          deleteCriterion = deleteCriterion.AND(exp);
+        }
+      }
 
-    input.start();
+      // Add the where to the delete statement.
+      SQLWhere where = new SQLWhere(deleteCriterion);
+      delete.setWhere(where);
+      delete.render(builder);
 
-    // Handle single row operations (no batching)
-    if (input.size() == 1 ||
-        !SQLBatchUtils.useBatchProcessing(batchExecutionSize)) {
-      int totalCount = 0;
-      for (int row = 0; row < input.size(); row++) {
-        setBindValues(identifierExpressions, row);
-        SQLPreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, delete);
-        totalCount += jdbcTemplate.update(psc);
+      input.start();
+
+      // Handle single row operations (no batching)
+      if (input.size() == 1 ||
+          !SQLBatchUtils.useBatchProcessing(batchExecutionSize)) {
+        for (int row = 0; row < input.size(); row++) {
+          setBindValues(identifierExpressions, row);
+          SQLPreparedStatementCreator psc = new SQLPreparedStatementCreator(builder, delete);
+          totalCount += jdbcTemplate.update(psc);
+        }
+        return new DeleteOutput(totalCount);
+      }
+
+      // Handle batch operations
+      int offset = 0;
+      int remaining = input.size();
+      while (remaining > 0) {
+        int currentBatchSize = Math.min(batchExecutionSize, remaining);
+        int count = executeBatch(builder, identifierExpressions, offset, currentBatchSize);
+        if (count != currentBatchSize) {
+          log.warn("count != currentBatchSize! {} != {}", count, currentBatchSize);
+        }
+        offset += currentBatchSize;
+        remaining -= currentBatchSize;
+        totalCount += count;
       }
       return new DeleteOutput(totalCount);
     }
-
-    // Handle batch operations
-    int totalCount = 0;
-    int offset = 0;
-    int remaining = input.size();
-    while (remaining > 0) {
-      int currentBatchSize = Math.min(batchExecutionSize, remaining);
-      int count = executeBatch(builder, identifierExpressions, offset, currentBatchSize);
-      if (count != currentBatchSize) {
-        log.warn("count != currentBatchSize! {} != {}", count, currentBatchSize);
-      }
-      offset += currentBatchSize;
-      remaining -= currentBatchSize;
-      totalCount += count;
-    }
-    return new DeleteOutput(totalCount);
   }
 
   private void setBindValues(final List<Expression> identifierExpressions, int row) {

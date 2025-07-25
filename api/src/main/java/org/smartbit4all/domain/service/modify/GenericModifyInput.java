@@ -90,6 +90,11 @@ public abstract class GenericModifyInput<E extends EntityDefinition> {
     this.entityDefinition = tableData.entity();
   }
 
+  public GenericModifyInput(E entityDefinition) {
+    super();
+    this.entityDefinition = entityDefinition;
+  }
+
   public List<PropertyOwned<?>> properties() {
     if (properties == null) {
       List<DataColumn<?>> mycolumns = new ArrayList<>(tableData.columns().size());
@@ -156,6 +161,9 @@ public abstract class GenericModifyInput<E extends EntityDefinition> {
   }
 
   public int size() {
+    if (tableData == null) {
+      return 0;
+    }
     return tableData.size();
   }
 

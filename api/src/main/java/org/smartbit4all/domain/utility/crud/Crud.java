@@ -17,6 +17,7 @@ package org.smartbit4all.domain.utility.crud;
 import java.util.Map;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.service.CrudApis;
 import org.smartbit4all.domain.service.modify.CreateInput;
@@ -101,6 +102,25 @@ public class Crud {
     }
 
     return CrudApis.getCrudApi().executeDelete(new DeleteInput<>(tableData));
+
+  }
+
+  /**
+   * Execute a delete immediately based on the tableData parameter.
+   * 
+   * @param <E>
+   * @param where The table data defines the {@link EntityDefinition} and the rows to delete at the
+   *        same time. All row is going to be deleted based using the primary key that must be
+   *        included as column in the table data. The rest of the table data is not used.
+   * @return The result that contains the number of rows affected.
+   */
+  public static <E extends EntityDefinition> DeleteOutput delete(E entityDef,
+      Expression where) {
+    if (where == null) {
+      return DeleteOutput.EMPTY;
+    }
+
+    return CrudApis.getCrudApi().executeDelete(new DeleteInput<>(entityDef, where));
 
   }
 
