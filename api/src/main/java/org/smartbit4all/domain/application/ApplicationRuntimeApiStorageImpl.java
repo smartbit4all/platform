@@ -10,15 +10,18 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
 import org.smartbit4all.api.invocation.bean.ApplicationRuntimeData;
 import org.smartbit4all.api.object.DataSourceContextHolder;
-import org.smartbit4all.api.object.DataSourceContextTemplate;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -28,9 +31,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * The application runtime api implementation via {@link StorageApi}.
@@ -103,7 +110,11 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   private Environment environment;
 
   @Autowired
-  private DataSourceContextTemplate dataSourceContextTemplate;
+  private ObjectApi objectApi;
+
+  @Autowired(required = false)
+  @Lazy
+  protected PlatformTransactionManager transactionManager;
 
   private CountDownLatch maintainLatch = new CountDownLatch(1);
 
@@ -191,9 +202,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     maintainLatch.countDown();
   }
 
-  @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
-      fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}",
-      scheduler = "applicationRuntimeScheduler")
+  @Scheduled(initialDelayString = "${applicationruntime.refreshruntime.initialdelay:30000}",
+      fixedDelayString = "${applicationruntime.refreshruntime.fixeddelay:30000}")
   public void refreshRuntimes() throws InterruptedException, ExecutionException {
     if (storageCluster == null) {
       return;
@@ -203,7 +213,27 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     } catch (InterruptedException e) {
       log.error("Wait for maintain interrupted.", e);
     }
-    DataSourceContextHolder.setSystem();
+    URI lockUri =
+        UriUtils.constructMethodUri(SCHEMA, InvocationRegisterApi.class,
+            "refreshRuntimes");
+    Lock lock = objectApi.getLock(lockUri);
+    if (!lock.tryLock()) {
+      return;
+    }
+    if (transactionManager == null) {
+      // no transactionManager or already in transaction
+      refreshRuntimesInTransaction();
+      return;
+    }
+
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+    transaction
+        .executeWithoutResult(
+            status -> refreshRuntimesInTransaction());
+  }
+
+  private void refreshRuntimesInTransaction() {
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     // If we successfully saved ourself then read all the active runtime we have in this register.
@@ -213,8 +243,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     List<ApplicationRuntimeData> invalidRuntimes = new ArrayList<>();
     Map<UUID, ApplicationRuntime> activeRuntimesMap = new HashMap<>();
     for (ApplicationRuntimeData runtimeData : activeRuntimes) {
-      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 5)
-          && !Objects.equals(runtimeData.getUri(), runtimeUri)) {
+      if (runtimeData.getLastTouchTime() < (currentTimeMillis - getSchedulePeriod() * 5)) {
         // This is an invalid runtime. Remove it from the list and from the set.
         invalidRuntimes.add(runtimeData);
       } else {
