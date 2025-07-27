@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
-    "applicationruntime.maintain.fixeddelay=2000"
+    "applicationruntime.refreshruntime.fixeddelay=2000"
 })
 @MockBean(SessionApi.class)
 public class InvocationApiPrimaryApiRestclientTests {
@@ -56,9 +56,9 @@ public class InvocationApiPrimaryApiRestclientTests {
   @BeforeAll
   public static void setUpBeforeClass(@Autowired StorageApi storageApi,
       @Value("${mockServerPort}") Integer mockServerPort,
-      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString,
-  @Autowired InvocationRegisterApi invocationRegisterApi)
-  throws IOException, InterruptedException {
+      @Value("${applicationruntime.refreshruntime.fixeddelay:5000}") String schedulePeriodString,
+      @Autowired InvocationRegisterApi invocationRegisterApi)
+      throws IOException, InterruptedException {
 
     URI uri = ProviderApiInvocationHandler.uriOf(TestContributionApi.class,
         TestContributionApiImpl.NAME_REMOTE);

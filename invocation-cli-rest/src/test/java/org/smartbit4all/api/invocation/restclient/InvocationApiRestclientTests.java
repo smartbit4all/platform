@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiRestclientTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
-    "applicationruntime.maintain.fixeddelay=2000"
+    "applicationruntime.refreshruntime.fixeddelay=2000"
 })
 @MockBean(SessionApi.class)
 public class InvocationApiRestclientTests {
@@ -59,15 +59,15 @@ public class InvocationApiRestclientTests {
   @BeforeAll
   public static void setUpBeforeClass(@Autowired StorageApi storageApi,
       @Value("${mockServerPort}") Integer mockServerPort,
-      @Value("${applicationruntime.maintain.fixeddelay:5000}") String schedulePeriodString,
-                                      @Autowired InvocationRegisterApi invocationRegisterApi)
-  throws IOException, InterruptedException {
+      @Value("${applicationruntime.refreshruntime.fixeddelay:5000}") String schedulePeriodString,
+      @Autowired InvocationRegisterApi invocationRegisterApi)
+      throws IOException, InterruptedException {
 
     URI uri = ProviderApiInvocationHandler.uriOf(TestApi.class, TestApiImpl.NAME);
     ApplicationRuntimeData runtimeData = new ApplicationRuntimeData().ipAddress("127.0.0.1")
         .serverPort(mockServerPort).uuid(UUID.randomUUID()).startupTime(System.currentTimeMillis())
         .timeOffset(0l).apis(Arrays.asList(uri));
-    
+
     Long maintainDelay = Long.valueOf(schedulePeriodString);
     TestApplicationRuntime.create(storageApi)
         .runtimeOf(runtimeData)
@@ -83,7 +83,8 @@ public class InvocationApiRestclientTests {
       return r;
     });
 
-    System.out.println("Maintain delay: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + maintainDelay);
+    System.out.println(
+        "Maintain delay: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! " + maintainDelay);
     Thread.sleep(maintainDelay * 2);
   }
 

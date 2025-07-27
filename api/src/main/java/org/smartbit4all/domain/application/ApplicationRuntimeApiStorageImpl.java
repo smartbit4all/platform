@@ -31,7 +31,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -113,7 +112,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
   private ObjectApi objectApi;
 
   @Autowired(required = false)
-  @Lazy
   protected PlatformTransactionManager transactionManager;
 
   private CountDownLatch maintainLatch = new CountDownLatch(1);
@@ -199,41 +197,59 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       }
       self.get().getData().setLastTouchTime(currentTimeMillis);
     }
-    maintainLatch.countDown();
   }
 
-  @Scheduled(initialDelayString = "${applicationruntime.refreshruntime.initialdelay:30000}",
-      fixedDelayString = "${applicationruntime.refreshruntime.fixeddelay:30000}")
+  @Scheduled(initialDelayString = "${applicationruntime.refreshruntime.initialdelay:0}",
+      fixedDelayString = "${applicationruntime.refreshruntime.fixeddelay:30000}",
+      scheduler = "applicationRuntimeScheduler")
   public void refreshRuntimes() throws InterruptedException, ExecutionException {
     if (storageCluster == null) {
       return;
     }
-    try {
-      maintainLatch.await();
-    } catch (InterruptedException e) {
-      log.error("Wait for maintain interrupted.", e);
-    }
-    URI lockUri =
-        UriUtils.constructMethodUri(SCHEMA, InvocationRegisterApi.class,
-            "refreshRuntimes");
-    Lock lock = objectApi.getLock(lockUri);
-    if (!lock.tryLock()) {
-      return;
-    }
-    if (transactionManager == null) {
-      // no transactionManager or already in transaction
-      refreshRuntimesInTransaction();
-      return;
-    }
 
-    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
-    transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-    transaction
-        .executeWithoutResult(
-            status -> refreshRuntimesInTransaction());
+    if (runtimes.isEmpty()) {
+      initRuntimes();
+    } else {
+      // cannot use Lock before runtimes are initialized
+      URI lockUri =
+          UriUtils.constructMethodUri(SCHEMA, InvocationRegisterApi.class,
+              "refreshRuntimes");
+      Lock lock = objectApi.getLock(lockUri);
+      lock.lock();
+
+      try {
+        if (transactionManager == null) {
+          // no transactionManager or already in transaction
+          refreshRuntimesInTransaction();
+          return;
+        }
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        transaction
+            .executeWithoutResult(
+                status -> refreshRuntimesInTransaction());
+      } finally {
+        lock.unlock();
+      }
+    }
+  }
+
+  public void initRuntimes() {
+    ApplicationRuntimes applicationRuntimes = collectRuntimes();
+    runtimes = applicationRuntimes.activeRuntimes;
+    maintainLatch.countDown();
   }
 
   private void refreshRuntimesInTransaction() {
+    ApplicationRuntimes applicationRuntimes = collectRuntimes();
+    // Remove the invalid runtimes from the set.
+    for (ApplicationRuntimeData invalidRuntime : applicationRuntimes.invalidRuntimes) {
+      storageCluster.archive(invalidRuntime.getUri());
+    }
+    maintainLatch.countDown();
+  }
+
+  private ApplicationRuntimes collectRuntimes() {
     // TODO sync the times!
     long currentTimeMillis = System.currentTimeMillis();
     // If we successfully saved ourself then read all the active runtime we have in this register.
@@ -251,11 +267,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       }
     }
     // Set the new runtimes. This is an atomic operation there is no need to lock.
-    runtimes = activeRuntimesMap;
-    // Remove the invalid runtimes from the set.
-    for (ApplicationRuntimeData invalidRuntime : invalidRuntimes) {
-      storageCluster.archive(invalidRuntime.getUri());
-    }
+    return new ApplicationRuntimes(activeRuntimesMap, invalidRuntimes);
   }
 
   @Override
@@ -340,5 +352,15 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     return runtimes.get(uuid).getData().getApis();
   }
 
+  private static class ApplicationRuntimes {
+    protected final Map<UUID, ApplicationRuntime> activeRuntimes;
+    protected final List<ApplicationRuntimeData> invalidRuntimes;
 
+    public ApplicationRuntimes(Map<UUID, ApplicationRuntime> activeRuntimes,
+        List<ApplicationRuntimeData> invalidRuntimes) {
+      super();
+      this.activeRuntimes = activeRuntimes;
+      this.invalidRuntimes = invalidRuntimes;
+    }
+  }
 }

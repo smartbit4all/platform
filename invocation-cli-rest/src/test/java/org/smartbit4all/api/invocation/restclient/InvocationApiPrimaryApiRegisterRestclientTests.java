@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @MockServerTest()
 @SpringBootTest(classes = {InvocationApiPrimaryApiRestclientTestConfig.class}, properties = {
-    "applicationruntime.maintain.fixeddelay=2000",
+    "applicationruntime.refreshruntime.fixeddelay=2000",
     "invocationregistry.refresh.fixeddelay=2000"
 })
 @MockBean(SessionApi.class)
@@ -58,7 +58,7 @@ public class InvocationApiPrimaryApiRegisterRestclientTests {
   @Autowired
   private StorageApi storageApi;
 
-  @Value("${applicationruntime.maintain.fixeddelay:5000}")
+  @Value("${applicationruntime.refreshruntime.fixeddelay:5000}")
   private String schedulePeriodString;
 
   @BeforeAll
