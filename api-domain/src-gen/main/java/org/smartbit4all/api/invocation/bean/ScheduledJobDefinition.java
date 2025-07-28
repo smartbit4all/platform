@@ -37,9 +37,11 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the definitions are managed by the InvocationApi.  ")
 @JsonPropertyOrder({
+  ScheduledJobDefinition.URI,
   ScheduledJobDefinition.ID,
   ScheduledJobDefinition.NAME,
   ScheduledJobDefinition.DESCRIPTION,
+  ScheduledJobDefinition.EXECUTION_SCOPE,
   ScheduledJobDefinition.CRON_EXPRESSION,
   ScheduledJobDefinition.PARAMETERS,
   ScheduledJobDefinition.TASK,
@@ -47,6 +49,9 @@ import jakarta.validation.Valid;
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ScheduledJobDefinition {
+  public static final String URI = "uri";
+  private URI uri;
+
   public static final String ID = "id";
   private String id;
 
@@ -55,6 +60,44 @@ public class ScheduledJobDefinition {
 
   public static final String DESCRIPTION = "description";
   private String description;
+
+  /**
+   * Gets or Sets executionScope
+   */
+  public enum ExecutionScopeEnum {
+    CLUSTER("cluster"),
+    
+    NODE("node");
+
+    private String value;
+
+    ExecutionScopeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static ExecutionScopeEnum fromValue(String value) {
+      for (ExecutionScopeEnum b : ExecutionScopeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String EXECUTION_SCOPE = "executionScope";
+  private ExecutionScopeEnum executionScope;
 
   public static final String CRON_EXPRESSION = "cronExpression";
   private String cronExpression;
@@ -69,6 +112,35 @@ public class ScheduledJobDefinition {
   private URI state;
 
   public ScheduledJobDefinition() {
+  }
+
+  public ScheduledJobDefinition uri(URI uri) {
+    
+    this.uri = uri;
+    return this;
+  }
+
+  /**
+   * The uri of the scheduled job designed . 
+   * @return uri
+   */
+  @jakarta.annotation.Nonnull
+  @NotNull
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The uri of the scheduled job designed . ")
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public URI getUri() {
+    return uri;
+  }
+
+
+  @JsonProperty(URI)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setUri(URI uri) {
+    this.uri = uri;
   }
 
   public ScheduledJobDefinition id(String id) {
@@ -152,6 +224,33 @@ public class ScheduledJobDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public ScheduledJobDefinition executionScope(ExecutionScopeEnum executionScope) {
+    
+    this.executionScope = executionScope;
+    return this;
+  }
+
+  /**
+   * Get executionScope
+   * @return executionScope
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(EXECUTION_SCOPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ExecutionScopeEnum getExecutionScope() {
+    return executionScope;
+  }
+
+
+  @JsonProperty(EXECUTION_SCOPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExecutionScope(ExecutionScopeEnum executionScope) {
+    this.executionScope = executionScope;
   }
 
   public ScheduledJobDefinition cronExpression(String cronExpression) {
@@ -283,9 +382,11 @@ public class ScheduledJobDefinition {
       return false;
     }
     ScheduledJobDefinition scheduledJobDefinition = (ScheduledJobDefinition) o;
-    return Objects.equals(this.id, scheduledJobDefinition.id) &&
+    return Objects.equals(this.uri, scheduledJobDefinition.uri) &&
+        Objects.equals(this.id, scheduledJobDefinition.id) &&
         Objects.equals(this.name, scheduledJobDefinition.name) &&
         Objects.equals(this.description, scheduledJobDefinition.description) &&
+        Objects.equals(this.executionScope, scheduledJobDefinition.executionScope) &&
         Objects.equals(this.cronExpression, scheduledJobDefinition.cronExpression) &&
         Objects.equals(this.parameters, scheduledJobDefinition.parameters) &&
         Objects.equals(this.task, scheduledJobDefinition.task) &&
@@ -294,16 +395,18 @@ public class ScheduledJobDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name, description, cronExpression, parameters, task, state);
+    return Objects.hash(uri, id, name, description, executionScope, cronExpression, parameters, task, state);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ScheduledJobDefinition {\n");
+    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
+    sb.append("    executionScope: ").append(toIndentedString(executionScope)).append("\n");
     sb.append("    cronExpression: ").append(toIndentedString(cronExpression)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    task: ").append(toIndentedString(task)).append("\n");
