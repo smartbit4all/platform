@@ -12,6 +12,7 @@ import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.api.view.UiActions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFieldUiConverter {
@@ -40,6 +41,8 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         layoutDefinition.widgets(convertSelectFilter(field));
       } else if (field.getWidgetType().equals(FilterExpressionFieldWidgetType.SELECT_MULTIPLE)) {
         layoutDefinition.widgets(convertSelectMultipleFilter(field));
+      } else if (FilterExpressionFieldWidgetType.TEXT_FIELD_LOOKUP == field.getWidgetType()) {
+        layoutDefinition.widgets(convertLookupFilter(field));
       } else {
         layoutDefinition.addWidgetsItem(
             new SmartWidgetDefinition()
@@ -111,6 +114,21 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         .type(getSelectLayoutTypeFromField(field))
         .label(field.getLabel())
         .placeholder(field.getLabel())
+        .values(field.getPossibleValues()));
+    return result;
+  }
+  
+  private List<SmartWidgetDefinition> convertLookupFilter(final FilterExpressionField field) {
+    List<SmartWidgetDefinition> result = new ArrayList<>();
+    result.add(new SmartWidgetDefinition()
+        .key(EXPRESSION_DATA_SELECTEDVALUES)
+        .type(SmartFormWidgetType.TEXT_FIELD_LOOKUP)
+        .label(field.getLabel())
+        .placeholder(field.getLabel())
+            .toolbarId(field.getExpressionData()
+                           .getOperand1()
+                           .getValueAsString() 
+                       + UiActions.TOOLBAR_SUFFIX)
         .values(field.getPossibleValues()));
     return result;
   }
