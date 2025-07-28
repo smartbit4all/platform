@@ -715,8 +715,10 @@ public class InvocationApiImpl implements InvocationApi {
           StringBuilder sb = new StringBuilder();
           sb.append("Key: ");
           sb.append(e.getKey());
+          sb.append('\n');
           sb.append("Value: ");
           sb.append(ctx.getValueFromContext(List.of(e.getKey())));
+          sb.append('\n');
           return sb.toString();
         })
         .toList().toString();
