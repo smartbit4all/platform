@@ -675,7 +675,15 @@ public class InvocationApiImpl implements InvocationApi {
         // initiate sub context to hide away the additional context objects.
       } else if (item.getRequestDefinition() != null) {
         InvocationRequest invocationRequest = resolve(item.getRequestDefinition(), ctx);
+        if (log.isDebugEnabled()) {
+          log.debug("Resolved invocation request in invocation run is the following: {}",
+              invocationRequest);
+        }
         try {
+          if (log.isDebugEnabled()) {
+            log.debug("Current state of the context object (BEFORE the the request):\n {}",
+                ctxToString(ctx));
+          }
           InvocationParameter resultParameter = invoke(invocationRequest);
           ctx.set(ContextObject.INVOCATION_RESULT, resultParameter.getValue());
           if (item.getRequestDefinition().getApplyResult() != null) {
@@ -684,6 +692,10 @@ public class InvocationApiImpl implements InvocationApi {
             mapping.setFrom(ctx);
             mapping.setTo(ctx);
             mapping.execute();
+            if (log.isDebugEnabled()) {
+              log.debug("Current state of the context object (AFTER the the request):\n {}",
+                  ctxToString(ctx));
+            }
           }
         } catch (Exception e) {
           if (Boolean.TRUE.equals(item.getRequestDefinition().getThrowException())) {
@@ -692,6 +704,22 @@ public class InvocationApiImpl implements InvocationApi {
         }
       }
     }
+  }
+
+  String ctxToString(ContextObject ctx) {
+    return ctx
+        .getItems()
+        .entrySet()
+        .stream()
+        .map(e -> {
+          StringBuilder sb = new StringBuilder();
+          sb.append("Key: ");
+          sb.append(e.getKey());
+          sb.append("Value: ");
+          sb.append(ctx.getValueFromContext(List.of(e.getKey())));
+          return sb.toString();
+        })
+        .toList().toString();
   }
 
 }
