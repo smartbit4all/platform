@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.net.URI;
 import java.time.OffsetDateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -28,99 +29,65 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * InvocationScheduledJobState
+ * RuntimeSchedule
  */
 @JsonPropertyOrder({
-  InvocationScheduledJobState.STATE,
-  InvocationScheduledJobState.NEXT_SCHEDULED_AT
+  RuntimeSchedule.RUNTIME,
+  RuntimeSchedule.NEXT_SCHEDULED_AT
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class InvocationScheduledJobState {
-  /**
-   * The state of the scheduled job. 
-   */
-  public enum StateEnum {
-    SCHEDULED("SCHEDULED"),
-    
-    RUNNING("RUNNING");
-
-    private String value;
-
-    StateEnum(String value) {
-      this.value = value;
-    }
-
-    @JsonValue
-    public String getValue() {
-      return value;
-    }
-
-    @Override
-    public String toString() {
-      return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static StateEnum fromValue(String value) {
-      for (StateEnum b : StateEnum.values()) {
-        if (b.value.equals(value)) {
-          return b;
-        }
-      }
-      throw new IllegalArgumentException("Unexpected value '" + value + "'");
-    }
-  }
-
-  public static final String STATE = "state";
-  private StateEnum state;
+public class RuntimeSchedule {
+  public static final String RUNTIME = "runtime";
+  private URI runtime;
 
   public static final String NEXT_SCHEDULED_AT = "nextScheduledAt";
   private OffsetDateTime nextScheduledAt;
 
-  public InvocationScheduledJobState() {
+  public RuntimeSchedule() {
   }
 
-  public InvocationScheduledJobState state(StateEnum state) {
+  public RuntimeSchedule runtime(URI runtime) {
     
-    this.state = state;
+    this.runtime = runtime;
     return this;
   }
 
   /**
-   * The state of the scheduled job. 
-   * @return state
+   * Get runtime
+   * @return runtime
    */
   @jakarta.annotation.Nullable
+  @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The state of the scheduled job. ")
-  @JsonProperty(STATE)
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(RUNTIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public StateEnum getState() {
-    return state;
+  public URI getRuntime() {
+    return runtime;
   }
 
 
-  @JsonProperty(STATE)
+  @JsonProperty(RUNTIME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setState(StateEnum state) {
-    this.state = state;
+  public void setRuntime(URI runtime) {
+    this.runtime = runtime;
   }
 
-  public InvocationScheduledJobState nextScheduledAt(OffsetDateTime nextScheduledAt) {
+  public RuntimeSchedule nextScheduledAt(OffsetDateTime nextScheduledAt) {
     
     this.nextScheduledAt = nextScheduledAt;
     return this;
   }
 
   /**
-   * Human readable name of the scheduled job.
+   * Get nextScheduledAt
    * @return nextScheduledAt
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Human readable name of the scheduled job.")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(NEXT_SCHEDULED_AT)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
@@ -143,21 +110,21 @@ public class InvocationScheduledJobState {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InvocationScheduledJobState invocationScheduledJobState = (InvocationScheduledJobState) o;
-    return Objects.equals(this.state, invocationScheduledJobState.state) &&
-        Objects.equals(this.nextScheduledAt, invocationScheduledJobState.nextScheduledAt);
+    RuntimeSchedule runtimeSchedule = (RuntimeSchedule) o;
+    return Objects.equals(this.runtime, runtimeSchedule.runtime) &&
+        Objects.equals(this.nextScheduledAt, runtimeSchedule.nextScheduledAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(state, nextScheduledAt);
+    return Objects.hash(runtime, nextScheduledAt);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class InvocationScheduledJobState {\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("class RuntimeSchedule {\n");
+    sb.append("    runtime: ").append(toIndentedString(runtime)).append("\n");
     sb.append("    nextScheduledAt: ").append(toIndentedString(nextScheduledAt)).append("\n");
     sb.append("}");
     return sb.toString();

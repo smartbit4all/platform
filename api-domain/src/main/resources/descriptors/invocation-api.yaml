@@ -910,11 +910,16 @@ components:
           type: string
     ScheduledJobDefinition:
       type: object
-      required: [id, name, schedule, task]
+      required: [uri, id, name, task]
       description: |
         The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the
         definitions are managed by the InvocationApi. 
       properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The uri of the scheduled job designed .
         id:
           type: string
           description: |
@@ -925,6 +930,8 @@ components:
         description:
           type: string
           description: Human-readable description of the scheduled job.
+        executionScope:
+          enum: [cluster, node]
         cronExpression:
           type: string
           description: |
@@ -938,18 +945,66 @@ components:
         state:
           type: string
           format: uri
-    InvocationScheduledJobState:
+    ScheduledJobState:
+      description: |
+        The state contains all the information necessary to calculate the scheduling actions of a node. If the state is changing then a short 
+        lock will be placed to prevent the concurrent modification. 
       type: object
-      required: [id, name, schedule, task]
+      required: [uri, instances, runtimeSchedules]
       properties:
-        state:
-          enum: [SCHEDULED, RUNNING]
+        uri:
+          type: string
+          format: uri
+        instances:
           description: |
-            The state of the scheduled job.
+            The actively running instances of the scheduled jobs.
+          type: array
+          items:
+            type: string
+            format: uri
         nextScheduledAt:
           type: string
           format: date-time
-          description: Human readable name of the scheduled job.
+        runtimeSchedules:
+          description: Need a cleanup logic to remove invalid runtimes.
+          type: array
+          items:
+            $ref: '#/components/schemas/RuntimeSchedule'
+    RuntimeSchedule:
+      type: object
+      required: [id, name, schedule, task]
+      properties:
+        runtime:
+          type: string
+          format: uri
+        nextScheduledAt:
+          type: string
+          format: date-time
+    ScheduledJobInstance:
+      type: object
+      required: [id, name, schedule, task]
+      properties:
+        uri:
+          type: string
+          format: uri
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+        progress:
+          type: number
+          format: float
+        progressMessage:
+          type: string
+        errorMessage:
+          type: string
+        runtime:
+          type: string
+          format: uri
+        threadName:
+          type: string
     JobParameter:
       type: object
       required: [type]
