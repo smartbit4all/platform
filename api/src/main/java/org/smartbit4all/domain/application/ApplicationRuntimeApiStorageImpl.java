@@ -242,6 +242,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
 
   private void refreshRuntimesInTransaction() {
     ApplicationRuntimes applicationRuntimes = collectRuntimes();
+    runtimes = applicationRuntimes.activeRuntimes;
     // Remove the invalid runtimes from the set.
     for (ApplicationRuntimeData invalidRuntime : applicationRuntimes.invalidRuntimes) {
       storageCluster.archive(invalidRuntime.getUri());
