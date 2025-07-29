@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -475,16 +474,17 @@ public class InvocationApiImpl implements InvocationApi {
       throws ScriptException {
     Objects.requireNonNull(scriptEngine, "scriptEngine cannot be null!");
     Objects.requireNonNull(script, "script cannot be null!");
-
-    final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    // TODO memoization candidate, check scrintEngine, script, contextObjects and inputParams to
+    // avoid unnecessary engine.eval() call
+    ScriptEngine engine = scriptEngineMgmtApi.getEngine(scriptEngine);
+    Bindings globalBindings = engine.createBindings();
     if (contextObjects != null && !contextObjects.isEmpty()) {
-      contextObjects.forEach(scriptEngineManager::put);
+      contextObjects.forEach(globalBindings::put);
     }
     if (inputParams != null && !inputParams.isEmpty()) {
-      inputParams.forEach(scriptEngineManager::put);
+      inputParams.forEach(globalBindings::put);
     }
-
-    ScriptEngine engine = scriptEngineManager.getEngineByName(scriptEngine);
+    engine.setBindings(globalBindings, ScriptContext.GLOBAL_SCOPE);
     return engine.eval(script);
   }
 
