@@ -50,38 +50,54 @@ public class LookupApiImpl implements LookupApi {
         filterExpressionBuilderApi.getFilterExpressionFieldList(viewUuid, filterId);
     if (filterFields != null) {
       FilterExpressionField affectedSubjectsField = filterFields.getFilters().stream()
+          .filter(field -> field != null
+              && field.getExpressionData() != null
+              && field.getExpressionData().getOperand1() != null)
           .filter(field -> identifier
               .equals(field.getExpressionData().getOperand1().getValueAsString()))
           .findFirst()
           .orElse(null);
-      if (affectedSubjectsField != null
-          && affectedSubjectsField.getExpressionData() != null
-          && affectedSubjectsField.getExpressionData().getOperand2() != null) {
-        List<Object> selectedObjects =
-            affectedSubjectsField.getExpressionData().getOperand2().getSelectedObjects();
-        if (selectedObjects == null) {
-          selectedObjects = new ArrayList<>();
-          affectedSubjectsField.getExpressionData().getOperand2()
-              .setSelectedObjects(selectedObjects);
-        }
-        List<URI> existingSubjects = selectedObjects.stream()
-            .map(value -> objectApi.asType(GenericValue.class, value).getUri())
-            .map(objectApi::getLatestUri)
-            .collect(toList());
-        List<Object> newSelection = subjects.stream()
-            .map(Subject::getRef)
-            .map(objectApi::getLatestUri)
-            .filter(uri -> !existingSubjects.contains(uri))
-            .map(uri -> {
-              ObjectNode objNode = objectApi.load(uri);
-              return new GenericValue()
-                  .uri(uri)
-                  .name(objNode.getValueAsString("name"));
-              // OrganizationUnit.NAME, User.NAME
-            })
-            .collect(toList());
-        selectedObjects.addAll(newSelection);
+      setSelectedSubjects(affectedSubjectsField, subjects);
+    }
+    FilterExpressionField selectedField =
+        filterExpressionBuilderApi.getSelectedFilterExpressionField(viewUuid, filterId);
+    if (selectedField != null
+        && selectedField.getExpressionData() != null
+        && selectedField.getExpressionData().getOperand1() != null
+        && identifier.equals(selectedField.getExpressionData().getOperand1().getValueAsString())) {
+      setSelectedSubjects(selectedField, subjects);
+    }
+  }
+
+  private void setSelectedSubjects(FilterExpressionField filterField,
+      List<Subject> subjects) {
+    if (filterField != null
+        && filterField.getExpressionData() != null
+        && filterField.getExpressionData().getOperand2() != null) {
+      List<Object> selectedObjects =
+          filterField.getExpressionData().getOperand2().getSelectedObjects();
+      if (selectedObjects == null) {
+        selectedObjects = new ArrayList<>();
+        filterField.getExpressionData().getOperand2()
+            .setSelectedObjects(selectedObjects);
       }
+      List<URI> existingSubjects = selectedObjects.stream()
+          .map(value -> objectApi.asType(GenericValue.class, value).getUri())
+          .map(objectApi::getLatestUri)
+          .collect(toList());
+      List<Object> newSelection = subjects.stream()
+          .map(Subject::getRef)
+          .map(objectApi::getLatestUri)
+          .filter(uri -> !existingSubjects.contains(uri))
+          .map(uri -> {
+            ObjectNode objNode = objectApi.load(uri);
+            return new GenericValue()
+                .uri(uri)
+                .name(objNode.getValueAsString("name"));
+            // OrganizationUnit.NAME, User.NAME
+          })
+          .collect(toList());
+      selectedObjects.addAll(newSelection);
     }
   }
 

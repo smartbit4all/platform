@@ -12,7 +12,6 @@ import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
-import org.smartbit4all.api.view.UiActions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFieldUiConverter {
@@ -22,6 +21,9 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
 
   public static final String EXPRESSION_DATA_SELECTEDVALUES =
       "expressionData.operand2.selectedValues";
+
+  public static final String EXPRESSION_DATA_SELECTEDOBJECTS =
+      "expressionData.operand2.selectedObjects";
 
   @Autowired
   private LocaleSettingApi localeSettingApi;
@@ -48,8 +50,7 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
             new SmartWidgetDefinition()
                 .key(EXPRESSION_DATA_OPERAND2)
                 .type(getLayoutTypeFromField(field))
-                .label(field.getLabel())
-                .placeholder(field.getLabel()));
+                .label(field.getLabel()));
       }
       layoutDefinition.addWidgetsItem(getPossibleOperations(field));
     }
@@ -85,13 +86,11 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
     return new ArrayList<>(Arrays.asList(new SmartWidgetDefinition()
         .key(EXPRESSION_DATA_OPERAND2)
         .type(getLayoutTypeFromField(field))
-        .label(field.getLabel2() != null ? field.getLabel2() : field.getLabel())
-        .placeholder(field.getLabel2() != null ? field.getLabel2() : field.getLabel()),
+        .label(field.getLabel2() != null ? field.getLabel2() : field.getLabel()),
         new SmartWidgetDefinition()
             .key("expressionData.operand3.valueAsString")
             .type(getLayoutTypeFromField(field))
-            .label(field.getLabel3() != null ? field.getLabel3() : field.getLabel())
-            .placeholder(field.getLabel3() != null ? field.getLabel3() : field.getLabel())));
+            .label(field.getLabel3() != null ? field.getLabel3() : field.getLabel())));
   }
 
   private List<SmartWidgetDefinition> convertSelectMultipleFilter(FilterExpressionField field) {
@@ -101,7 +100,6 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         .key(EXPRESSION_DATA_SELECTEDVALUES)
         .type(getSelectLayoutTypeFromField(field))
         .label(field.getLabel())
-        .placeholder(field.getLabel())
         .values(field.getPossibleValues()));
     return result;
   }
@@ -113,23 +111,19 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         .key(EXPRESSION_DATA_OPERAND2)
         .type(getSelectLayoutTypeFromField(field))
         .label(field.getLabel())
-        .placeholder(field.getLabel())
         .values(field.getPossibleValues()));
     return result;
   }
-  
+
   private List<SmartWidgetDefinition> convertLookupFilter(final FilterExpressionField field) {
     List<SmartWidgetDefinition> result = new ArrayList<>();
+
+    field.getExpressionData().getOperand2().getSelectedObjects();
     result.add(new SmartWidgetDefinition()
-        .key(EXPRESSION_DATA_SELECTEDVALUES)
+        .key(EXPRESSION_DATA_SELECTEDOBJECTS)
         .type(SmartFormWidgetType.TEXT_FIELD_LOOKUP)
         .label(field.getLabel())
-        .placeholder(field.getLabel())
-            .toolbarId(field.getExpressionData()
-                           .getOperand1()
-                           .getValueAsString() 
-                       + UiActions.TOOLBAR_SUFFIX)
-        .values(field.getPossibleValues()));
+        .toolbarId(field.getToolbarId()));
     return result;
   }
 

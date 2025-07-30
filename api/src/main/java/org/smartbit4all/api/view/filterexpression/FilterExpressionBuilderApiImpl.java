@@ -169,6 +169,12 @@ public class FilterExpressionBuilderApiImpl implements FilterExpressionBuilderAp
     return model.getModel().getWorkplaceList();
   }
 
+  @Override
+  public FilterExpressionField getSelectedFilterExpressionField(UUID viewUuid,
+      String filterId) {
+    FilterExpressionBuilderUiModel model = getModel(viewUuid, filterId);
+    return model.getSelectedField();
+  }
 
   @Override
   public FilterExpressionList getFilterExpressionList(UUID viewUuid, String filterId) {

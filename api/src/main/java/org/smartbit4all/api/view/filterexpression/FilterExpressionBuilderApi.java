@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
+import org.smartbit4all.api.filterexpression.bean.FilterExpressionField;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -22,6 +23,8 @@ public interface FilterExpressionBuilderApi {
 
 
   FilterExpressionFieldList getFilterExpressionFieldList(UUID viewUuid, String filterId);
+
+  FilterExpressionField getSelectedFilterExpressionField(UUID viewUuid, String filterId);
 
   FilterExpressionList getFilterExpressionList(UUID viewUuid, String filterId);
 
