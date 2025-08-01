@@ -16,6 +16,7 @@ import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.ApplicationSetup;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.UriUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<Applicatio
 
   @Autowired
   private CollectionApi collectionApi;
+
+  @Autowired(required = false)
+  private SessionManagementApi sessionManagementApi;
 
   public ApplicationSetupManagementApiImpl() {
     super(ApplicationSetupApi.class);
@@ -66,6 +70,7 @@ public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<Applicatio
           .sorted((e1, e2) -> setupPreRequisites.get(e1.getKey()).contains(e2.getKey()) ? 1 : 0)
           .map(Entry::getValue).collect(toList());
       for (ApplicationSetupApi setupApi : sortedList) {
+        tryEnsureTechnicalSession();
         try {
           URI uri = objectApi.saveAsNew(MasterDataManagementApi.SCHEMA,
               new ApplicationSetup().data(setupApi.getData()));
@@ -77,6 +82,16 @@ public class ApplicationSetupManagementApiImpl extends PrimaryApiImpl<Applicatio
       }
     } finally {
       lock.unlock();
+    }
+  }
+
+  private void tryEnsureTechnicalSession() {
+    if (sessionManagementApi != null) {
+      try {
+        sessionManagementApi.startTechnicalSession();
+      } catch (final Exception e) {
+        log.error("Could not start technical session: {}", e.getMessage(), e);
+      }
     }
   }
 }
