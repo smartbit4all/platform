@@ -1,5 +1,6 @@
 package org.smartbit4all.api.geomap.restserver;
 
+import java.util.UUID;
 import org.smartbit4all.api.geomap.bean.GeoMapChange;
 import org.smartbit4all.api.geomap.bean.GeoMapInteraction;
 import org.smartbit4all.api.geomap.bean.GeoMapModel;
@@ -10,8 +11,6 @@ import org.smartbit4all.api.view.bean.ViewContextChange;
 import org.smartbit4all.api.view.geomap.GeoMapApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-
-import java.util.UUID;
 
 public class GeoMapApiDelegateImpl implements GeoMapApiDelegate {
 
@@ -47,6 +46,6 @@ public class GeoMapApiDelegateImpl implements GeoMapApiDelegate {
     return ResponseEntity.ok(viewContextService.performViewCall(() -> {
       geoMapApi.interact(uuid, identifier, geoMapInteraction);
       return null;
-    }, "geoMapInteract"));
+    }, "geoMapInteract", uuid));
   }
 }

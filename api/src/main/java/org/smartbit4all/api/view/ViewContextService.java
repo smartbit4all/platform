@@ -170,7 +170,7 @@ public interface ViewContextService {
    */
   ViewContextChange performDataChanged(UUID viewUuid, DataChange event);
 
-  ViewContextChange performViewCall(ViewCall viewCall, String methodName);
+  ViewContextChange performViewCall(ViewCall viewCall, String methodName, UUID viewUuid);
 
   void setClientPageModelFromRequest(UUID viewUuid, String widgetId, String nodeId,
       UiActionRequest request);

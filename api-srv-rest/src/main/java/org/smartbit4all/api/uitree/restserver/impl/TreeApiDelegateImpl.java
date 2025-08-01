@@ -35,7 +35,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.collapseNode(treeState, nodeId)),
-            "collapseNode"));
+            "collapseNode", viewUuid));
   }
 
   @Override
@@ -52,7 +52,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.expandNode(treeState, nodeId)),
-            "expandNode"));
+            "expandNode", viewUuid));
   }
 
   @Override
@@ -69,7 +69,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.getChildrenNodes(treeState, nodeId)),
-            "getChildrenNodes"));
+            "getChildrenNodes", viewUuid));
   }
 
   @Override
@@ -86,7 +86,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.getMainActions(treeState)),
-            "getMainActions"));
+            "getMainActions", viewUuid));
   }
 
   @Override
@@ -103,7 +103,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.getRootNodes(treeState)),
-            "getRootNodes"));
+            "getRootNodes", viewUuid));
   }
 
   @Override
@@ -122,7 +122,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.performAction(treeState, nodeId, request),
                 false),
-            "performMainAction"));
+            "performMainAction", viewUuid));
   }
 
   @Override
@@ -141,7 +141,7 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.performAction(treeState, null, request),
                 false),
-            "performMainAction"));
+            "performMainAction", viewUuid));
   }
 
   @Override
@@ -158,6 +158,6 @@ public class TreeApiDelegateImpl implements TreeApiDelegate {
         viewContextService.performViewCall(
             () -> treeApi.executeTreeCall(viewUuid, treeId,
                 treeState -> treeApi.selectNode(treeState, nodeId)),
-            "selectNode"));
+            "selectNode", viewUuid));
   }
 }

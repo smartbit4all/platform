@@ -59,7 +59,7 @@ public class GridApiDelegateImpl implements GridApiDelegate {
           gridModelApi.selectRow(
               uuid, gridId, rowId, Boolean.TRUE == selected);
           return null;
-        }, "gridSelectRow"));
+        }, "gridSelectRow", uuid));
   }
 
   @Override
@@ -70,7 +70,7 @@ public class GridApiDelegateImpl implements GridApiDelegate {
           gridModelApi.selectRows(
               uuid, gridId, gridSelectionChange);
           return null;
-        }, "gridSelectRows"));
+        }, "gridSelectRows", uuid));
   }
 
   @Override
@@ -81,7 +81,7 @@ public class GridApiDelegateImpl implements GridApiDelegate {
           gridModelApi.selectAllRow(uuid, gridId, Boolean.TRUE == selected);
           return null;
         },
-        "gridSelectAllRow"));
+        "gridSelectAllRow", uuid));
   }
 
 }

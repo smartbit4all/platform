@@ -412,7 +412,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   public ViewContextChange handleMessage(UUID viewUuid, UUID messageUuid,
       MessageResult messageResult) {
     return performViewCall(() -> handleMessageInternal(viewUuid, messageUuid, messageResult),
-        "handleMessage");
+        "handleMessage", viewUuid);
   }
 
   private Object handleMessageInternal(UUID viewUuid, UUID messageUuid,
@@ -718,7 +718,7 @@ public class ViewContextServiceImpl implements ViewContextService {
   @Override
   public ViewContextChange getComponentModel2(UUID viewUuid) {
     ViewContextChange result = performViewCall(
-        () -> getComponentModel(viewUuid), "getComponentModel2");
+        () -> getComponentModel(viewUuid), "getComponentModel2", viewUuid);
     ComponentModelChange change = result.getChanges().stream()
         .filter(ch -> viewUuid.equals(ch.getUuid()))
         .findFirst().orElse(null);
@@ -1164,7 +1164,13 @@ public class ViewContextServiceImpl implements ViewContextService {
   }
 
   @Override
-  public ViewContextChange performViewCall(ViewCall viewCall, String methodName) {
+  public ViewContextChange performViewCall(ViewCall viewCall, String methodName, UUID viewUuid) {
+    final View view = getViewFromCurrentSession(viewUuid);
+    startServerRequest(new ServerRequestTrack()
+        .startTime(OffsetDateTime.now())
+        .type(ServerRequestType.WIDGET_ACTION)
+        .viewUuid(viewUuid)
+        .viewName(view.getViewName()));
     ObjectNode before = beforeInvoke(methodName);
     Object result;
     try {
@@ -1214,7 +1220,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     // notify data listeners, calculate changes during data change processing and return
     return performViewCall(() -> {
       return null;
-    }, "performDataChanged");
+    }, "performDataChanged", viewUuid);
   }
 
   /**
