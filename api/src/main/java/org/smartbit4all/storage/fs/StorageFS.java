@@ -21,10 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
@@ -51,7 +47,6 @@ import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
-import org.smartbit4all.domain.data.storage.StorageConfigurationProperties;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.smartbit4all.domain.data.storage.StorageObject.StorageObjectOperation;
@@ -111,9 +106,6 @@ public class StorageFS extends ObjectStorageImpl {
    */
   private static final String SO_TRANSACTIONFILEEXTENSION = ".t";
 
-
-  private static final ExecutorService LOAD_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
-
   /**
    * The transaction manager (there must be only one in one application) that is configured. Used to
    * identify if there is an active transaction initiated on the current {@link Thread}. The lock of
@@ -129,10 +121,6 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Autowired
   private BlobObjectStorageAccessApi storageAccessApi;
-
-  @Autowired(required = false)
-  private StorageConfigurationProperties configProperties;
-  private int parallelLoadThreshold = -1;
 
   @Autowired
   @Lazy
@@ -588,63 +576,6 @@ public class StorageFS extends ObjectStorageImpl {
       return null;
     }
     return storageObjectDataFile.lastModified();
-  }
-
-  @Override
-  public List<StorageObject<?>> loadBatch(Storage storage, List<URI> uris,
-      StorageLoadOption... options) {
-    if (!reachesParallelLoadThreshold(uris)) {
-      return super.loadBatch(storage, uris, options);
-    }
-
-    @SuppressWarnings({"rawtypes"})
-    final List<Future<StorageObject>> fs = uris.stream()
-        .map(uri -> LOAD_EXECUTOR.submit(() -> (StorageObject) load(storage, uri, options)))
-        .toList();
-    final List<StorageObject<?>> res = new ArrayList<>();
-    try {
-      for (final var f : fs) {
-        res.add(f.get());
-      }
-      return res;
-    } catch (final InterruptedException | ExecutionException e) {
-      log.error(e.getMessage(), e);
-      return new ArrayList<>();
-    }
-  }
-
-  @Override
-  public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
-      StorageLoadOption... options) {
-    if (!reachesParallelLoadThreshold(uris)) {
-      return super.loadBatch(storage, uris, clazz, options);
-    }
-
-    final List<Future<StorageObject<T>>> fs = uris.stream()
-        .map(uri -> LOAD_EXECUTOR.submit(() -> load(storage, uri, clazz, options)))
-        .toList();
-    final List<StorageObject<T>> res = new ArrayList<>();
-    try {
-      for (final var f : fs) {
-        res.add(f.get());
-      }
-      return res;
-    } catch (final InterruptedException | ExecutionException e) {
-      log.error(e.getMessage(), e);
-      return new ArrayList<>();
-    }
-  }
-
-  private boolean reachesParallelLoadThreshold(Collection<? extends Object> c) {
-    if (parallelLoadThreshold < 0) {
-      if (configProperties != null && configProperties.fs() != null) {
-        parallelLoadThreshold = configProperties.fs().parallelLoadThreshold();
-      } else {
-        parallelLoadThreshold = 0;
-      }
-    }
-
-    return c != null && c.size() >= parallelLoadThreshold;
   }
 
   @Override
