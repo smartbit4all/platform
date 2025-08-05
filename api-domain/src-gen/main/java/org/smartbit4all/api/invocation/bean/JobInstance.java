@@ -29,22 +29,30 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * ScheduledJobInstance
+ * JobInstance
  */
 @JsonPropertyOrder({
-  ScheduledJobInstance.URI,
-  ScheduledJobInstance.STARTED_AT,
-  ScheduledJobInstance.FINISHED_AT,
-  ScheduledJobInstance.PROGRESS,
-  ScheduledJobInstance.PROGRESS_MESSAGE,
-  ScheduledJobInstance.ERROR_MESSAGE,
-  ScheduledJobInstance.RUNTIME,
-  ScheduledJobInstance.THREAD_NAME
+  JobInstance.URI,
+  JobInstance.CREATED_AT,
+  JobInstance.RESERVED_AT,
+  JobInstance.STARTED_AT,
+  JobInstance.FINISHED_AT,
+  JobInstance.PROGRESS,
+  JobInstance.PROGRESS_MESSAGE,
+  JobInstance.ERROR_MESSAGE,
+  JobInstance.RUNTIME,
+  JobInstance.THREAD_NAME
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class ScheduledJobInstance {
+public class JobInstance {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String CREATED_AT = "createdAt";
+  private OffsetDateTime createdAt;
+
+  public static final String RESERVED_AT = "reservedAt";
+  private OffsetDateTime reservedAt;
 
   public static final String STARTED_AT = "startedAt";
   private OffsetDateTime startedAt;
@@ -67,10 +75,10 @@ public class ScheduledJobInstance {
   public static final String THREAD_NAME = "threadName";
   private String threadName;
 
-  public ScheduledJobInstance() {
+  public JobInstance() {
   }
 
-  public ScheduledJobInstance uri(URI uri) {
+  public JobInstance uri(URI uri) {
     
     this.uri = uri;
     return this;
@@ -80,12 +88,13 @@ public class ScheduledJobInstance {
    * Get uri
    * @return uri
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getUri() {
     return uri;
@@ -93,12 +102,68 @@ public class ScheduledJobInstance {
 
 
   @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
   }
 
-  public ScheduledJobInstance startedAt(OffsetDateTime startedAt) {
+  public JobInstance createdAt(OffsetDateTime createdAt) {
+    
+    this.createdAt = createdAt;
+    return this;
+  }
+
+  /**
+   * Get createdAt
+   * @return createdAt
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+
+  @JsonProperty(CREATED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public JobInstance reservedAt(OffsetDateTime reservedAt) {
+    
+    this.reservedAt = reservedAt;
+    return this;
+  }
+
+  /**
+   * Get reservedAt
+   * @return reservedAt
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(RESERVED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public OffsetDateTime getReservedAt() {
+    return reservedAt;
+  }
+
+
+  @JsonProperty(RESERVED_AT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setReservedAt(OffsetDateTime reservedAt) {
+    this.reservedAt = reservedAt;
+  }
+
+  public JobInstance startedAt(OffsetDateTime startedAt) {
     
     this.startedAt = startedAt;
     return this;
@@ -108,12 +173,13 @@ public class ScheduledJobInstance {
    * Get startedAt
    * @return startedAt
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(STARTED_AT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public OffsetDateTime getStartedAt() {
     return startedAt;
@@ -121,12 +187,12 @@ public class ScheduledJobInstance {
 
 
   @JsonProperty(STARTED_AT)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setStartedAt(OffsetDateTime startedAt) {
     this.startedAt = startedAt;
   }
 
-  public ScheduledJobInstance finishedAt(OffsetDateTime finishedAt) {
+  public JobInstance finishedAt(OffsetDateTime finishedAt) {
     
     this.finishedAt = finishedAt;
     return this;
@@ -154,7 +220,7 @@ public class ScheduledJobInstance {
     this.finishedAt = finishedAt;
   }
 
-  public ScheduledJobInstance progress(Float progress) {
+  public JobInstance progress(Float progress) {
     
     this.progress = progress;
     return this;
@@ -181,7 +247,7 @@ public class ScheduledJobInstance {
     this.progress = progress;
   }
 
-  public ScheduledJobInstance progressMessage(String progressMessage) {
+  public JobInstance progressMessage(String progressMessage) {
     
     this.progressMessage = progressMessage;
     return this;
@@ -208,7 +274,7 @@ public class ScheduledJobInstance {
     this.progressMessage = progressMessage;
   }
 
-  public ScheduledJobInstance errorMessage(String errorMessage) {
+  public JobInstance errorMessage(String errorMessage) {
     
     this.errorMessage = errorMessage;
     return this;
@@ -235,7 +301,7 @@ public class ScheduledJobInstance {
     this.errorMessage = errorMessage;
   }
 
-  public ScheduledJobInstance runtime(URI runtime) {
+  public JobInstance runtime(URI runtime) {
     
     this.runtime = runtime;
     return this;
@@ -245,12 +311,13 @@ public class ScheduledJobInstance {
    * Get runtime
    * @return runtime
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(RUNTIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public URI getRuntime() {
     return runtime;
@@ -258,12 +325,12 @@ public class ScheduledJobInstance {
 
 
   @JsonProperty(RUNTIME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setRuntime(URI runtime) {
     this.runtime = runtime;
   }
 
-  public ScheduledJobInstance threadName(String threadName) {
+  public JobInstance threadName(String threadName) {
     
     this.threadName = threadName;
     return this;
@@ -273,11 +340,12 @@ public class ScheduledJobInstance {
    * Get threadName
    * @return threadName
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
   @JsonProperty(THREAD_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public String getThreadName() {
     return threadName;
@@ -285,7 +353,7 @@ public class ScheduledJobInstance {
 
 
   @JsonProperty(THREAD_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setThreadName(String threadName) {
     this.threadName = threadName;
   }
@@ -298,27 +366,31 @@ public class ScheduledJobInstance {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ScheduledJobInstance scheduledJobInstance = (ScheduledJobInstance) o;
-    return Objects.equals(this.uri, scheduledJobInstance.uri) &&
-        Objects.equals(this.startedAt, scheduledJobInstance.startedAt) &&
-        Objects.equals(this.finishedAt, scheduledJobInstance.finishedAt) &&
-        Objects.equals(this.progress, scheduledJobInstance.progress) &&
-        Objects.equals(this.progressMessage, scheduledJobInstance.progressMessage) &&
-        Objects.equals(this.errorMessage, scheduledJobInstance.errorMessage) &&
-        Objects.equals(this.runtime, scheduledJobInstance.runtime) &&
-        Objects.equals(this.threadName, scheduledJobInstance.threadName);
+    JobInstance jobInstance = (JobInstance) o;
+    return Objects.equals(this.uri, jobInstance.uri) &&
+        Objects.equals(this.createdAt, jobInstance.createdAt) &&
+        Objects.equals(this.reservedAt, jobInstance.reservedAt) &&
+        Objects.equals(this.startedAt, jobInstance.startedAt) &&
+        Objects.equals(this.finishedAt, jobInstance.finishedAt) &&
+        Objects.equals(this.progress, jobInstance.progress) &&
+        Objects.equals(this.progressMessage, jobInstance.progressMessage) &&
+        Objects.equals(this.errorMessage, jobInstance.errorMessage) &&
+        Objects.equals(this.runtime, jobInstance.runtime) &&
+        Objects.equals(this.threadName, jobInstance.threadName);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, startedAt, finishedAt, progress, progressMessage, errorMessage, runtime, threadName);
+    return Objects.hash(uri, createdAt, reservedAt, startedAt, finishedAt, progress, progressMessage, errorMessage, runtime, threadName);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ScheduledJobInstance {\n");
+    sb.append("class JobInstance {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    createdAt: ").append(toIndentedString(createdAt)).append("\n");
+    sb.append("    reservedAt: ").append(toIndentedString(reservedAt)).append("\n");
     sb.append("    startedAt: ").append(toIndentedString(startedAt)).append("\n");
     sb.append("    finishedAt: ").append(toIndentedString(finishedAt)).append("\n");
     sb.append("    progress: ").append(toIndentedString(progress)).append("\n");

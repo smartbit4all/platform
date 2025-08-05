@@ -25,7 +25,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.JobParameter;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -33,24 +32,27 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the definitions are managed by the InvocationApi.  
+ * The scheduled job definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the definitions are managed by the InvocationApi.  
  */
-@Schema(description = "The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the definitions are managed by the InvocationApi.  ")
+@Schema(description = "The scheduled job definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the definitions are managed by the InvocationApi.  ")
 @JsonPropertyOrder({
   ScheduledJobDefinition.URI,
+  ScheduledJobDefinition.JOB_DEFINITION,
   ScheduledJobDefinition.ID,
   ScheduledJobDefinition.NAME,
   ScheduledJobDefinition.DESCRIPTION,
   ScheduledJobDefinition.EXECUTION_SCOPE,
   ScheduledJobDefinition.CRON_EXPRESSION,
   ScheduledJobDefinition.PARAMETERS,
-  ScheduledJobDefinition.TASK,
   ScheduledJobDefinition.STATE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ScheduledJobDefinition {
   public static final String URI = "uri";
   private URI uri;
+
+  public static final String JOB_DEFINITION = "jobDefinition";
+  private URI jobDefinition;
 
   public static final String ID = "id";
   private String id;
@@ -105,9 +107,6 @@ public class ScheduledJobDefinition {
   public static final String PARAMETERS = "parameters";
   private List<@Valid JobParameter> parameters = new ArrayList<>();
 
-  public static final String TASK = "task";
-  private InvocationRun task = null;
-
   public static final String STATE = "state";
   private URI state;
 
@@ -141,6 +140,34 @@ public class ScheduledJobDefinition {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setUri(URI uri) {
     this.uri = uri;
+  }
+
+  public ScheduledJobDefinition jobDefinition(URI jobDefinition) {
+    
+    this.jobDefinition = jobDefinition;
+    return this;
+  }
+
+  /**
+   * The uri of the scheduled job designed . 
+   * @return jobDefinition
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the scheduled job designed . ")
+  @JsonProperty(JOB_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getJobDefinition() {
+    return jobDefinition;
+  }
+
+
+  @JsonProperty(JOB_DEFINITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setJobDefinition(URI jobDefinition) {
+    this.jobDefinition = jobDefinition;
   }
 
   public ScheduledJobDefinition id(String id) {
@@ -316,35 +343,6 @@ public class ScheduledJobDefinition {
     this.parameters = parameters;
   }
 
-  public ScheduledJobDefinition task(InvocationRun task) {
-    
-    this.task = task;
-    return this;
-  }
-
-  /**
-   * Get task
-   * @return task
-   */
-  @jakarta.annotation.Nonnull
-  @NotNull
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
-  @JsonProperty(TASK)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public InvocationRun getTask() {
-    return task;
-  }
-
-
-  @JsonProperty(TASK)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setTask(InvocationRun task) {
-    this.task = task;
-  }
-
   public ScheduledJobDefinition state(URI state) {
     
     this.state = state;
@@ -383,19 +381,19 @@ public class ScheduledJobDefinition {
     }
     ScheduledJobDefinition scheduledJobDefinition = (ScheduledJobDefinition) o;
     return Objects.equals(this.uri, scheduledJobDefinition.uri) &&
+        Objects.equals(this.jobDefinition, scheduledJobDefinition.jobDefinition) &&
         Objects.equals(this.id, scheduledJobDefinition.id) &&
         Objects.equals(this.name, scheduledJobDefinition.name) &&
         Objects.equals(this.description, scheduledJobDefinition.description) &&
         Objects.equals(this.executionScope, scheduledJobDefinition.executionScope) &&
         Objects.equals(this.cronExpression, scheduledJobDefinition.cronExpression) &&
         Objects.equals(this.parameters, scheduledJobDefinition.parameters) &&
-        Objects.equals(this.task, scheduledJobDefinition.task) &&
         Objects.equals(this.state, scheduledJobDefinition.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, name, description, executionScope, cronExpression, parameters, task, state);
+    return Objects.hash(uri, jobDefinition, id, name, description, executionScope, cronExpression, parameters, state);
   }
 
   @Override
@@ -403,13 +401,13 @@ public class ScheduledJobDefinition {
     StringBuilder sb = new StringBuilder();
     sb.append("class ScheduledJobDefinition {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    jobDefinition: ").append(toIndentedString(jobDefinition)).append("\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    executionScope: ").append(toIndentedString(executionScope)).append("\n");
     sb.append("    cronExpression: ").append(toIndentedString(cronExpression)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
-    sb.append("    task: ").append(toIndentedString(task)).append("\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();

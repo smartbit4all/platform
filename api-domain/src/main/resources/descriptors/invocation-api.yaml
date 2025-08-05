@@ -908,14 +908,46 @@ components:
           type: string
         settings:
           type: string
+    JobDefinition:
+      type: object
+      required: [uri, id, name, task]
+      description: |
+        The job definition defines an InvocationRun with default parameters
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: |
+            The uri of the job designed .
+        id:
+          type: string
+          description: |
+            Unique identifier of the job that must be set by the administrator and must be unique in an application.
+        name:
+          type: string
+          description: Human readable name of the job.
+        description:
+          type: string
+          description: Human-readable description of the job.
+        parameters:
+          type: array
+          items:
+            $ref: '#/components/schemas/JobParameter'
+        task:
+          type: InvocationRun
     ScheduledJobDefinition:
       type: object
       required: [uri, id, name, task]
       description: |
-        The scheduled jod definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the
+        The scheduled job definition that can be saved in the InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOB MDM entry. All the
         definitions are managed by the InvocationApi. 
       properties:
         uri:
+          type: string
+          format: uri
+          description: |
+            The uri of the scheduled job designed .
+        jobDefinition:
           type: string
           format: uri
           description: |
@@ -940,8 +972,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/JobParameter'
-        task:
-          type: InvocationRun
         state:
           type: string
           format: uri
@@ -980,13 +1010,19 @@ components:
         nextScheduledAt:
           type: string
           format: date-time
-    ScheduledJobInstance:
+    JobInstance:
       type: object
-      required: [id, name, schedule, task]
+      required: [uri, startedAt, runtime, threadName]
       properties:
         uri:
           type: string
           format: uri
+        createdAt:
+          type: string
+          format: date-time
+        reservedAt:
+          type: string
+          format: date-time
         startedAt:
           type: string
           format: date-time

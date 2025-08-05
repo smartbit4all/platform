@@ -37,6 +37,8 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
+import org.smartbit4all.api.invocation.bean.JobDefinition;
+import org.smartbit4all.api.invocation.bean.JobInstance;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobState;
 import org.smartbit4all.api.invocation.bean.ScriptSetting;
@@ -1078,9 +1080,19 @@ public class PlatformApiConfig {
             ReferencePropertyKind.LIST,
             AggregationKind.SHARED)
         .ref(ScheduledJobDefinition.class,
+            ScheduledJobDefinition.JOB_DEFINITION,
+            JobDefinition.class,
+            ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE)
+        .ref(ScheduledJobDefinition.class,
             ScheduledJobDefinition.STATE,
             ScheduledJobState.class,
             ReferencePropertyKind.REFERENCE,
+            AggregationKind.NONE)
+        .ref(ScheduledJobState.class,
+            ScheduledJobState.INSTANCES,
+            JobInstance.class,
+            ReferencePropertyKind.LIST,
             AggregationKind.NONE);
   }
 
