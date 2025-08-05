@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toMap;
 
 public class ContextObject {
 
@@ -148,6 +148,33 @@ public class ContextObject {
    */
   public ContextObject set(ObjectNode node) {
     singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
+    return this;
+  }
+
+  /**
+   * Sets multiple values in this context by their name.
+   * 
+   * @param values a {@link Map} of ordered pairs of (k, v), where k is the {@String} unique name of
+   *        the item in this context, and v is either an {@link ObjectNode}, an {@link URI} or a
+   *        plain Java object; null values are skipped; nullable
+   * @return this instance
+   */
+  public ContextObject setAll(Map<String, ? extends Object> values) {
+    if (values == null || values.isEmpty()) {
+      return this;
+    }
+
+
+    for (final var e : values.entrySet()) {
+      final String key = e.getKey();
+      switch (e.getValue()) {
+        case null -> {
+        }
+        case URI uri -> set(key, uri);
+        case ObjectNode node -> set(key, node);
+        default -> set(key, e.getValue());
+      }
+    }
     return this;
   }
 
