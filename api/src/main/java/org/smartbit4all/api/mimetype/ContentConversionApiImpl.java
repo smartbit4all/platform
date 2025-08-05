@@ -25,6 +25,9 @@ import org.springframework.util.ObjectUtils;
 public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionContributionApi>
     implements ContentConversionApi {
 
+  private static final String EXCEPTION_CONVERSION_FAIL =
+      ContentConversionContributionApi.EXCEPTION_CONVERSION_FAIL;
+
   @Autowired(required = false)
   SessionApi sessionApi;
   @Autowired
@@ -131,63 +134,6 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
     }
     return totalPath;
   }
-
-  // @Override
-  // public List<String> getConversionPath(String fromMimeType, String toMimeType) {
-  // if (fromMimeType.equals(toMimeType)) {
-  // return Collections.emptyList();
-  // }
-  // MutableValueGraph<String, ContentConversionContributionApi> conversionGraph =
-  // ValueGraphBuilder.directed().allowsSelfLoops(true).build();
-  // for (ContentConversionContributionApi api : getContributionApis().values()) {
-  // for (String acceptedMimeType : api.getAcceptedMimeTypes()) {
-  // for (String targetMimeType : api.getTargetMimeTypes()) {
-  // conversionGraph.putEdgeValue(acceptedMimeType, targetMimeType, api);
-  // }
-  // }
-  // }
-  // // Now we shell find the shortest path on the conversion graph and execute it.
-  // Set<String> alreadyVisited = new HashSet<>();
-  // alreadyVisited.add(fromMimeType);
-  // Set<EndpointPair<String>> incidentEdges = conversionGraph.incidentEdges(fromMimeType);
-  // List<EndpointPair<String>> shortestPath =
-  // pathRecursive(conversionGraph, incidentEdges, fromMimeType, toMimeType, alreadyVisited);
-  // return shortestPath.stream().map(ep -> ep.target()).collect(toList());
-  // }
-
-  // private final List<EndpointPair<String>> pathRecursive(
-  // MutableValueGraph<String, ContentConversionContributionApi> conversionGraph,
-  // Set<EndpointPair<String>> incidentEdges,
-  // String fromMimeType, String toMimeType, Set<String> alreadyVisited) {
-  // // If the toMimeType is included then we arrived and we can return the last EnpointPair as
-  // // result.
-  // if (fromMimeType.equals(toMimeType)) {
-  // return Collections.emptyList();
-  // }
-  // List<EndpointPair<String>> result = new ArrayList<>();
-  // Optional<EndpointPair<String>> toOption =
-  // incidentEdges.stream()
-  // .filter(ep -> ep.source().equals(fromMimeType) && ep.target().equals(toMimeType))
-  // .findFirst();
-  // if (toOption.isPresent()) {
-  // result.add(toOption.get());
-  // return result;
-  // }
-  // // Go further to find the toMimeType.
-  // return incidentEdges.stream().filter(ep -> !alreadyVisited.contains(ep.target())).map(ep -> {
-  // alreadyVisited.add(ep.target());
-  // List<EndpointPair<String>> pathRecursive =
-  // pathRecursive(conversionGraph, conversionGraph.incidentEdges(ep.target()),
-  // ep.target(), toMimeType, alreadyVisited);
-  // if (!pathRecursive.isEmpty()) {
-  // List<EndpointPair<String>> tmp = new ArrayList<>();
-  // tmp.add(ep);
-  // tmp.addAll(pathRecursive);
-  // pathRecursive = tmp;
-  // }
-  // return pathRecursive;
-  // }).filter(l -> !l.isEmpty()).findFirst().orElse(Collections.emptyList());
-  // }
 
   private final ContentConversionContributionApi getConverterApi(String fromMimeType,
       String toMimeType) {

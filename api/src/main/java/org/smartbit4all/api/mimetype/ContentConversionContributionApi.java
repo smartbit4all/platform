@@ -9,6 +9,8 @@ import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
 public interface ContentConversionContributionApi extends ContributionApi {
 
+  String EXCEPTION_CONVERSION_FAIL = "exception.conversion.fail";
+
   /**
    * Returns the accepted input data's mime types.
    */

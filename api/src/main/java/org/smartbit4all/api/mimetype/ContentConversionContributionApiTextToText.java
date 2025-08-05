@@ -41,7 +41,7 @@ public class ContentConversionContributionApiTextToText extends ContentConversio
           objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class);
       return BinaryData.of(dataObject.getBinaryData().inputStream());
     } catch (Exception e) {
-      throw new IllegalStateException("Error while converting text file to text file.", e);
+      throw getFailedException(content, toMimeType, e);
     }
   }
 

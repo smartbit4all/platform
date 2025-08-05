@@ -1,6 +1,7 @@
 package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
@@ -12,6 +13,7 @@ import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +26,25 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
   protected MasterDataManagementApi mdmApi;
   @Autowired
   protected MimeTypeApi mimeTypeApi;
+  @Autowired
+  protected LocaleSettingApi localeSettingApi;
+
+
+  public final BusinessLogicException getFailedException(BinaryContentData content,
+      String toMimeType,
+      Exception e) {
+    return new BusinessLogicException(
+        MessageFormat.format(localeSettingApi.get(EXCEPTION_CONVERSION_FAIL),
+            content.getMimeType(), toMimeType, content.getFileName()),
+        e);
+  }
+
+  public final BusinessLogicException getFailedException(BinaryContentData content,
+      String toMimeType) {
+    return new BusinessLogicException(
+        MessageFormat.format(localeSettingApi.get(EXCEPTION_CONVERSION_FAIL),
+            content.getMimeType(), toMimeType, content.getFileName()));
+  }
 
   /**
    * This option is set for every conversion api. If set true then the
@@ -83,9 +104,9 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
     BinaryData binaryData = convertInternal(content, toMimeType, parameters);
     if (binaryData == null) {
       throw new BusinessLogicException(
-          String.format("The conversion of the file %s from %s to %s has failed!",
-              content.getFileName(),
-              content.getMimeType(), toMimeType));
+          MessageFormat
+              .format(localeSettingApi.get("exception.conversion.fail"), content.getMimeType(),
+                  toMimeType, content.getFileName()));
     }
     return objectApi.saveAsNew(logicalSchema,
         binaryData.asObject());
