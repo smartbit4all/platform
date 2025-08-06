@@ -675,10 +675,10 @@ public class InvocationApiImpl implements InvocationApi {
         // initiate sub context to hide away the additional context objects.
       } else if (item.getRequestDefinition() != null) {
         InvocationRequest invocationRequest = resolve(item.getRequestDefinition(), ctx);
-        if (log.isDebugEnabled()) {
-          log.debug("Resolved invocation request in invocation run is the following: {}",
-              invocationRequest);
-        }
+        // if (log.isDebugEnabled()) {
+        // log.debug("Resolved invocation request in invocation run is the following: {}",
+        // invocationRequest);
+        // }
         try {
           if (log.isDebugEnabled()) {
             log.debug("Current state of the context object (BEFORE the the request):\n {}",
