@@ -34,6 +34,6 @@ public interface UserSecurityCheckerApi {
 
   URI increaseLoginAttemptAndCheck(String userName);
 
-
+  boolean checkPassword(String password);
 
 }

@@ -4,6 +4,8 @@ import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +20,14 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 
 public class UserSecurityCheckerApiImpl implements UserSecurityCheckerApi {
   private static final Logger log = LoggerFactory.getLogger(UserSecurityCheckerApiImpl.class);
+
+  @Value("${password.rule.regex:.+}")
+  private String passwordRuleRegex;
 
   @Autowired
   private ObjectApi objectApi;
@@ -394,4 +400,12 @@ public class UserSecurityCheckerApiImpl implements UserSecurityCheckerApi {
     long daysSinceLastChange = ChronoUnit.DAYS.between(lastPasswordChange, currentDate);
     return daysSinceLastChange > passwordExpirationDays;
   }
+
+  @Override
+  public boolean checkPassword(String password) {
+    Pattern pattern = Pattern.compile(passwordRuleRegex);
+    Matcher matcher = pattern.matcher(password);
+    return matcher.matches();
+  }
+
 }

@@ -100,6 +100,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   public void changePassword(UUID viewUuid, UiActionRequest request) {
     ObjectMapHelper actionRequestHelper = actionRequestHelper(request);
     String newPassword = actionRequestHelper.get(UiActions.INPUT2, String.class);
+    if (!userSecurityCheckerApi.checkPassword(newPassword)) {
+      viewApi.showMessage(invalidPasswordMessageData(viewUuid));
+      return;
+    }
     UserEditingModel model = getModel(viewUuid);
     model.getUser().password(newPassword);
     setModel(viewUuid, model);
@@ -155,6 +159,10 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     ObjectNode userNode = null;
 
     if (!ObjectUtils.isEmpty(clientPassword)) {
+      if (!userSecurityCheckerApi.checkPassword(clientPassword)) {
+        viewApi.showMessage(invalidPasswordMessageData(viewUuid));
+        return;
+      }
       String password =
           passwordEncoder == null ? clientPassword : passwordEncoder.encode(clientPassword);
       user.password(password);
@@ -263,6 +271,18 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
       }
     }
     return uiActions;
+  }
+
+  private MessageData invalidPasswordMessageData(UUID viewUuid) {
+    return new MessageData()
+        .viewUuid(viewUuid)
+        .type(MessageType.WARNING)
+        .header(localeSettingApi.get("password.error"))
+        .text(localeSettingApi.get("password.error.regex"))
+        .options(
+            List.of(new MessageOption().code("CONFIRM")
+                .label(localeSettingApi.get("OK"))
+                .type(MessageOptionType.CONFIRM)));
   }
 
 }
