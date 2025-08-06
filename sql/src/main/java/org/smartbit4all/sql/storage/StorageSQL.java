@@ -24,7 +24,6 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
@@ -65,6 +64,7 @@ import org.smartbit4all.domain.data.storage.StorageSaveEvent;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionUtils;
 import org.smartbit4all.domain.meta.EntityDefinition;
+import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
@@ -85,6 +85,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.ObjectUtils;
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalNotification;
@@ -1473,12 +1474,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       }
     }
 
-    String setPath =
-        storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
-            + (Strings.isBlank(setName) ? StringConstant.EMPTY
-                : StringConstant.SLASH
-                    + setName);
 
+    final Expression typeMatches = assembleTypeClause(storageScheme, objectDefinition, setName);
     TableData<ObjectEntryDef> objectList;
     try {
       if (log.isTraceEnabled()) {
@@ -1486,7 +1483,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       }
       objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.uri())
-          .where(objectEntryDef.uri().like(setPath + StringConstant.PERCENT))
+          .where(typeMatches)
           .listData();
       // TODO check if transaction cache is available and uris present only there
       List<URI> result = objectList.rows().stream()
@@ -1499,6 +1496,39 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     } catch (Exception e) {
       log.debug("Unable to read all the objects from the set.", e);
       return Collections.emptyList();
+    }
+  }
+
+  /**
+   * Assembles a where clause {@link Expression} to match a given type.
+   * 
+   * <h2>If setName is omitted</h2>
+   * 
+   * <code>WHERE ( SCHEME = {storageScheme} AND CLASSNAME = {objectDefinition.getAlias()} )
+   * 
+   * <h2>If setName is provided</h2>
+   * 
+   * <code>WHERE ( URI LIKE '{storageScheme}:/{objectDefinition.getAlias()}/{setName}%' )
+   * 
+   * @param storageScheme the {@link String} storage schema to search, not null
+   * @param objectDefinition the {@link ObjectDefinition} of the type to search for, not null with
+   *        valid alias
+   * @param setName the narrowing {@link String} set, nullable
+   * @return an {@link Expression} filtering for the object entries matching the provided schema,
+   *         type and potential set
+   */
+  private Expression assembleTypeClause(final String storageScheme,
+      final ObjectDefinition<?> objectDefinition,
+      final String setName) {
+    Objects.requireNonNull(storageScheme);
+    final String className = Objects.requireNonNull(objectDefinition.getAlias());
+    if (Strings.isNullOrEmpty(setName)) {
+      return objectEntryDef.scheme().eq(storageScheme)
+          .AND(objectEntryDef.className().eq(className));
+    } else {
+      final String setPattern = "%s:/%s/%s".formatted(storageScheme, className, setName)
+          + StringConstant.PERCENT;
+      return objectEntryDef.uri().like(setPattern);
     }
   }
 
@@ -1516,19 +1546,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       }
     }
 
-    String setPath =
-        storageScheme + StringConstant.COLON + StringConstant.SLASH + objectDefinition.getAlias()
-            + (Strings.isBlank(setName) ? StringConstant.EMPTY
-                : StringConstant.SLASH
-                    + setName);
-
+    final Expression typeMatches = assembleTypeClause(storageScheme, objectDefinition, setName);
     try {
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={}", setName);
       }
       TableData<ObjectEntryDef> objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.uri(), objectEntryDef.createdAt())
-          .where(objectEntryDef.uri().like(setPath + StringConstant.PERCENT))
+          .where(typeMatches)
           .order(objectEntryDef.createdAt())
           .limit(500)
           .listData();
