@@ -1504,11 +1504,11 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
    * 
    * <h2>If setName is omitted</h2>
    * 
-   * <code>WHERE ( SCHEME = {storageScheme} AND CLASSNAME = {objectDefinition.getAlias()} )
+   * <code>WHERE ( SCHEME = {storageScheme} AND CLASSNAME = {objectDefinition.getAlias()} )</code>
    * 
    * <h2>If setName is provided</h2>
    * 
-   * <code>WHERE ( URI LIKE '{storageScheme}:/{objectDefinition.getAlias()}/{setName}%' )
+   * <code>WHERE ( URI LIKE '{storageScheme}:/{objectDefinition.getAlias()}/{setName}%' )</code>
    * 
    * @param storageScheme the {@link String} storage schema to search, not null
    * @param objectDefinition the {@link ObjectDefinition} of the type to search for, not null with
