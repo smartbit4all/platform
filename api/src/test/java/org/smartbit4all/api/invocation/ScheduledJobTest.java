@@ -52,8 +52,7 @@ class ScheduledJobTest {
 
     Assertions.assertEquals(sleepSeconds, ScheduledTestApiImpl.counter);
     Assertions.assertTrue(ScheduledTestApiImpl.value > 0);
-    Assertions.assertTrue(ScheduledTestApiImpl.value / PARAM_VALUE == sleepSeconds);
-    Assertions.assertTrue(ScheduledTestApiImpl.value % PARAM_VALUE == 0);
+    Assertions.assertEquals(sleepSeconds * PARAM_VALUE, ScheduledTestApiImpl.value);
   }
 
   private ScheduledJobDefinition createScheduledJobDef(URI jobDefUri) {

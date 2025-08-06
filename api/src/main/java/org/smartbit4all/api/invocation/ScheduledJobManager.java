@@ -41,7 +41,7 @@ public class ScheduledJobManager {
 
   public ScheduledJobManager() {}
 
-  protected void scheduleJobs(List<ScheduledJobDefinition> jobDefinitions) {
+  public void scheduleJobs(List<ScheduledJobDefinition> jobDefinitions) {
     jobDefinitions.stream().forEach(this::startScheduledJob);
   }
 

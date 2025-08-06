@@ -27,30 +27,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.base.Objects;
 import jakarta.validation.Valid;
 
-/*-
- * every 5 seconds:
-  1. Read ScheduledJobState (without lock)
-     - from DB or cache (if guaranteed to be fresh enough)
-
-  2. Check if it's due:
-     - If nextScheduledAt is in the future, skip execution.
-     - Else continue.
-
-  3. Try to acquire lock for the job (via DB row or lock table)
-     - If failed → another node is working → skip
-     - If successful → continue
-
-  4. Re-fetch ScheduledJobState (to ensure latest version)
-  5. Re-check if it’s still due
-     - If yes → Update ScheduledJobState
-     - If no → release lock, exit
-  6. Release lock
-  7. Execute job
-  8. Acquire lock
-  9. Update state with job result (success/failure, progress, etc), and update nextScheduledAt to next (e.g., using cron parser).
-  10. Release lock
- */
-
 /**
  * Abstract base class for executing a scheduled job. Handles common logic such as reserving
  * execution, execution lifecycle, and managing job state and instances.
