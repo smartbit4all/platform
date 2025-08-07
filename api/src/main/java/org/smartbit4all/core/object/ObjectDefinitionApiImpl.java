@@ -615,7 +615,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   @Override
   public boolean isValue(Object o) {
-    return o == null ? true : defaultAsValueClasses.contains(o.getClass());
+    return o == null ? true
+        : (defaultAsValueClasses.contains(o.getClass()) || isAssignableFromDefaultValueClass(o));
   }
 
 }

@@ -6,9 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,8 +32,11 @@ public interface ObjectDefinitionApi {
           java.sql.Date.class, Double.class, Float.class, Integer.class, LocalDate.class,
           LocalDateTime.class,
           LocalTime.class, OffsetDateTime.class, Long.class, Short.class, String.class, URI.class,
-          UUID.class,
-          List.class, ArrayList.class, LinkedList.class);
+          UUID.class);
+
+  default boolean isAssignableFromDefaultValueClass(Object o) {
+    return List.class.isAssignableFrom(o.getClass());
+  }
 
   /**
    * Check if the given object is a value object that shouldn't be converted to a map or used as
