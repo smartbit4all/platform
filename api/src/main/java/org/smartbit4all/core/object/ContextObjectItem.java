@@ -1,11 +1,11 @@
 package org.smartbit4all.core.object;
 
+import static org.smartbit4all.core.utility.ObjectDefinitionUtils.isValue;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.api.object.bean.ContextObjectDataItem;
-import org.smartbit4all.api.object.bean.PersistableObject;
 
 /**
  * The context object inner structure that contains the name, uri and the loaded object node if it
@@ -65,7 +65,7 @@ public class ContextObjectItem {
         loadedObjectNode = objectApi().load(data.getUri());
       } else if (data.getObject() instanceof Map) {
         loadedObjectNode =
-            objectApi().create(DEFAULT_SCHEMA, objectApi().definition(PersistableObject.class),
+            objectApi().create(DEFAULT_SCHEMA, objectApi().definition(Map.class),
                 (Map<String, Object>) data.getObject());
       } else if (data.getObject() != null) {
         loadedObjectNode = objectApi().create(DEFAULT_SCHEMA, data.getObject());
@@ -80,7 +80,7 @@ public class ContextObjectItem {
    * @return The value of the context object itself.
    */
   Object getValue() {
-    if (data.getObject() != null) {
+    if (isValue(data.getObject())) {
       return data.getObject();
     }
     ObjectNode objectNode = objectNode();

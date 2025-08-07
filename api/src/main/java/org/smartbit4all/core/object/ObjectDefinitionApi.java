@@ -1,16 +1,7 @@
 package org.smartbit4all.core.object;
 
-import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PersistableObject;
 import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
@@ -22,30 +13,6 @@ import org.smartbit4all.api.object.bean.ReferenceDefinitionData;
  *
  */
 public interface ObjectDefinitionApi {
-
-  /**
-   * The set contains the types (classes) of the properties that must be assumed as value and not as
-   * embedded object. This is the default set that is used if it is not set manually.
-   */
-  Set<Class<?>> defaultAsValueClasses =
-      Set.of(BigDecimal.class, Byte.class, Boolean.class, Character.class, Date.class,
-          java.sql.Date.class, Double.class, Float.class, Integer.class, LocalDate.class,
-          LocalDateTime.class,
-          LocalTime.class, OffsetDateTime.class, Long.class, Short.class, String.class, URI.class,
-          UUID.class);
-
-  default boolean isAssignableFromDefaultValueClass(Object o) {
-    return List.class.isAssignableFrom(o.getClass());
-  }
-
-  /**
-   * Check if the given object is a value object that shouldn't be converted to a map or used as
-   * Bean.
-   * 
-   * @param o
-   * @return
-   */
-  boolean isValue(Object o);
 
   /**
    * Get the definition for the given Class.

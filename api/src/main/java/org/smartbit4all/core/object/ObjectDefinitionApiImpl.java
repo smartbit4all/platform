@@ -613,10 +613,4 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     return definition.toMap(o);
   }
 
-  @Override
-  public boolean isValue(Object o) {
-    return o == null ? true
-        : (defaultAsValueClasses.contains(o.getClass()) || isAssignableFromDefaultValueClass(o));
-  }
-
 }

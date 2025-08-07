@@ -33,6 +33,7 @@ import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
+import org.smartbit4all.core.utility.ObjectDefinitionUtils;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
@@ -773,7 +774,7 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public boolean isValue(Object o) {
-    return objectDefinitionApi.isValue(o);
+    return ObjectDefinitionUtils.isValue(o);
   }
 
   @Override
