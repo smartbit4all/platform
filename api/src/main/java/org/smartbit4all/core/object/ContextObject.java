@@ -289,10 +289,10 @@ public class ContextObject {
       }
       return;
     }
-    ContextObjectItem contextObject;
+    ContextObjectItem contextObjectItem;
     List<String> finalPath = new ArrayList<>();
-    contextObject = findItem(path, finalPath);
-    ObjectNode objectNode = contextObject.objectNode();
+    contextObjectItem = findItem(path, finalPath);
+    ObjectNode objectNode = contextObjectItem.objectNode();
     if (objectNode != null) {
       if (merge && !objectApi().isValue(value)) {
         objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
