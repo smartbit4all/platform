@@ -68,7 +68,18 @@ public class InvocationRunItemBuilder {
    * @return the builder instance
    */
   private final InvocationRunItemBuilder addResolver(ObjectMappingDefinition mappingDef) {
-    InvocationParameterResolver resolver = new InvocationParameterResolver().definition(mappingDef);
+    InvocationParameterResolver resolver = new InvocationParameterResolver()
+        .definition(mappingDef);
+    this.requestDefinition.addResolversItem(resolver);
+    return this;
+  }
+
+
+  private final InvocationRunItemBuilder addResolver(Integer position,
+      ObjectMappingDefinition mappingDef) {
+    InvocationParameterResolver resolver = new InvocationParameterResolver()
+        .definition(mappingDef)
+        .position(position);
     this.requestDefinition.addResolversItem(resolver);
     return this;
   }
@@ -84,6 +95,17 @@ public class InvocationRunItemBuilder {
     build.accept(builder);
     InvocationParameterResolver resolver =
         new InvocationParameterResolver().definition(builder.build());
+    this.requestDefinition.addResolversItem(resolver);
+    return this;
+  }
+
+  public InvocationRunItemBuilder addResolver(Integer position,
+      Consumer<ObjectMappingDefinitionBuilder> build) {
+    ObjectMappingDefinitionBuilder builder = ObjectMappingDefinitionBuilder.create();
+    build.accept(builder);
+    InvocationParameterResolver resolver =
+        new InvocationParameterResolver().definition(builder.build())
+            .position(position);
     this.requestDefinition.addResolversItem(resolver);
     return this;
   }
@@ -104,6 +126,16 @@ public class InvocationRunItemBuilder {
     }
     mapping.addMappingsItem(propertyMapping);
     return addResolver(mapping);
+  }
+
+  public InvocationRunItemBuilder addResolverFromPath(Integer position, String... fromPathItems) {
+    ObjectMappingDefinition mapping = new ObjectMappingDefinition();
+    ObjectPropertyMapping propertyMapping = new ObjectPropertyMapping();
+    for (String path : fromPathItems) {
+      propertyMapping.addFromPathItem(path);
+    }
+    mapping.addMappingsItem(propertyMapping);
+    return addResolver(position, mapping);
   }
 
   /**

@@ -193,7 +193,7 @@ public final class ObjectMapping {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Object execute() {
     ObjectApi objectApi = objectApi();
-    // If we have a constant value then return immediately withoput any further manipulation.
+    // If we have a constant value then return immediately without any further manipulation.
     if (definition.getConstant() != null) {
       return definition.getConstant();
     }
