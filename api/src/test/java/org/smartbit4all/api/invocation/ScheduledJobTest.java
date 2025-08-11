@@ -10,6 +10,8 @@ import org.smartbit4all.api.invocation.bean.JobParameter.TypeEnum;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition.ExecutionScopeEnum;
 import org.smartbit4all.api.invocation.bean.ScheduledTestApiImpl;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,18 +37,29 @@ class ScheduledJobTest {
   @Autowired
   private ScheduledJobManager scheduledJobManager;
 
+  @Autowired
+  private MasterDataManagementApi masterDataManagementApi;
+
   @Value("${applicationruntime.refreshruntime.fixeddelay:5000}")
   private String schedulePeriodString;
 
   @Test
   void scheduledJobTest() throws Exception {
     JobDefinition jobDef = createJobDef();
-    URI jobDefUri = objectApi.saveAsNew(ScheduledJobRunner.SCHEMA, jobDef);
-    ScheduledJobDefinition scheduledJobDef = createScheduledJobDef(jobDefUri);
-    URI scheduledJobDefUri = objectApi.saveAsNew(ScheduledJobRunner.SCHEMA, scheduledJobDef);
+    masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+        InvocationApiMdmConfig.MDM_ENTRY_JOBDEFINITION)
+        .save(objectApi.create(Invocations.INVOCATION_SCHEME, jobDef));
+
+    ScheduledJobDefinition scheduledJobDef = createScheduledJobDef(jobDef.getCode());
+    List<URI> scheduledJobUris = masterDataManagementApi
+        .getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOBDEFINITION)
+        .save(objectApi.create(Invocations.INVOCATION_SCHEME, scheduledJobDef));
+
     waitForRefresh();
     scheduledJobManager.scheduleJobs(
-        List.of(objectApi.loadLatest(scheduledJobDefUri).getObject(ScheduledJobDefinition.class)));
+        List.of(
+            objectApi.loadLatest(scheduledJobUris.get(0)).getObject(ScheduledJobDefinition.class)));
     int sleepSeconds = 10;
     Thread.sleep(sleepSeconds * 1000);
 
@@ -55,13 +68,13 @@ class ScheduledJobTest {
     Assertions.assertEquals(sleepSeconds * PARAM_VALUE, ScheduledTestApiImpl.value);
   }
 
-  private ScheduledJobDefinition createScheduledJobDef(URI jobDefUri) {
+  private ScheduledJobDefinition createScheduledJobDef(String jobDefCode) {
     return new ScheduledJobDefinition()
-        .id("test_scheduled")
+        .code("1")
         .cronExpression("* * * * * *") // every sec
         .description("Ez egy teszt ScheduledJob")
         .name("Teszt")
-        .jobDefinition(jobDefUri)
+        .jobDefinitionCode(jobDefCode)
         .executionScope(ExecutionScopeEnum.NODE)
         .parameters(
             List.of(new JobParameter()
@@ -73,7 +86,7 @@ class ScheduledJobTest {
   private JobDefinition createJobDef() {
     // Increment *ScheduledTestApiImpl.value* with *PARAM_VALUE* every sec
     return new JobDefinition()
-        .id("test_job")
+        .code("1")
         .description("Ez egy teszt Job")
         .name("Teszt")
         .parameters(

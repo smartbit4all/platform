@@ -84,6 +84,8 @@ public interface SessionManagementApi {
 
   void startTechnicalSession();
 
+  void startTechnicalSessionWithUser(String userName);
+
   void setSession(URI sessionUri);
 
   /**

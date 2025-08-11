@@ -6,6 +6,8 @@ import java.util.concurrent.locks.Lock;
 import org.smartbit4all.api.invocation.bean.RuntimeSchedule;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobState;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,9 +20,13 @@ import com.google.common.base.Objects;
 class NodeScheduledJobRunner extends ScheduledJobRunner {
 
   public NodeScheduledJobRunner(ScheduledJobDefinition def, URI runtimeUri, ObjectApi objectApi,
-      InvocationApi invocationApi, ApplicationRuntimeApi applicationRuntimeApi,
+      InvocationApi invocationApi, MasterDataManagementApi mdmApi,
+      ApplicationRuntimeApi applicationRuntimeApi,
+      SessionManagementApi sessionManagementApi,
       PlatformTransactionManager transactionManager) {
-    super(def, runtimeUri, objectApi, invocationApi, applicationRuntimeApi, transactionManager);
+    super(def, runtimeUri, objectApi, invocationApi, mdmApi, applicationRuntimeApi,
+        sessionManagementApi,
+        transactionManager);
   }
 
   @Override

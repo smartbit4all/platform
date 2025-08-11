@@ -919,7 +919,7 @@ components:
           format: uri
           description: |
             The uri of the job designed .
-        id:
+        code:
           type: string
           description: |
             Unique identifier of the job that must be set by the administrator and must be unique in an application.
@@ -947,12 +947,11 @@ components:
           format: uri
           description: |
             The uri of the scheduled job designed .
-        jobDefinition:
+        jobDefinitionCode:
           type: string
-          format: uri
           description: |
-            The uri of the scheduled job designed .
-        id:
+            The code of the job designed .
+        code:
           type: string
           description: |
             Unique identifier of the scheduled job that must be set by the administrator and must be unique in an application.
@@ -962,6 +961,9 @@ components:
         description:
           type: string
           description: Human-readable description of the scheduled job.
+        userName:
+          type: string
+          description: The technical user to run.
         executionScope:
           enum: [cluster, node]
         cronExpression:

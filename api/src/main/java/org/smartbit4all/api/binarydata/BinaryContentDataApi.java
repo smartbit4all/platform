@@ -17,4 +17,7 @@ public interface BinaryContentDataApi {
   BinaryContentData constructFromClassResource(String fileRelativePath,
       String schemaToSave);
 
+  BinaryContentData constructFromFile(String fileRelativePath,
+      String schemaToSave);
+
 }

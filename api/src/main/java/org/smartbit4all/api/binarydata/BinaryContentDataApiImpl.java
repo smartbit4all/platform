@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
@@ -34,10 +35,26 @@ public class BinaryContentDataApiImpl implements BinaryContentDataApi {
   @Override
   public BinaryContentData constructFromClassResource(String fileRelativePath,
       String schemaToSave) {
-    InputStream in =
-        this.getClass()
-            .getResourceAsStream(fileRelativePath);
+    InputStream in = this.getClass().getResourceAsStream(fileRelativePath);
     Path path = Paths.get(fileRelativePath);
+    return constructBinaryContentData(fileRelativePath, path, schemaToSave, in);
+  }
+
+  @Override
+  public BinaryContentData constructFromFile(String fileRelativePath, String schemaToSave) {
+    Path path = Paths.get(fileRelativePath);
+    InputStream in;
+    try {
+      in = Files.newInputStream(path);
+    } catch (IOException e) {
+      throw new IllegalArgumentException("Unable to load file from " + fileRelativePath);
+    }
+    return constructBinaryContentData(fileRelativePath, path, schemaToSave, in);
+  }
+
+  private BinaryContentData constructBinaryContentData(String fileRelativePath, Path path,
+      String schemaToSave,
+      InputStream in) {
     String fileName = path.getFileName().toString();
     String extensionFromFileName = mimeTypeApi.getExtensionFromFileName(fileName);
     BinaryData binaryData = BinaryData.of(in);

@@ -4,7 +4,6 @@ import java.net.URI;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -16,6 +15,9 @@ import org.smartbit4all.api.invocation.bean.JobParameter;
 import org.smartbit4all.api.invocation.bean.JobParameter.TypeEnum;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobState;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -24,6 +26,7 @@ import org.springframework.scheduling.support.CronExpression;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import com.google.common.base.Objects;
 import jakarta.validation.Valid;
 
@@ -32,7 +35,6 @@ import jakarta.validation.Valid;
  * execution, execution lifecycle, and managing job state and instances.
  */
 public abstract class ScheduledJobRunner {
-  public static final String SCHEMA = "scheduledJob";
 
   // JobDefinition
   protected final ScheduledJobDefinition scheduledJobDef;
@@ -45,6 +47,8 @@ public abstract class ScheduledJobRunner {
   protected final ApplicationRuntimeApi applicationRuntimeApi;
   protected final InvocationApi invocationApi;
   protected final PlatformTransactionManager transactionManager;
+  protected final MasterDataManagementApi mdmApi;
+  protected final SessionManagementApi sessionManagementApi;
 
   // Schedule
   private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -54,17 +58,28 @@ public abstract class ScheduledJobRunner {
       URI runtimeUri,
       ObjectApi objectApi,
       InvocationApi invocationApi,
+      MasterDataManagementApi mdmApi,
       ApplicationRuntimeApi applicationRuntimeApi,
+      SessionManagementApi sessionManagementApi,
       PlatformTransactionManager transactionManager) {
     this.scheduledJobDef = def;
     this.runtimeUri = runtimeUri;
     this.objectApi = objectApi;
     this.invocationApi = invocationApi;
+    this.mdmApi = mdmApi;
     this.applicationRuntimeApi = applicationRuntimeApi;
+    this.sessionManagementApi = sessionManagementApi;
     this.transactionManager = transactionManager;
 
-    this.jobDefinition =
-        objectApi.loadLatest(def.getJobDefinition()).getObject(JobDefinition.class);
+    String jobDefinitionCode = scheduledJobDef.getJobDefinitionCode();
+    this.jobDefinition = mdmApi
+        .getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_JOBDEFINITION)
+        .getList().nodesFromCache()
+        .filter(n -> Objects.equal(jobDefinitionCode, n.getValueAsString(JobDefinition.CODE)))
+        .findFirst()
+        .map(n -> n.getObject(JobDefinition.class))
+        .get();
   }
 
   /**
@@ -130,7 +145,7 @@ public abstract class ScheduledJobRunner {
       } else {
         // Create new state and save it
         ScheduledJobState newState = new ScheduledJobState();
-        stateUri = objectApi.saveAsNew(SCHEMA, newState);
+        stateUri = objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, newState);
 
         // Link the state to the job definition
         jobDefNode.modify(ScheduledJobDefinition.class, d -> d.state(stateUri));
@@ -184,7 +199,7 @@ public abstract class ScheduledJobRunner {
         .runtime(runtimeUri)
         .reservedAt(now)
         .threadName(Thread.currentThread().getName());
-    return objectApi.saveAsNew(SCHEMA, instance);
+    return objectApi.saveAsNew(Invocations.INVOCATION_SCHEME, instance);
   }
 
   /**
@@ -210,6 +225,7 @@ public abstract class ScheduledJobRunner {
       String error = null;
       OffsetDateTime startedAt = OffsetDateTime.now();
       try {
+        startTechnicalSessionIfNeeded();
         // Start execution
         startExecution(instanceUri, startedAt);
 
@@ -219,7 +235,6 @@ public abstract class ScheduledJobRunner {
       } catch (Exception ex) {
         error = ex.getMessage();
       } finally {
-        // TDOD transacional
         // Always cleanup, remove instance entry, update runtimeSchedules (for node), etc.
         OffsetDateTime finishedAt = OffsetDateTime.now();
         finishExecution(instanceUri, error, finishedAt);
@@ -230,6 +245,12 @@ public abstract class ScheduledJobRunner {
         }
       }
     }, delay, TimeUnit.MILLISECONDS);
+  }
+
+  private void startTechnicalSessionIfNeeded() {
+    if (sessionManagementApi != null && scheduledJobDef.getUserName() != null) {
+      sessionManagementApi.startTechnicalSessionWithUser(scheduledJobDef.getUserName());
+    }
   }
 
   private void finishExecution(URI instanceUri, String error, OffsetDateTime finishedAt) {
@@ -291,8 +312,9 @@ public abstract class ScheduledJobRunner {
   }
 
   protected List<JobParameter> getParameters() {
-    return Optional.ofNullable(scheduledJobDef.getParameters())
-        .orElse(jobDefinition.getParameters());
+    return !CollectionUtils.isEmpty(scheduledJobDef.getParameters())
+        ? scheduledJobDef.getParameters()
+        : jobDefinition.getParameters();
   }
 
   /**

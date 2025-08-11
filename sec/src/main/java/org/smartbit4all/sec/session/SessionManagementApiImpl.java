@@ -508,6 +508,16 @@ public class SessionManagementApiImpl implements SessionManagementApi {
   }
 
   @Override
+  public void startTechnicalSessionWithUser(String userName) {
+    User user = orgApi.getUserByUsername(userName);
+    if (user == null) {
+      throw new IllegalArgumentException("User " + userName + " doesn't exist!");
+    }
+
+    startTechnicalSession(user.getUri());
+  }
+
+  @Override
   public void startTechnicalSession(URI technicalUserUri) {
 
     if (SecurityContextHolder.getContext().getAuthentication() != null) {

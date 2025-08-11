@@ -10,6 +10,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition.ExecutionScopeEnum;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
@@ -27,6 +29,12 @@ public class ScheduledJobManager {
 
   @Autowired
   private ApplicationRuntimeApi applicationRuntimeApi;
+
+  @Autowired
+  private MasterDataManagementApi mdmApi;
+
+  @Autowired(required = false)
+  private SessionManagementApi sessionManagementApi;
 
   @Autowired
   private ObjectApi objectApi;
@@ -54,7 +62,7 @@ public class ScheduledJobManager {
 
     if (scope == null) {
       throw new IllegalArgumentException(
-          "Execution scope cannot be null for job: " + jobDefinition.getId());
+          "Execution scope cannot be null for job: " + jobDefinition.getCode());
     }
 
     switch (scope) {
@@ -63,7 +71,9 @@ public class ScheduledJobManager {
             runtimeUri,
             objectApi,
             invocationApi,
+            mdmApi,
             applicationRuntimeApi,
+            sessionManagementApi,
             transactionManager);
 
       case NODE:
@@ -71,7 +81,9 @@ public class ScheduledJobManager {
             runtimeUri,
             objectApi,
             invocationApi,
+            mdmApi,
             applicationRuntimeApi,
+            sessionManagementApi,
             transactionManager);
 
       default:
@@ -90,7 +102,7 @@ public class ScheduledJobManager {
   public void startScheduledJob(ScheduledJobDefinition def) {
     ScheduledJobRunner runner = createScheduledJobRunner(def, runtimeUri);
     runner.scheduleIfNeeded();
-    jobControls.put(def.getId(), runner);
+    jobControls.put(def.getCode(), runner);
   }
 
   public List<ScheduledJobRunner> getAllJobControls() {

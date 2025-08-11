@@ -38,7 +38,7 @@ import jakarta.validation.Valid;
 @Schema(description = "The job definition defines an InvocationRun with default parameters ")
 @JsonPropertyOrder({
   JobDefinition.URI,
-  JobDefinition.ID,
+  JobDefinition.CODE,
   JobDefinition.NAME,
   JobDefinition.DESCRIPTION,
   JobDefinition.PARAMETERS,
@@ -49,8 +49,8 @@ public class JobDefinition {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String ID = "id";
-  private String id;
+  public static final String CODE = "code";
+  private String code;
 
   public static final String NAME = "name";
   private String name;
@@ -96,32 +96,31 @@ public class JobDefinition {
     this.uri = uri;
   }
 
-  public JobDefinition id(String id) {
+  public JobDefinition code(String code) {
     
-    this.id = id;
+    this.code = code;
     return this;
   }
 
   /**
    * Unique identifier of the job that must be set by the administrator and must be unique in an application. 
-   * @return id
+   * @return code
    */
-  @jakarta.annotation.Nonnull
-  @NotNull
+  @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Unique identifier of the job that must be set by the administrator and must be unique in an application. ")
-  @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Unique identifier of the job that must be set by the administrator and must be unique in an application. ")
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getId() {
-    return id;
+  public String getCode() {
+    return code;
   }
 
 
-  @JsonProperty(ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setId(String id) {
-    this.id = id;
+  @JsonProperty(CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setCode(String code) {
+    this.code = code;
   }
 
   public JobDefinition name(String name) {
@@ -254,7 +253,7 @@ public class JobDefinition {
     }
     JobDefinition jobDefinition = (JobDefinition) o;
     return Objects.equals(this.uri, jobDefinition.uri) &&
-        Objects.equals(this.id, jobDefinition.id) &&
+        Objects.equals(this.code, jobDefinition.code) &&
         Objects.equals(this.name, jobDefinition.name) &&
         Objects.equals(this.description, jobDefinition.description) &&
         Objects.equals(this.parameters, jobDefinition.parameters) &&
@@ -263,7 +262,7 @@ public class JobDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, id, name, description, parameters, task);
+    return Objects.hash(uri, code, name, description, parameters, task);
   }
 
   @Override
@@ -271,7 +270,7 @@ public class JobDefinition {
     StringBuilder sb = new StringBuilder();
     sb.append("class JobDefinition {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    code: ").append(toIndentedString(code)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    description: ").append(toIndentedString(description)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");

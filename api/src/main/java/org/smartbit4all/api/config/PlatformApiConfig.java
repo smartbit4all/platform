@@ -37,7 +37,6 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.ApiRegistryData;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
-import org.smartbit4all.api.invocation.bean.JobDefinition;
 import org.smartbit4all.api.invocation.bean.JobInstance;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobState;
@@ -205,6 +204,10 @@ public class PlatformApiConfig {
   public static final String VECTOR_DB_CONNECTIONS = "vectorDbConnections";
 
   public static final String TICKETING_CONNECTIONS = "ticketingConnections";
+
+  public static final String JOB_DEFINTIONS = "jobDefinitions";
+
+  public static final String SCHEDULED_JOB_DEFINTIONS = "scheduledJobDefinitions";
 
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
 
@@ -832,6 +835,7 @@ public class PlatformApiConfig {
               .addPathItem(ScriptSetting.NAME));
       result.addDescriptor(entry);
     }
+
     return result;
   }
 
@@ -1080,11 +1084,6 @@ public class PlatformApiConfig {
             ReferencePropertyKind.LIST,
             AggregationKind.SHARED)
         .ref(ScheduledJobDefinition.class,
-            ScheduledJobDefinition.JOB_DEFINITION,
-            JobDefinition.class,
-            ReferencePropertyKind.REFERENCE,
-            AggregationKind.NONE)
-        .ref(ScheduledJobDefinition.class,
             ScheduledJobDefinition.STATE,
             ScheduledJobState.class,
             ReferencePropertyKind.REFERENCE,
@@ -1154,6 +1153,12 @@ public class PlatformApiConfig {
   @Bean
   BinaryContentDataApi binaryContentDataApi() {
     return new BinaryContentDataApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<BinaryContentDataApi> binaryContentDataApiProvider(
+      BinaryContentDataApi api) {
+    return Invocations.asProvider(BinaryContentDataApi.class, api);
   }
 
   @Bean

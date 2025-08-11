@@ -33,6 +33,10 @@ import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApi;
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.invocation.JobDefinitionEditorPageApi;
+import org.smartbit4all.bff.api.mdm.invocation.JobDefinitionEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApi;
+import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
@@ -213,6 +217,18 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<ApiKeyEditorPageApi> apiKeyEditorPageApiProvider(
       ApiKeyEditorPageApi api) {
     return Invocations.asProvider(ApiKeyEditorPageApi.class, api);
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  JobDefinitionEditorPageApi jobDefinitionEditPageApi() {
+    return new JobDefinitionEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  ScheduledJobDefinitionEditorPageApi scheduledJobDefinitionEditPageApi() {
+    return new ScheduledJobDefinitionEditorPageApiImpl();
   }
 
   @Bean

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import org.smartbit4all.api.invocation.bean.JobInstance;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ScheduledJobState;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
+import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.application.ApplicationRuntime;
@@ -21,9 +23,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 class ClusterScheduledJobRunner extends ScheduledJobRunner {
 
   public ClusterScheduledJobRunner(ScheduledJobDefinition def, URI runtimeUri, ObjectApi objectApi,
-      InvocationApi invocationApi, ApplicationRuntimeApi applicationRuntimeApi,
+      InvocationApi invocationApi, MasterDataManagementApi mdmApi,
+      ApplicationRuntimeApi applicationRuntimeApi, SessionManagementApi sessionManagementApi,
       PlatformTransactionManager transactionManager) {
-    super(def, runtimeUri, objectApi, invocationApi, applicationRuntimeApi, transactionManager);
+    super(def, runtimeUri, objectApi, invocationApi, mdmApi, applicationRuntimeApi,
+        sessionManagementApi,
+        transactionManager);
   }
 
   @Override

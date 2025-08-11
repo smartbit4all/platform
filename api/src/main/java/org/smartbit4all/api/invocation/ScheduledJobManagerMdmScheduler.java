@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
+import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -28,7 +29,9 @@ public class ScheduledJobManagerMdmScheduler {
   }
 
   private List<ScheduledJobDefinition> loadJobDefinitions() {
-    return masterDataManagementApi.getApi(ScheduledJobRunner.SCHEMA, MDM_SCHEDULED_JOB)
+    return masterDataManagementApi
+        .getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_SCHEDULEDJOBDEFINITION)
         .getList()
         .nodesFromCache()
         .map(node -> node.getObject(ScheduledJobDefinition.class))
