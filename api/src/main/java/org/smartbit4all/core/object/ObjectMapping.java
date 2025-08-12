@@ -3,6 +3,7 @@ package org.smartbit4all.core.object;
 import static org.smartbit4all.api.invocation.ScriptEngineMgmtApi.SCRIPT_KIND_GROOVY;
 import java.lang.ref.WeakReference;
 import java.net.URI;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.object.bean.ObjectListMapping;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
@@ -236,8 +238,18 @@ public final class ObjectMapping {
         // mapping.
         return value;
       }
-      objectApi.setValueIntoObjectMap(resultObject, value,
-          StringConstant.toArray(propertyMapping.getToPath()));
+
+      try {
+
+        objectApi.setValueIntoObjectMap(resultObject, value,
+            StringConstant.toArray(propertyMapping.getToPath()));
+      } catch (NullPointerException e) {
+        log.debug("Error {}", e);
+        throw new BusinessLogicException(
+            MessageFormat.format("The value we wanted to set from {0} to {1}",
+                propertyMapping.getFromPath(), propertyMapping.getToPath()),
+            e);
+      }
     }
     return resultObject;
   }
