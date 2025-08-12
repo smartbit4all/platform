@@ -50,6 +50,9 @@ public class ScheduledJobManager {
   public ScheduledJobManager() {}
 
   public void scheduleJobs(List<ScheduledJobDefinition> jobDefinitions) {
+    // FIXME Only start jobs when runtime has already started
+    List<ApplicationRuntime> activeRuntimes = applicationRuntimeApi.getActiveRuntimes();
+    runtimeUri = applicationRuntimeApi.self().getUri();
     jobDefinitions.stream().forEach(this::startScheduledJob);
   }
 
@@ -116,6 +119,10 @@ public class ScheduledJobManager {
         .map(ApplicationRuntime::getUri)
         .collect(Collectors.toSet());
 
+    if (activeRuntimes.isEmpty()) {
+      // FIXME fix empty runtimes at application start
+      return;
+    }
     // reschedule jobs with inactive runtimes
     jobControls.values().stream()
         .filter(runner -> !activeRuntimes.contains(runner.getOwnerRuntimeUri()))
