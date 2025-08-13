@@ -36,7 +36,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   InvocationPredicate.PROPERTY_VALUE,
   InvocationPredicate.DEFINITION,
-  InvocationPredicate.EEQUEST
+  InvocationPredicate.REQUEST
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationPredicate {
@@ -46,8 +46,8 @@ public class InvocationPredicate {
   public static final String DEFINITION = "definition";
   private ObjectMappingDefinition definition = null;
 
-  public static final String EEQUEST = "eequest";
-  private InvocationRequestDefinition eequest;
+  public static final String REQUEST = "request";
+  private InvocationRequestDefinition request;
 
   public InvocationPredicate() {
   }
@@ -108,32 +108,32 @@ public class InvocationPredicate {
     this.definition = definition;
   }
 
-  public InvocationPredicate eequest(InvocationRequestDefinition eequest) {
+  public InvocationPredicate request(InvocationRequestDefinition request) {
     
-    this.eequest = eequest;
+    this.request = request;
     return this;
   }
 
   /**
-   * Get eequest
-   * @return eequest
+   * Get request
+   * @return request
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(EEQUEST)
+  @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public InvocationRequestDefinition getEequest() {
-    return eequest;
+  public InvocationRequestDefinition getRequest() {
+    return request;
   }
 
 
-  @JsonProperty(EEQUEST)
+  @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setEequest(InvocationRequestDefinition eequest) {
-    this.eequest = eequest;
+  public void setRequest(InvocationRequestDefinition request) {
+    this.request = request;
   }
 
   @Override
@@ -147,12 +147,12 @@ public class InvocationPredicate {
     InvocationPredicate invocationPredicate = (InvocationPredicate) o;
     return Objects.equals(this.propertyValue, invocationPredicate.propertyValue) &&
         Objects.equals(this.definition, invocationPredicate.definition) &&
-        Objects.equals(this.eequest, invocationPredicate.eequest);
+        Objects.equals(this.request, invocationPredicate.request);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyValue, definition, eequest);
+    return Objects.hash(propertyValue, definition, request);
   }
 
   @Override
@@ -161,7 +161,7 @@ public class InvocationPredicate {
     sb.append("class InvocationPredicate {\n");
     sb.append("    propertyValue: ").append(toIndentedString(propertyValue)).append("\n");
     sb.append("    definition: ").append(toIndentedString(definition)).append("\n");
-    sb.append("    eequest: ").append(toIndentedString(eequest)).append("\n");
+    sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("}");
     return sb.toString();
   }

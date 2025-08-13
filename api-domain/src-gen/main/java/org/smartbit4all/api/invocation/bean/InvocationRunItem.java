@@ -42,7 +42,7 @@ import jakarta.validation.Valid;
   InvocationRunItem.ELSE,
   InvocationRunItem.WHILE_LOOP,
   InvocationRunItem.DO_WHILE_LOOP,
-  InvocationRunItem.PARALEL_RUNS
+  InvocationRunItem.PARALLELS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRunItem {
@@ -61,8 +61,8 @@ public class InvocationRunItem {
   public static final String DO_WHILE_LOOP = "doWhileLoop";
   private InvocationRunConditional doWhileLoop;
 
-  public static final String PARALEL_RUNS = "paralelRuns";
-  private List<@Valid InvocationRun> paralelRuns = new ArrayList<>();
+  public static final String PARALLELS = "parallels";
+  private List<@Valid InvocationRun> parallels = new ArrayList<>();
 
   public InvocationRunItem() {
   }
@@ -215,40 +215,40 @@ public class InvocationRunItem {
     this.doWhileLoop = doWhileLoop;
   }
 
-  public InvocationRunItem paralelRuns(List<@Valid InvocationRun> paralelRuns) {
+  public InvocationRunItem parallels(List<@Valid InvocationRun> parallels) {
     
-    this.paralelRuns = paralelRuns;
+    this.parallels = parallels;
     return this;
   }
 
-  public InvocationRunItem addParalelRunsItem(InvocationRun paralelRunsItem) {
-    if (this.paralelRuns == null) {
-      this.paralelRuns = new ArrayList<>();
+  public InvocationRunItem addParallelsItem(InvocationRun parallelsItem) {
+    if (this.parallels == null) {
+      this.parallels = new ArrayList<>();
     }
-    this.paralelRuns.add(paralelRunsItem);
+    this.parallels.add(parallelsItem);
     return this;
   }
 
   /**
-   * Paralel runs to execute. 
-   * @return paralelRuns
+   * Parallel runs to execute. 
+   * @return parallels
    */
   @jakarta.annotation.Nullable
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Paralel runs to execute. ")
-  @JsonProperty(PARALEL_RUNS)
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Parallel runs to execute. ")
+  @JsonProperty(PARALLELS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public List<@Valid InvocationRun> getParalelRuns() {
-    return paralelRuns;
+  public List<@Valid InvocationRun> getParallels() {
+    return parallels;
   }
 
 
-  @JsonProperty(PARALEL_RUNS)
+  @JsonProperty(PARALLELS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setParalelRuns(List<@Valid InvocationRun> paralelRuns) {
-    this.paralelRuns = paralelRuns;
+  public void setParallels(List<@Valid InvocationRun> parallels) {
+    this.parallels = parallels;
   }
 
   @Override
@@ -265,12 +265,12 @@ public class InvocationRunItem {
         Objects.equals(this._else, invocationRunItem._else) &&
         Objects.equals(this.whileLoop, invocationRunItem.whileLoop) &&
         Objects.equals(this.doWhileLoop, invocationRunItem.doWhileLoop) &&
-        Objects.equals(this.paralelRuns, invocationRunItem.paralelRuns);
+        Objects.equals(this.parallels, invocationRunItem.parallels);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestDefinition, conditionals, _else, whileLoop, doWhileLoop, paralelRuns);
+    return Objects.hash(requestDefinition, conditionals, _else, whileLoop, doWhileLoop, parallels);
   }
 
   @Override
@@ -282,7 +282,7 @@ public class InvocationRunItem {
     sb.append("    _else: ").append(toIndentedString(_else)).append("\n");
     sb.append("    whileLoop: ").append(toIndentedString(whileLoop)).append("\n");
     sb.append("    doWhileLoop: ").append(toIndentedString(doWhileLoop)).append("\n");
-    sb.append("    paralelRuns: ").append(toIndentedString(paralelRuns)).append("\n");
+    sb.append("    parallels: ").append(toIndentedString(parallels)).append("\n");
     sb.append("}");
     return sb.toString();
   }

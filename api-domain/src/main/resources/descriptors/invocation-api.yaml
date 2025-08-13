@@ -160,9 +160,20 @@ components:
       properties:
         items:
           type: array
-          description: The resolvers are used to setup parameters of the newly created invocation request.
+          description: |
+            The items are an ordered list of program steps. The step can be an invocation request or some programmatic
+            structure like if-else, while etc.
           items:
             $ref: '#/components/schemas/InvocationRunItem'
+        exceptionHandlers:
+          type: array
+          description: |
+            The exceprion handlers are conditional parts that are executed if an exception occures during the execution of the
+            items. The exception handlers are evaluated in order and if the predicate is true then the given handler will run.
+            If none of the predicates are evalueted as true then the exception is thrown. The predicate can use the exception that 
+            is saved into the context as "exceptionThrown" but every other context variable can be used also.
+          items:
+            $ref: '#/components/schemas/InvocationRunConditional'
     InvocationRunItem:
       type: object
       description: |
@@ -228,7 +239,7 @@ components:
             The definition of the mapping is the value producer for the predicate. This must be a boolean
             value. The predicate is true if the value is boolean and equals to true.
           type: ObjectMappingDefinition
-        eequest:
+        request:
           description: |
             The definition of the mapping is the value producer for the given parameter.
           $ref: '#/components/schemas/InvocationRequestDefinition'
