@@ -21,7 +21,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
+import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -33,15 +38,31 @@ import jakarta.validation.Valid;
 @Schema(description = "The invocation run item can be an InvocationRequestDefinition or an inline run. ")
 @JsonPropertyOrder({
   InvocationRunItem.REQUEST_DEFINITION,
-  InvocationRunItem.INLINE_RUN
+  InvocationRunItem.CONDITIONALS,
+  InvocationRunItem.ELSE,
+  InvocationRunItem.WHILE_LOOP,
+  InvocationRunItem.DO_WHILE_LOOP,
+  InvocationRunItem.PARALEL_RUNS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRunItem {
   public static final String REQUEST_DEFINITION = "requestDefinition";
   private InvocationRequestDefinition requestDefinition;
 
-  public static final String INLINE_RUN = "inlineRun";
-  private InvocationRequestDefinition inlineRun;
+  public static final String CONDITIONALS = "conditionals";
+  private List<@Valid InvocationRunConditional> conditionals = new ArrayList<>();
+
+  public static final String ELSE = "else";
+  private InvocationRun _else;
+
+  public static final String WHILE_LOOP = "whileLoop";
+  private InvocationRunConditional whileLoop;
+
+  public static final String DO_WHILE_LOOP = "doWhileLoop";
+  private InvocationRunConditional doWhileLoop;
+
+  public static final String PARALEL_RUNS = "paralelRuns";
+  private List<@Valid InvocationRun> paralelRuns = new ArrayList<>();
 
   public InvocationRunItem() {
   }
@@ -74,32 +95,160 @@ public class InvocationRunItem {
     this.requestDefinition = requestDefinition;
   }
 
-  public InvocationRunItem inlineRun(InvocationRequestDefinition inlineRun) {
+  public InvocationRunItem conditionals(List<@Valid InvocationRunConditional> conditionals) {
     
-    this.inlineRun = inlineRun;
+    this.conditionals = conditionals;
+    return this;
+  }
+
+  public InvocationRunItem addConditionalsItem(InvocationRunConditional conditionalsItem) {
+    if (this.conditionals == null) {
+      this.conditionals = new ArrayList<>();
+    }
+    this.conditionals.add(conditionalsItem);
     return this;
   }
 
   /**
-   * Get inlineRun
-   * @return inlineRun
+   * The conditional parts to execute. 
+   * @return conditionals
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The conditional parts to execute. ")
+  @JsonProperty(CONDITIONALS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid InvocationRunConditional> getConditionals() {
+    return conditionals;
+  }
+
+
+  @JsonProperty(CONDITIONALS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConditionals(List<@Valid InvocationRunConditional> conditionals) {
+    this.conditionals = conditionals;
+  }
+
+  public InvocationRunItem _else(InvocationRun _else) {
+    
+    this._else = _else;
+    return this;
+  }
+
+  /**
+   * Get _else
+   * @return _else
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(INLINE_RUN)
+  @JsonProperty(ELSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public InvocationRequestDefinition getInlineRun() {
-    return inlineRun;
+  public InvocationRun getElse() {
+    return _else;
   }
 
 
-  @JsonProperty(INLINE_RUN)
+  @JsonProperty(ELSE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInlineRun(InvocationRequestDefinition inlineRun) {
-    this.inlineRun = inlineRun;
+  public void setElse(InvocationRun _else) {
+    this._else = _else;
+  }
+
+  public InvocationRunItem whileLoop(InvocationRunConditional whileLoop) {
+    
+    this.whileLoop = whileLoop;
+    return this;
+  }
+
+  /**
+   * Get whileLoop
+   * @return whileLoop
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(WHILE_LOOP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRunConditional getWhileLoop() {
+    return whileLoop;
+  }
+
+
+  @JsonProperty(WHILE_LOOP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setWhileLoop(InvocationRunConditional whileLoop) {
+    this.whileLoop = whileLoop;
+  }
+
+  public InvocationRunItem doWhileLoop(InvocationRunConditional doWhileLoop) {
+    
+    this.doWhileLoop = doWhileLoop;
+    return this;
+  }
+
+  /**
+   * Get doWhileLoop
+   * @return doWhileLoop
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(DO_WHILE_LOOP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRunConditional getDoWhileLoop() {
+    return doWhileLoop;
+  }
+
+
+  @JsonProperty(DO_WHILE_LOOP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDoWhileLoop(InvocationRunConditional doWhileLoop) {
+    this.doWhileLoop = doWhileLoop;
+  }
+
+  public InvocationRunItem paralelRuns(List<@Valid InvocationRun> paralelRuns) {
+    
+    this.paralelRuns = paralelRuns;
+    return this;
+  }
+
+  public InvocationRunItem addParalelRunsItem(InvocationRun paralelRunsItem) {
+    if (this.paralelRuns == null) {
+      this.paralelRuns = new ArrayList<>();
+    }
+    this.paralelRuns.add(paralelRunsItem);
+    return this;
+  }
+
+  /**
+   * Paralel runs to execute. 
+   * @return paralelRuns
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Paralel runs to execute. ")
+  @JsonProperty(PARALEL_RUNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid InvocationRun> getParalelRuns() {
+    return paralelRuns;
+  }
+
+
+  @JsonProperty(PARALEL_RUNS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParalelRuns(List<@Valid InvocationRun> paralelRuns) {
+    this.paralelRuns = paralelRuns;
   }
 
   @Override
@@ -112,12 +261,16 @@ public class InvocationRunItem {
     }
     InvocationRunItem invocationRunItem = (InvocationRunItem) o;
     return Objects.equals(this.requestDefinition, invocationRunItem.requestDefinition) &&
-        Objects.equals(this.inlineRun, invocationRunItem.inlineRun);
+        Objects.equals(this.conditionals, invocationRunItem.conditionals) &&
+        Objects.equals(this._else, invocationRunItem._else) &&
+        Objects.equals(this.whileLoop, invocationRunItem.whileLoop) &&
+        Objects.equals(this.doWhileLoop, invocationRunItem.doWhileLoop) &&
+        Objects.equals(this.paralelRuns, invocationRunItem.paralelRuns);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestDefinition, inlineRun);
+    return Objects.hash(requestDefinition, conditionals, _else, whileLoop, doWhileLoop, paralelRuns);
   }
 
   @Override
@@ -125,7 +278,11 @@ public class InvocationRunItem {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationRunItem {\n");
     sb.append("    requestDefinition: ").append(toIndentedString(requestDefinition)).append("\n");
-    sb.append("    inlineRun: ").append(toIndentedString(inlineRun)).append("\n");
+    sb.append("    conditionals: ").append(toIndentedString(conditionals)).append("\n");
+    sb.append("    _else: ").append(toIndentedString(_else)).append("\n");
+    sb.append("    whileLoop: ").append(toIndentedString(whileLoop)).append("\n");
+    sb.append("    doWhileLoop: ").append(toIndentedString(doWhileLoop)).append("\n");
+    sb.append("    paralelRuns: ").append(toIndentedString(paralelRuns)).append("\n");
     sb.append("}");
     return sb.toString();
   }

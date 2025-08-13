@@ -671,9 +671,7 @@ public class InvocationApiImpl implements InvocationApi {
     Objects.requireNonNull(ctx);
     Objects.requireNonNull(run);
     for (InvocationRunItem item : run.getItems()) {
-      if (item.getInlineRun() != null) {
-        // initiate sub context to hide away the additional context objects.
-      } else if (item.getRequestDefinition() != null) {
+      if (item.getRequestDefinition() != null) {
         InvocationRequest invocationRequest = resolve(item.getRequestDefinition(), ctx);
         // if (log.isDebugEnabled()) {
         // log.debug("Resolved invocation request in invocation run is the following: {}",
