@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.org.bean.Group;
@@ -85,10 +83,10 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
     }
   }
 
-//  @PostConstruct
-//  private void postConstruct() {
-//    self = this;
-//  }
+  // @PostConstruct
+  // private void postConstruct() {
+  // self = this;
+  // }
 
   /**
    * This function analyze the given class to discover the {@link LocaleString} fields. We add this
@@ -106,6 +104,8 @@ public abstract class OrgApiImpl implements OrgApi, InitializingBean {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
             securityGroup.setCheckForPrimaryAccount(checkForPrimaryAccount);
+            securityGroup.setUsersOfPrimaryAccountSupplier(
+                uri -> OrgUtils.getUsersOfPrimaryAccount(this, getCurrentUserProvider(), uri));
             securityGroup.setSecurityPredicate(
                 (sg, uri) -> OrgUtils.securityPredicate(this, getCurrentUserProvider(), null, sg,
                     uri));

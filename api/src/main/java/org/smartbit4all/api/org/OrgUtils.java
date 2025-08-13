@@ -1,6 +1,7 @@
 package org.smartbit4all.api.org;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 import org.smartbit4all.api.org.bean.Group;
@@ -76,5 +77,20 @@ public class OrgUtils {
         .map(AccountInfo::getRoles)
         .flatMap(List::stream)
         .anyMatch(securityGroupName::equals);
+  }
+
+  public static List<URI> getUsersOfPrimaryAccount(OrgApi orgApi,
+      Supplier<User> currentUserProvider, URI userUri) {
+    if (userUri == null) {
+      if (currentUserProvider != null) {
+        userUri = currentUserProvider.get().getUri();
+      }
+    }
+
+    if (userUri != null) {
+      return orgApi.getUsersOfPrimaryAccount(userUri).stream().map(User::getUri).toList();
+    } else {
+      return Collections.emptyList();
+    }
   }
 }

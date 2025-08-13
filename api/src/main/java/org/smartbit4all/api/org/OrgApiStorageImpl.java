@@ -1,5 +1,7 @@
 package org.smartbit4all.api.org;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -65,8 +67,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -99,7 +99,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   private AtomicLong lastUpdateTime = new AtomicLong();
 
-  private Supplier<Storage> storage = new Supplier<Storage>() {
+  private Supplier<Storage> storage = new Supplier<>() {
 
     private Storage storageInstance;
 
@@ -257,6 +257,8 @@ public class OrgApiStorageImpl implements OrgApi {
           SecurityGroup securityGroup = (SecurityGroup) field.get(option);
           if (securityGroup != null) {
             securityGroup.setCheckForPrimaryAccount(checkForPrimaryAccount);
+            securityGroup.setUsersOfPrimaryAccountSupplier(
+                uri -> OrgUtils.getUsersOfPrimaryAccount(self, getCurrentUserProvider(), uri));
             securityGroup.setSecurityPredicate(
                 (sg, uri) -> OrgUtils.securityPredicate(
                     self,

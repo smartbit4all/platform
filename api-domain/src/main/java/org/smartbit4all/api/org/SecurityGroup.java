@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +43,13 @@ public final class SecurityGroup {
   private boolean builtIn;
 
   /**
-   * If set to true group should be unmodifiable.
+   * If set to true predicate also checks for connected accounts to the primary account.
    */
   private boolean checkForPrimaryAccount;
 
   private BiFunction<SecurityGroup, URI, Boolean> securityPredicate;
+
+  private Function<URI, List<URI>> usersOfPrimaryAccountSupplier;
 
   /**
    * The sub groups of the security group.
@@ -116,7 +119,19 @@ public final class SecurityGroup {
       log.warn("No securityPredicate when checking {}, default allow.", this.name);
       return true;
     }
-    return securityPredicate.apply(this, userUri);
+    boolean result = securityPredicate.apply(this, userUri);
+
+    if (!result && checkForPrimaryAccount) {
+      List<URI> userUrisToCheck = usersOfPrimaryAccountSupplier.apply(userUri);
+      for (URI userUriToCheck : userUrisToCheck) {
+        if (securityPredicate.apply(this, userUriToCheck)) {
+          result = true;
+          break;
+        }
+      }
+    }
+
+    return result;
   }
 
   public final List<SecurityGroup> getSubGroups() {
@@ -145,6 +160,10 @@ public final class SecurityGroup {
 
   public void setCheckForPrimaryAccount(boolean checkForPrimaryAccount) {
     this.checkForPrimaryAccount = checkForPrimaryAccount;
+  }
+
+  public void setUsersOfPrimaryAccountSupplier(Function<URI, List<URI>> usersOfPrimaryAccountSupplier) {
+    this.usersOfPrimaryAccountSupplier = usersOfPrimaryAccountSupplier;
   }
 
 }
