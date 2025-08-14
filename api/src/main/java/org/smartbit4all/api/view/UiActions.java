@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,6 +18,8 @@ import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.View;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public final class UiActions {
 
@@ -59,6 +59,7 @@ public final class UiActions {
     public static final String ACCENT = "accent";
     public static final String ERROR = "error";
     public static final String WARN = "warn";
+    public static final String SUCCESS = "success";
   }
 
   private UiActions() {}
@@ -516,16 +517,18 @@ public final class UiActions {
 
     public UiActionBuilder addIf(UiAction action, boolean... conditions) {
       for (boolean c : conditions) {
-        if (!c)
+        if (!c) {
           return this;
+        }
       }
       return this.add(action);
     }
 
     public UiActionBuilder addSeparator(boolean... conditions) {
       for (boolean c : conditions) {
-        if (!c)
+        if (!c) {
           return this;
+        }
       }
       return this.add(separator());
     }
@@ -539,8 +542,9 @@ public final class UiActions {
      */
     public UiActionBuilder addSubMenu(String action, boolean... conditions) {
       for (boolean c : conditions) {
-        if (!c)
+        if (!c) {
           return this;
+        }
       }
       Optional<UiAction> existingSubMenu =
           actions.stream().filter(a -> Objects.equals(action, a.getCode())).findFirst();
@@ -553,8 +557,9 @@ public final class UiActions {
 
     public boolean removeIf(String action, boolean... conditions) {
       for (boolean c : conditions) {
-        if (!c)
+        if (!c) {
           return false;
+        }
       }
 
       return actions.removeIf(a -> Objects.equals(a.getCode(), action));
