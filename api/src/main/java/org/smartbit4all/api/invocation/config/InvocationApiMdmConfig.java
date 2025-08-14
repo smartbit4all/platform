@@ -132,10 +132,7 @@ public class InvocationApiMdmConfig {
                 .path(Arrays.asList(ServiceConnection.ENDPOINT)),
             new MDMTableColumnDescriptor()
                 .name("API version")
-                .path(Arrays.asList(ServiceConnection.API_VERSION)),
-            new MDMTableColumnDescriptor()
-                .name("Authentication token")
-                .path(Arrays.asList(ServiceConnection.AUTH_TOKEN)))));
+                .path(Arrays.asList(ServiceConnection.API_VERSION)))));
 
     result.addDescriptor(new MDMEntryDescriptor()
         .schema(Invocations.INVOCATION_SCHEME)
