@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import org.smartbit4all.api.invocation.bean.InvocationRunItem;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -35,12 +36,16 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The invocation run is a list of item to run as request or an inline run to run as embedded call. ")
 @JsonPropertyOrder({
-  InvocationRun.ITEMS
+  InvocationRun.ITEMS,
+  InvocationRun.EXCEPTION_HANDLERS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationRun {
   public static final String ITEMS = "items";
   private List<@Valid InvocationRunItem> items = new ArrayList<>();
+
+  public static final String EXCEPTION_HANDLERS = "exceptionHandlers";
+  private List<@Valid InvocationRunConditional> exceptionHandlers = new ArrayList<>();
 
   public InvocationRun() {
   }
@@ -60,14 +65,14 @@ public class InvocationRun {
   }
 
   /**
-   * The resolvers are used to setup parameters of the newly created invocation request.
+   * The items are an ordered list of program steps. The step can be an invocation request or some programmatic structure like if-else, while etc. 
    * @return items
    */
   @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The resolvers are used to setup parameters of the newly created invocation request.")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The items are an ordered list of program steps. The step can be an invocation request or some programmatic structure like if-else, while etc. ")
   @JsonProperty(ITEMS)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
@@ -82,6 +87,42 @@ public class InvocationRun {
     this.items = items;
   }
 
+  public InvocationRun exceptionHandlers(List<@Valid InvocationRunConditional> exceptionHandlers) {
+    
+    this.exceptionHandlers = exceptionHandlers;
+    return this;
+  }
+
+  public InvocationRun addExceptionHandlersItem(InvocationRunConditional exceptionHandlersItem) {
+    if (this.exceptionHandlers == null) {
+      this.exceptionHandlers = new ArrayList<>();
+    }
+    this.exceptionHandlers.add(exceptionHandlersItem);
+    return this;
+  }
+
+  /**
+   * The exceprion handlers are conditional parts that are executed if an exception occures during the execution of the items. The exception handlers are evaluated in order and if the predicate is true then the given handler will run. If none of the predicates are evalueted as true then the exception is thrown. The predicate can use the exception that  is saved into the context as \&quot;exceptionThrown\&quot; but every other context variable can be used also. 
+   * @return exceptionHandlers
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The exceprion handlers are conditional parts that are executed if an exception occures during the execution of the items. The exception handlers are evaluated in order and if the predicate is true then the given handler will run. If none of the predicates are evalueted as true then the exception is thrown. The predicate can use the exception that  is saved into the context as \"exceptionThrown\" but every other context variable can be used also. ")
+  @JsonProperty(EXCEPTION_HANDLERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid InvocationRunConditional> getExceptionHandlers() {
+    return exceptionHandlers;
+  }
+
+
+  @JsonProperty(EXCEPTION_HANDLERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExceptionHandlers(List<@Valid InvocationRunConditional> exceptionHandlers) {
+    this.exceptionHandlers = exceptionHandlers;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -91,12 +132,13 @@ public class InvocationRun {
       return false;
     }
     InvocationRun invocationRun = (InvocationRun) o;
-    return Objects.equals(this.items, invocationRun.items);
+    return Objects.equals(this.items, invocationRun.items) &&
+        Objects.equals(this.exceptionHandlers, invocationRun.exceptionHandlers);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(items);
+    return Objects.hash(items, exceptionHandlers);
   }
 
   @Override
@@ -104,6 +146,7 @@ public class InvocationRun {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationRun {\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
+    sb.append("    exceptionHandlers: ").append(toIndentedString(exceptionHandlers)).append("\n");
     sb.append("}");
     return sb.toString();
   }
