@@ -1,22 +1,23 @@
 plugins {
-	id 'java-test-fixtures'
+  id 'java-test-fixtures'
 }
 
 dependencies {
-	api project(':api-domain')
-	api 'javax.activation:activation:1.1.1'
-	
-    api 'org.springframework.boot:spring-boot-starter'
-    api 'org.springframework:spring-tx'
-    api "io.reactivex.rxjava3:rxjava:3.0.12"
+  api project(':api-domain')
+  api 'javax.activation:activation:1.1.1'
 
-    api 'org.openapitools:jackson-databind-nullable:0.2.1'
-    api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-    
-    testFixturesImplementation project(':api')
-    testFixturesImplementation project(':api-domain')
-    testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testFixturesImplementation "org.assertj:assertj-core:3.25.2"
-    testFixturesImplementation "org.springframework:spring-test"
+  api 'org.springframework.boot:spring-boot-starter'
+  api 'org.springframework:spring-tx'
+  api "io.reactivex.rxjava3:rxjava:3.0.12"
+
+  api 'org.openapitools:jackson-databind-nullable:0.2.1'
+  api 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+  testFixturesImplementation 'org.springframework.boot:spring-boot-test'
+  testFixturesImplementation project(':api')
+  testFixturesImplementation project(':api-domain')
+  testFixturesImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+  testFixturesImplementation "org.assertj:assertj-core:3.25.2"
+  testFixturesImplementation "org.springframework:spring-test"
 
 }
