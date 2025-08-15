@@ -24,6 +24,7 @@ import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredMap;
@@ -74,6 +75,8 @@ import org.smartbit4all.domain.data.TableDatas;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1217,6 +1220,35 @@ public class ObjectApiTestBase {
       assertThat(nodes.stream().map(n -> n.getPhysicalObjectId()).collect(toSet()))
           .hasSize(2);
     }
+  }
+
+  @Test
+  @ExtendWith(OutputCaptureExtension.class)
+  void testConsecutiveReadsOfSameObjectWhileReadCacheIsEnabled_yieldsConsistentResultsEvenIfNodeIsModifiedInMemory(
+      final CapturedOutput output) {
+    final URI uri = objectApi.saveAsNew("test", new SampleCategory().name("foo"));
+    final URI latestUri = objectApi.getLatestUri(uri);
+
+    objectApi.enableReadCache();
+    {
+      final ObjectNode node = objectApi.loadLatest(latestUri);
+      assertThat(node).returns("foo", it -> it.getValueAsString(SampleCategory.NAME));
+
+      // FIXME: Ideally this would incur a forced shutdown of the readCache:
+      node.setValue("bar", SampleCategory.NAME);
+      assertThat(node).returns("bar", it -> it.getValueAsString(SampleCategory.NAME));
+    }
+    {
+      // FIXME: If ReadCache treated this as unacceptable: this would be the latest point where an
+      // exception could be thrown.
+      final ObjectNode node = objectApi.loadLatest(latestUri);
+      assertThat(node).returns("foo", it -> it.getValueAsString(SampleCategory.NAME));
+    }
+
+    assertThat(objectApi.isReadCacheEnabled()).isTrue();
+    objectApi.disableReadCache();
+    assertThat(output).contains(
+        "Poisoned cache entry: CacheKey[uri=test:/org_smartbit4all_api_sample_bean_SampleCategory");
   }
 
 }
