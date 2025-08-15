@@ -97,6 +97,7 @@ public class ObjectApiImpl implements ObjectApi {
     private int cacheMisses = 0;
     private int existsHits = 0;
     private int existsMisses = 0;
+    private int poisonedHits = 0;
     private int lastModifiedHits = 0;
     private int lastModifiedMisses = 0;
 
@@ -111,6 +112,14 @@ public class ObjectApiImpl implements ObjectApi {
       ObjectNodeData data = cache.get(key);
       if (data != null) {
         cacheHits++;
+        if (ObjectNodeState.MODIFIED == data.getState()) {
+          poisonedHits++;
+          if (log.isWarnEnabled()) {
+            log.warn("Poisoned cache entry: {} is already modified!", key)
+          }
+          cache.remove(key);
+          return null;
+        }
       }
       return data;
     }
@@ -178,10 +187,12 @@ public class ObjectApiImpl implements ObjectApi {
       return String.format(
           "ReadCache stats - Duration: %dms, Total requests: %d, Hit rate: %.1f%%, " +
               "Objects(hits/misses): %d/%d, Exists(hits/misses): %d/%d, " +
+              "Poisoned read attempts: %d, " +
               "LastModified(hits/misses): %d/%d, Cached objects: %d",
           duration, totalRequests, hitRate,
           cacheHits, cacheMisses,
           existsHits, existsMisses,
+          poisonedHits,
           lastModifiedHits, lastModifiedMisses,
           cache.size());
     }
