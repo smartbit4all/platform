@@ -31,12 +31,14 @@ import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
+import org.smartbit4all.api.invocation.bean.InvocationPredicate;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.InvocationRun;
+import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import org.smartbit4all.api.invocation.bean.InvocationRunItem;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
@@ -666,6 +668,17 @@ public class InvocationApiImpl implements InvocationApi {
     invocationRegisterApi.saveAsyncInvocationResult(requestEntry, result);
   }
 
+  /**
+   * TODO Implement...
+   * 
+   * @param ctx
+   * @param predicate
+   * @return
+   */
+  private final boolean evaluate(ContextObject ctx, InvocationPredicate predicate) {
+    return true;
+  }
+
   @Override
   public void run(ContextObject ctx, InvocationRun run) {
     Objects.requireNonNull(ctx);
@@ -700,6 +713,30 @@ public class InvocationApiImpl implements InvocationApi {
             throw new IllegalArgumentException("Unable to call the " + invocationRequest, e);
           }
         }
+      } else if (!item.getConditionals().isEmpty()) {
+        // Evaluate the conditionals one by one and run the first matching.
+        // TODO The conditional can tell if it is exclusive or not. If not then the rest of the
+        // conditionals are evaluated also.
+        boolean conditionFound = false;
+        for (InvocationRunConditional conditional : item.getConditionals()) {
+          if (evaluate(ctx, conditional.getPredicate())) {
+            conditionFound = true;
+            run(ctx, conditional.getRun());
+          }
+        }
+        if (!conditionFound && item.getElse() != null) {
+          run(ctx, item.getElse());
+        }
+      } else if (item.getWhileLoop() != null) {
+        while (evaluate(ctx, item.getWhileLoop().getPredicate())) {
+          run(ctx, item.getWhileLoop().getRun());
+        }
+      } else if (item.getDoWhileLoop() != null) {
+        do {
+          run(ctx, item.getWhileLoop().getRun());
+        } while (evaluate(ctx, item.getWhileLoop().getPredicate()));
+      } else if (!item.getParallels().isEmpty()) {
+        item.getParallels().parallelStream().forEach(p -> run(ctx, p));
       }
     }
   }
