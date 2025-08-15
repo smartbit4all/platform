@@ -161,6 +161,8 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
         maintaining.remove();
       }
       myRuntime.getData().setUri(runtimeUri);
+
+      initRuntimes();
       self.setValue(myRuntime);
     }
 
@@ -170,7 +172,6 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
     long duration = endTime - startTime;
     log.info("initRuntime execution time: {} ms", duration);
   }
-
 
   @Scheduled(initialDelayString = "${applicationruntime.maintain.initialdelay:0}",
       fixedDelayString = "${applicationruntime.maintain.fixeddelay:5000}",
@@ -207,9 +208,7 @@ public class ApplicationRuntimeApiStorageImpl implements ApplicationRuntimeApi, 
       return;
     }
 
-    if (runtimes.isEmpty()) {
-      initRuntimes();
-    } else {
+    if (self.isDone()) {
       // cannot use Lock before runtimes are initialized
       URI lockUri =
           UriUtils.constructMethodUri(SCHEMA, InvocationRegisterApi.class,
