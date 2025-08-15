@@ -80,7 +80,7 @@ public class ContextObjectItem {
    * @return The value of the context object itself.
    */
   Object getValue() {
-    if (isValue(data.getObject())) {
+    if (isValue(data.getObject()) && data.getObject() != null) {
       return data.getObject();
     }
     ObjectNode objectNode = objectNode();

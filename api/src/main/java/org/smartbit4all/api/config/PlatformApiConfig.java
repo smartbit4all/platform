@@ -485,11 +485,7 @@ public class PlatformApiConfig {
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .addPathItem(ServiceConnection.API_VERSION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Authentication token")
-                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+                  .addPathItem(ServiceConnection.API_VERSION));
       result.addDescriptor(entry);
     }
     {
@@ -525,11 +521,7 @@ public class PlatformApiConfig {
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .addPathItem(ServiceConnection.API_VERSION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Authentication token")
-                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+                  .addPathItem(ServiceConnection.API_VERSION));
       result.addDescriptor(entry);
     }
     {
@@ -565,11 +557,7 @@ public class PlatformApiConfig {
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .addPathItem(ServiceConnection.API_VERSION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Authentication token")
-                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+                  .addPathItem(ServiceConnection.API_VERSION));
       result.addDescriptor(entry);
     }
     {
@@ -687,11 +675,7 @@ public class PlatformApiConfig {
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .addPathItem(ServiceConnection.API_VERSION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Authentication token")
-                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+                  .addPathItem(ServiceConnection.API_VERSION));
       result.addDescriptor(entry);
     }
     {
@@ -727,11 +711,7 @@ public class PlatformApiConfig {
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name("API version")
-                  .addPathItem(ServiceConnection.API_VERSION))
-          .addTableColumnsItem(
-              new MDMTableColumnDescriptor()
-                  .name("Authentication token")
-                  .addPathItem(ServiceConnection.AUTH_TOKEN));
+                  .addPathItem(ServiceConnection.API_VERSION));
       result.addDescriptor(entry);
     }
     {
