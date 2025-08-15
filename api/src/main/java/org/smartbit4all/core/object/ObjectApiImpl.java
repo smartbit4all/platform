@@ -115,7 +115,7 @@ public class ObjectApiImpl implements ObjectApi {
         if (ObjectNodeState.MODIFIED == data.getState()) {
           poisonedHits++;
           if (log.isWarnEnabled()) {
-            log.warn("Poisoned cache entry: {} is already modified!", key)
+            log.warn("Poisoned cache entry: {} is already modified!", key);
           }
           cache.remove(key);
           return null;
