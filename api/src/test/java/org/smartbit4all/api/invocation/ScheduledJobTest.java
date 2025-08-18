@@ -61,7 +61,7 @@ class ScheduledJobTest {
         List.of(
             objectApi.loadLatest(scheduledJobUris.get(0)).getObject(ScheduledJobDefinition.class)));
     int sleepSeconds = 10;
-    Thread.sleep(sleepSeconds * 1000);
+    Thread.sleep(sleepSeconds * 1000 + 1000);
 
     Assertions.assertEquals(sleepSeconds, ScheduledTestApiImpl.counter);
     Assertions.assertTrue(ScheduledTestApiImpl.value > 0);
