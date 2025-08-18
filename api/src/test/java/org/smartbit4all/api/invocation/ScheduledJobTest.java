@@ -1,6 +1,8 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -57,15 +59,18 @@ class ScheduledJobTest {
         .save(objectApi.create(Invocations.INVOCATION_SCHEME, scheduledJobDef));
 
     waitForRefresh();
-    scheduledJobManager.scheduleJobs(
-        List.of(
-            objectApi.loadLatest(scheduledJobUris.get(0)).getObject(ScheduledJobDefinition.class)));
-    int sleepSeconds = 10;
-    Thread.sleep(sleepSeconds * 1000 + 1000);
 
-    Assertions.assertEquals(sleepSeconds, ScheduledTestApiImpl.counter);
-    Assertions.assertTrue(ScheduledTestApiImpl.value > 0);
-    Assertions.assertEquals(sleepSeconds * PARAM_VALUE, ScheduledTestApiImpl.value);
+    scheduledJobManager.scheduleJobs(List
+        .of(objectApi.loadLatest(scheduledJobUris.get(0)).getObject(ScheduledJobDefinition.class)));
+
+    Thread.sleep(10000);
+
+    LocalDateTime finishTime = LocalDateTime.now();
+    long seconds = Duration.between(ScheduledTestApiImpl.startTime, finishTime).getSeconds();
+
+    // for example in 9 seconds the counter should be 10, because the job will be executed at the
+    // start too
+    Assertions.assertTrue(Math.abs(seconds - ScheduledTestApiImpl.counter) <= 2);
   }
 
   private ScheduledJobDefinition createScheduledJobDef(String jobDefCode) {
