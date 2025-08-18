@@ -1,8 +1,5 @@
 package org.smartbit4all.api.invocation;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -39,6 +36,7 @@ import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
+import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.invocation.bean.PublishedEventData;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannel;
 import org.smartbit4all.api.invocation.bean.RuntimeAsyncChannelList;
@@ -71,6 +69,9 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -130,6 +131,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
    * All api instances that our application provides for invoke an api call.
    */
   private final Map<URI, Object> apiInstanceByApiDataUri = new HashMap<>();
+
+  /**
+   * All method templates by fully qualified name.
+   */
+  private Map<String, MethodTemplate> methodTemplatesByFQN = new HashMap<>();
 
   /**
    * The runtime instances known in the cluster by Api uri. This map is always updated by the
@@ -211,6 +217,11 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
           .schema(Invocations.INVOCATION_SCHEME)
           .name(InvocationApiMdmConfig.MDM_ENTRY_APIREGISTRY);
+
+  private StoredCollectionDescriptor methodTemplateRegistryList =
+      new StoredCollectionDescriptor().collectionType(CollectionTypeEnum.LIST)
+          .schema(Invocations.INVOCATION_SCHEME)
+          .name(InvocationApiMdmConfig.MDM_ENTRY_METHOD_TEMPLATE);
 
   /**
    * This is the OrgApi scheme where we save the settings for the notify.
@@ -417,6 +428,10 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
       // Add the MDM registered apis to the active apis.
       activeApis.addAll(collectionApi.list(apiRegistryList).uris());
+
+      methodTemplatesByFQN = collectionApi.list(methodTemplateRegistryList).nodesFromCache()
+          .collect(toMap(n -> Invocations.createFQN(n.getObject(MethodTemplate.class).getRequest()),
+              n -> n.getObject(MethodTemplate.class)));
 
       List<URI> currentActiveApiUris = apiRegister.values().stream()
           .flatMap(m -> m.values().stream().map(ad -> ad.getApiData().getUri())).collect(toList());
@@ -1113,6 +1128,16 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
     }
 
     return null;
+  }
+
+  @Override
+  public MethodTemplate getMethodTemplate(String methodFQN) {
+    try {
+      maintainLatch.await();
+    } catch (InterruptedException e) {
+      log.error("Wait for maintain interrupted.", e);
+    }
+    return methodTemplatesByFQN.get(methodFQN);
   }
 
   @Override

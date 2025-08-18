@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
-import org.smartbit4all.api.invocation.bean.ParameterData;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -34,31 +34,23 @@ import jakarta.validation.Valid;
 @Schema(description = "The method template is a construction for a dynamic methon invocation mechanism. It defines an invokeable methon on an api that is executed by the InvocationExtensionApi that has different contributions to manage the different kind of protokolls like REST, SOAP, SQL etc. The objects are managed in an MDMEntry contained by the MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION definition. Based on the MDMEntry the api registry scheduled job will add these api calls to the registry. ")
 @JsonPropertyOrder({
   MethodTemplate.URI,
-  MethodTemplate.INTERFACE_NAME,
-  MethodTemplate.API_NAME,
-  MethodTemplate.DATA,
-  MethodTemplate.TEMPLATE,
-  MethodTemplate.CONNECTION
+  MethodTemplate.FULLY_QUALIFIED_NAME,
+  MethodTemplate.REQUEST,
+  MethodTemplate.TEMPLATE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodTemplate {
   public static final String URI = "uri";
   private URI uri;
 
-  public static final String INTERFACE_NAME = "interfaceName";
-  private String interfaceName;
+  public static final String FULLY_QUALIFIED_NAME = "fullyQualifiedName";
+  private String fullyQualifiedName;
 
-  public static final String API_NAME = "apiName";
-  private String apiName;
-
-  public static final String DATA = "data";
-  private ParameterData data;
+  public static final String REQUEST = "request";
+  private InvocationRequest request;
 
   public static final String TEMPLATE = "template";
   private String template;
-
-  public static final String CONNECTION = "connection";
-  private String connection;
 
   public MethodTemplate() {
   }
@@ -92,87 +84,61 @@ public class MethodTemplate {
     this.uri = uri;
   }
 
-  public MethodTemplate interfaceName(String interfaceName) {
+  public MethodTemplate fullyQualifiedName(String fullyQualifiedName) {
     
-    this.interfaceName = interfaceName;
+    this.fullyQualifiedName = fullyQualifiedName;
     return this;
   }
 
   /**
-   * The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. 
-   * @return interfaceName
+   * Get fullyQualifiedName
+   * @return fullyQualifiedName
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The fully qualified name of the api interface. In case of java it is the name of the interface. There can be more than one implementation from an interface class provided by one or more module. But they have to have a unique name in this case. ")
-  @JsonProperty(INTERFACE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @JsonProperty(FULLY_QUALIFIED_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public String getInterfaceName() {
-    return interfaceName;
+  public String getFullyQualifiedName() {
+    return fullyQualifiedName;
   }
 
 
-  @JsonProperty(INTERFACE_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setInterfaceName(String interfaceName) {
-    this.interfaceName = interfaceName;
+  @JsonProperty(FULLY_QUALIFIED_NAME)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setFullyQualifiedName(String fullyQualifiedName) {
+    this.fullyQualifiedName = fullyQualifiedName;
   }
 
-  public MethodTemplate apiName(String apiName) {
+  public MethodTemplate request(InvocationRequest request) {
     
-    this.apiName = apiName;
+    this.request = request;
     return this;
   }
 
   /**
-   * The name of the api that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. 
-   * @return apiName
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The name of the api that is equal to the name of the interface if we have only one instance. But if we have more than one provided implementation than it is uniquely identify them. Normally in java spring application this is the name of the service. It is useful when we have multiple secondary apis registered and the primary api is going to collect them all. ")
-  @JsonProperty(API_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public String getApiName() {
-    return apiName;
-  }
-
-
-  @JsonProperty(API_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setApiName(String apiName) {
-    this.apiName = apiName;
-  }
-
-  public MethodTemplate data(ParameterData data) {
-    
-    this.data = data;
-    return this;
-  }
-
-  /**
-   * Get data
-   * @return data
+   * Get request
+   * @return request
    */
   @jakarta.annotation.Nonnull
   @NotNull
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
-  @JsonProperty(DATA)
+  @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
-  public ParameterData getData() {
-    return data;
+  public InvocationRequest getRequest() {
+    return request;
   }
 
 
-  @JsonProperty(DATA)
+  @JsonProperty(REQUEST)
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setData(ParameterData data) {
-    this.data = data;
+  public void setRequest(InvocationRequest request) {
+    this.request = request;
   }
 
   public MethodTemplate template(String template) {
@@ -185,12 +151,11 @@ public class MethodTemplate {
    * Get template
    * @return template
    */
-  @jakarta.annotation.Nonnull
-  @NotNull
+  @jakarta.annotation.Nullable
 
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
   @JsonProperty(TEMPLATE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
   public String getTemplate() {
     return template;
@@ -198,37 +163,9 @@ public class MethodTemplate {
 
 
   @JsonProperty(TEMPLATE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setTemplate(String template) {
     this.template = template;
-  }
-
-  public MethodTemplate connection(String connection) {
-    
-    this.connection = connection;
-    return this;
-  }
-
-  /**
-   * The name of the service connection to use.
-   * @return connection
-   */
-  @jakarta.annotation.Nonnull
-  @NotNull
-
-  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The name of the service connection to use.")
-  @JsonProperty(CONNECTION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-
-  public String getConnection() {
-    return connection;
-  }
-
-
-  @JsonProperty(CONNECTION)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
-  public void setConnection(String connection) {
-    this.connection = connection;
   }
 
   @Override
@@ -241,16 +178,14 @@ public class MethodTemplate {
     }
     MethodTemplate methodTemplate = (MethodTemplate) o;
     return Objects.equals(this.uri, methodTemplate.uri) &&
-        Objects.equals(this.interfaceName, methodTemplate.interfaceName) &&
-        Objects.equals(this.apiName, methodTemplate.apiName) &&
-        Objects.equals(this.data, methodTemplate.data) &&
-        Objects.equals(this.template, methodTemplate.template) &&
-        Objects.equals(this.connection, methodTemplate.connection);
+        Objects.equals(this.fullyQualifiedName, methodTemplate.fullyQualifiedName) &&
+        Objects.equals(this.request, methodTemplate.request) &&
+        Objects.equals(this.template, methodTemplate.template);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, interfaceName, apiName, data, template, connection);
+    return Objects.hash(uri, fullyQualifiedName, request, template);
   }
 
   @Override
@@ -258,11 +193,9 @@ public class MethodTemplate {
     StringBuilder sb = new StringBuilder();
     sb.append("class MethodTemplate {\n");
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
-    sb.append("    interfaceName: ").append(toIndentedString(interfaceName)).append("\n");
-    sb.append("    apiName: ").append(toIndentedString(apiName)).append("\n");
-    sb.append("    data: ").append(toIndentedString(data)).append("\n");
+    sb.append("    fullyQualifiedName: ").append(toIndentedString(fullyQualifiedName)).append("\n");
+    sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("    template: ").append(toIndentedString(template)).append("\n");
-    sb.append("    connection: ").append(toIndentedString(connection)).append("\n");
     sb.append("}");
     return sb.toString();
   }

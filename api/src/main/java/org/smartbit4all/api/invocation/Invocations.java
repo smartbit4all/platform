@@ -569,4 +569,9 @@ public class Invocations {
     return result;
   }
 
+  public static String createFQN(InvocationRequest request) {
+    // TODO Add the types of the parameters.
+    return request.getInterfaceClass() + StringConstant.DOT + request.getMethodName();
+  }
+
 }

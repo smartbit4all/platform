@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -9,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import org.smartbit4all.api.object.bean.ContextObjectData;
@@ -17,6 +18,7 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toMap;
 
 public class ContextObject {
 
@@ -36,6 +38,11 @@ public class ContextObject {
 
   private WeakReference<ObjectApi> objectApiRef;
 
+  /**
+   * The read-write lock for the context object.
+   */
+  private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+
   private ObjectApi objectApi() {
     return objectApiRef.get();
   }
@@ -46,18 +53,28 @@ public class ContextObject {
   }
 
   public ContextObject init(ContextObject from) {
-    singleContextItem = from.singleContextItem;
-    items.putAll(from.items);
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      singleContextItem = from.singleContextItem;
+      items.putAll(from.items);
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   public ContextObject init(ContextObjectData from) {
-    if (from.getSingleItem() != null) {
-      singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
+    rwLock.writeLock().lock();
+    try {
+      if (from.getSingleItem() != null) {
+        singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
+      }
+      items.putAll(from.getItems().stream().map(di -> new ContextObjectItem(objectApi(), di))
+          .collect(toMap(i -> i.getName(), i -> i)));
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
     }
-    items.putAll(from.getItems().stream().map(di -> new ContextObjectItem(objectApi(), di))
-        .collect(toMap(i -> i.getName(), i -> i)));
-    return this;
   }
 
   /**
@@ -74,8 +91,13 @@ public class ContextObject {
     }
 
     final var ctx = new ContextObject(objectApi());
-    ctx.items.put(name, singleContextItem);
-    return ctx;
+    rwLock.writeLock().lock();
+    try {
+      ctx.items.put(name, singleContextItem);
+      return ctx;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**

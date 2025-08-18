@@ -47,7 +47,7 @@ public class InvocationApiMdmConfig {
   private static final String INVOCATION_SCHEDULED_JOB_DEFINTIONS =
       "Invocaton Scheduled job definitions";
 
-  public static final String METHOD_TEMPLATES = "METHOD_TEMPLATES";
+  public static final String MDM_ENTRY_METHOD_TEMPLATE = "METHOD_TEMPLATES";
 
   /**
    * The name of the MDM entry containing the service connections for the
@@ -83,12 +83,12 @@ public class InvocationApiMdmConfig {
 
     result.addDescriptor(new MDMEntryDescriptor()
         .schema(Invocations.INVOCATION_SCHEME)
-        .publishedListName(METHOD_TEMPLATES)
-        .name(METHOD_TEMPLATES)
+        .publishedListName(MDM_ENTRY_METHOD_TEMPLATE)
+        .name(MDM_ENTRY_METHOD_TEMPLATE)
         .adminGroupName(PlatformSecurityOption.methodTemplateEditor.getName())
         .addConstraintsItem(new MDMEntryConstraint()
             .kind(KindEnum.UNIQUECASEINSENSITIVE)
-            .addPathItem(MethodTemplate.INTERFACE_NAME))
+            .addPathItem(MethodTemplate.FULLY_QUALIFIED_NAME))
         .editorViewName(MDMConstants.MDM_EDIT)
         .displayNameList(new LangString().defaultValue("Method templates")
             .putValueByLocaleItem(Locales.L_HU, "Metódus sablonok")
@@ -100,12 +100,8 @@ public class InvocationApiMdmConfig {
         .typeQualifiedName(MethodTemplate.class.getName())
         .addTableColumnsItem(
             new MDMTableColumnDescriptor()
-                .name("Interface name")
-                .addPathItem(MethodTemplate.INTERFACE_NAME))
-        .addTableColumnsItem(
-            new MDMTableColumnDescriptor()
-                .name("Api name")
-                .addPathItem(MethodTemplate.API_NAME)));
+                .name("Teljes név")
+                .addPathItem(MethodTemplate.FULLY_QUALIFIED_NAME)));
 
     result.addDescriptor(new MDMEntryDescriptor()
         .schema(Invocations.INVOCATION_SCHEME)

@@ -11,6 +11,7 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.EventSubscriptionData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
+import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.core.object.ObjectNode;
 
 /**
@@ -33,6 +34,8 @@ public interface InvocationRegisterApi {
   Object getApiInstance(URI apiDataUri);
 
   ApiDescriptor getApi(String interfaceClass, String name);
+
+  MethodTemplate getMethodTemplate(String methodFQN);
 
   List<UUID> getRuntimesForApi(URI apiDataUri);
 
@@ -85,5 +88,6 @@ public interface InvocationRegisterApi {
   List<EventSubscriptionData> getSubscriptions(String interfaceName);
 
   void initRegistry();
+
 
 }

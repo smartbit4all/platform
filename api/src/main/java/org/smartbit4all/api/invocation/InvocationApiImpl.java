@@ -136,9 +136,16 @@ public class InvocationApiImpl implements InvocationApi {
   public InvocationParameter invoke(InvocationRequest request, Object... args)
       throws ApiNotFoundException {
     Objects.requireNonNull(request);
+    // MethodTemplate methodTemplate =
+    // invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
+    // if (methodTemplate != null) {
+    //
+    // }
+
     if (Invocations.isScript(request)) {
       return invokeScript(request);
     }
+
 
     ApiDescriptor apiDescriptor =
         invocationRegisterApi.getApi(request.getInterfaceClass(), request.getName());
