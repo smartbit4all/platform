@@ -170,7 +170,7 @@ public final class ObjectPropertyResolver {
    * @return this instance
    */
   public ObjectPropertyResolver addContextObject(String name, ObjectNode node) {
-    if (name != null && node != null && contextObject.getItem(name) == null) {
+    if (name != null && node != null && !contextObject.exists(name)) {
       contextObject.set(name, node);
     }
     return this;
@@ -234,14 +234,13 @@ public final class ObjectPropertyResolver {
     if (propertyUri == null) {
       return null;
     }
-    ContextObjectItem contextObjectItem = contextObject.getItem(propertyUri.getScheme());
-    if (contextObjectItem == null) {
+    if (!contextObject.exists(propertyUri.getScheme())) {
       throw new IllegalArgumentException(
           "Unable to resolve the " + propertyUri + " property because the "
               + propertyUri.getScheme() + " object is not defined in the context.");
     }
     String propertyUriString = propertyUri.toString();
-    return performResolution(contextObjectItem.objectNode(),
+    return performResolution(contextObject.getObjectNode(propertyUri.getScheme()),
         PropertyPath.parse(propertyUriString.substring(propertyUriString.indexOf('/'))),
         language);
   }

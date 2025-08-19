@@ -13,7 +13,7 @@ import org.smartbit4all.api.object.bean.ContextObjectDataItem;
  * 
  * @author Peter Boros
  */
-public class ContextObjectItem {
+class ContextObjectItem {
 
   ContextObjectDataItem data;
 

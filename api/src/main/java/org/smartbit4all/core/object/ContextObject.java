@@ -348,8 +348,20 @@ public class ContextObject {
     return result;
   }
 
-  public ContextObjectItem getItem(String name) {
+  ContextObjectItem getItem(String name) {
     return items.get(name);
+  }
+
+  public ObjectNode getObjectNode(String name) {
+    ContextObjectItem item = findItem(name);
+    if (item == null) {
+      return null;
+    }
+    return item.objectNode();
+  }
+
+  public boolean exists(String name) {
+    return items.containsKey(name);
   }
 
   /**
@@ -361,12 +373,37 @@ public class ContextObject {
     return singleContextItem != null;
   }
 
-  public Map<String, ContextObjectItem> getItems() {
+  Map<String, ContextObjectItem> getItems() {
     if (isSingleItemContext()) {
       return Collections.singletonMap(StringConstant.EMPTY, singleContextItem);
     }
 
     return Collections.unmodifiableMap(items);
+  }
+
+  public List<String> getItemNames() {
+    if (isSingleItemContext()) {
+      return List.of(StringConstant.EMPTY);
+    }
+
+    return items.keySet().stream().toList();
+  }
+
+  public String toStringCtx() {
+    return items
+        .entrySet()
+        .stream()
+        .map(e -> {
+          StringBuilder sb = new StringBuilder();
+          sb.append("Key: ");
+          sb.append(e.getKey());
+          sb.append('\n');
+          sb.append("Value: ");
+          sb.append(getValueFromContext(List.of(e.getKey())));
+          sb.append('\n');
+          return sb.toString();
+        })
+        .toList().toString();
   }
 
 }

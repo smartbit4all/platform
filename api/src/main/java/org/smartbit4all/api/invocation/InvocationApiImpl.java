@@ -749,21 +749,7 @@ public class InvocationApiImpl implements InvocationApi {
   }
 
   String ctxToString(ContextObject ctx) {
-    return ctx
-        .getItems()
-        .entrySet()
-        .stream()
-        .map(e -> {
-          StringBuilder sb = new StringBuilder();
-          sb.append("Key: ");
-          sb.append(e.getKey());
-          sb.append('\n');
-          sb.append("Value: ");
-          sb.append(ctx.getValueFromContext(List.of(e.getKey())));
-          sb.append('\n');
-          return sb.toString();
-        })
-        .toList().toString();
+    return ctx.toStringCtx();
   }
 
 }
