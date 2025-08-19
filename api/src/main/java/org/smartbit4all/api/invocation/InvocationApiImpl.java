@@ -728,7 +728,7 @@ public class InvocationApiImpl implements InvocationApi {
         for (InvocationRunConditional conditional : item.getConditionals()) {
           if (evaluate(ctx, conditional.getPredicate())) {
             conditionFound = true;
-            run(ctx, conditional.getRun());
+            run(ctx.getSubContext(), conditional.getRun());
           }
         }
         if (!conditionFound && item.getElse() != null) {
@@ -736,14 +736,14 @@ public class InvocationApiImpl implements InvocationApi {
         }
       } else if (item.getWhileLoop() != null) {
         while (evaluate(ctx, item.getWhileLoop().getPredicate())) {
-          run(ctx, item.getWhileLoop().getRun());
+          run(ctx.getSubContext(), item.getWhileLoop().getRun());
         }
       } else if (item.getDoWhileLoop() != null) {
         do {
-          run(ctx, item.getWhileLoop().getRun());
+          run(ctx.getSubContext(), item.getWhileLoop().getRun());
         } while (evaluate(ctx, item.getWhileLoop().getPredicate()));
       } else if (!item.getParallels().isEmpty()) {
-        item.getParallels().parallelStream().forEach(p -> run(ctx, p));
+        item.getParallels().parallelStream().forEach(p -> run(ctx.getSubContext(), p));
       }
     }
   }

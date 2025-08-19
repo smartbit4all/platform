@@ -20,6 +20,24 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ObjectUtils;
 import static java.util.stream.Collectors.toMap;
 
+/**
+ * Represents a container for contextual objects used during evaluation, scripting, or data mapping
+ * operations.
+ * <p>
+ * A {@code ContextObject} can operate in two modes:
+ * <ul>
+ * <li><b>Single item context</b> - wrapping a single unnamed {@link ContextObjectItem}.</li>
+ * <li><b>Multi-item context</b> - wrapping a map of named {@link ContextObjectItem}s.</li>
+ * </ul>
+ * It provides methods to set, retrieve, and update context items which can be plain Java objects,
+ * {@link ObjectNode}s, or {@link URI}-based references. Context objects are commonly used in
+ * expression evaluation (SpEL), scripting environments, and for mapping values across different
+ * execution contexts.
+ *
+ * <p>
+ * This class is thread-safe due to the use of a {@link ReadWriteLock} when mutating internal state.
+ * </p>
+ */
 public class ContextObject {
 
   private final Map<String, ContextObjectItem> items = new HashMap<>();
@@ -47,28 +65,62 @@ public class ContextObject {
     return objectApiRef.get();
   }
 
+  /**
+   * Creates a new {@code ContextObject} bound to the given {@link ObjectApi}.
+   *
+   * @param objectApi the object API reference used to resolve object nodes
+   */
   ContextObject(ObjectApi objectApi) {
     super();
     this.objectApiRef = new WeakReference<>(objectApi);
   }
 
+  public ContextObject getSubContext() {
+    ContextObject result = new ContextObject(objectApi());
+    return result.init(this);
+  }
+
+  /**
+   * Initializes this context object with the contents of another {@link ContextObject}. This
+   * performs a shallow copy of its items and single item reference.
+   *
+   * @param from the source context to copy from
+   * @return this instance for method chaining
+   */
   public ContextObject init(ContextObject from) {
-    rwLock.writeLock().lock();
+    // Acquire source read lock first, then this write lock to copy a stable snapshot.
+    from.rwLock.readLock().lock();
     try {
-      singleContextItem = from.singleContextItem;
-      items.putAll(from.items);
-      return this;
+      rwLock.writeLock().lock();
+      try {
+        singleContextItem = from.singleContextItem;
+        items.clear();
+        items.putAll(from.items);
+        return this;
+      } finally {
+        rwLock.writeLock().unlock();
+      }
     } finally {
-      rwLock.writeLock().unlock();
+      from.rwLock.readLock().unlock();
     }
   }
 
+  /**
+   * Initializes this context object with the contents of a {@link ContextObjectData}. Creates new
+   * {@link ContextObjectItem}s for all provided data items.
+   *
+   * @param from the source context data to copy from
+   * @return this instance for method chaining
+   */
   public ContextObject init(ContextObjectData from) {
     rwLock.writeLock().lock();
     try {
       if (from.getSingleItem() != null) {
         singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
+      } else {
+        singleContextItem = null;
       }
+      items.clear();
       items.putAll(from.getItems().stream().map(di -> new ContextObjectItem(objectApi(), di))
           .collect(toMap(i -> i.getName(), i -> i)));
       return this;
@@ -86,17 +138,21 @@ public class ContextObject {
    *         name
    */
   public ContextObject toNamed(final String name) {
-    if (!isSingleItemContext()) {
-      throw new IllegalStateException("This instance holds multiple items already!");
-    }
-
-    final var ctx = new ContextObject(objectApi());
-    rwLock.writeLock().lock();
+    rwLock.readLock().lock();
     try {
-      ctx.items.put(name, singleContextItem);
+      if (singleContextItem == null) {
+        throw new IllegalStateException("This instance holds multiple items already!");
+      }
+      final var ctx = new ContextObject(objectApi());
+      ctx.rwLock.writeLock().lock();
+      try {
+        ctx.items.put(name, singleContextItem);
+      } finally {
+        ctx.rwLock.writeLock().unlock();
+      }
       return ctx;
     } finally {
-      rwLock.writeLock().unlock();
+      rwLock.readLock().unlock();
     }
   }
 
@@ -108,8 +164,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, URI uri) {
-    items.put(name, new ContextObjectItem(objectApi(), name, uri));
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      items.put(name, new ContextObjectItem(objectApi(), name, uri));
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -121,8 +182,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, Object object) {
-    items.put(name, new ContextObjectItem(objectApi(), name, object));
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      items.put(name, new ContextObjectItem(objectApi(), name, object));
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -134,8 +200,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, ObjectNode node) {
-    items.put(name, new ContextObjectItem(objectApi(), name, node));
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      items.put(name, new ContextObjectItem(objectApi(), name, node));
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -145,8 +216,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(URI uri) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -157,8 +233,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(Object object) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -169,8 +250,13 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(ObjectNode node) {
-    singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
-    return this;
+    rwLock.writeLock().lock();
+    try {
+      singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -187,17 +273,22 @@ public class ContextObject {
     }
 
 
-    for (final var e : values.entrySet()) {
-      final String key = e.getKey();
-      switch (e.getValue()) {
-        case null -> {
+    rwLock.writeLock().lock();
+    try {
+      for (final var e : values.entrySet()) {
+        final String key = e.getKey();
+        switch (e.getValue()) {
+          case null -> {
+          }
+          case URI uri -> items.put(key, new ContextObjectItem(objectApi(), key, uri));
+          case ObjectNode node -> items.put(key, new ContextObjectItem(objectApi(), key, node));
+          default -> items.put(key, new ContextObjectItem(objectApi(), key, e.getValue()));
         }
-        case URI uri -> set(key, uri);
-        case ObjectNode node -> set(key, node);
-        default -> set(key, e.getValue());
       }
+      return this;
+    } finally {
+      rwLock.writeLock().unlock();
     }
-    return this;
   }
 
   /**
@@ -206,15 +297,20 @@ public class ContextObject {
    * @return
    */
   public final EvaluationContext getEvaluationContext() {
-    StandardEvaluationContext result = new StandardEvaluationContext();
-    if (singleContextItem != null) {
-      // We should set the root object and also the variable.
-      result.setRootObject(singleContextItem.getValue());
+    rwLock.readLock().lock();
+    try {
+      StandardEvaluationContext result = new StandardEvaluationContext();
+      if (singleContextItem != null) {
+        // We should set the root object and also the variable.
+        result.setRootObject(singleContextItem.getValue());
+      }
+      for (ContextObjectItem contextObject : items.values()) {
+        result.setVariable(contextObject.getName(), contextObject.getValue());
+      }
+      return result;
+    } finally {
+      rwLock.readLock().unlock();
     }
-    for (ContextObjectItem contextObject : items.values()) {
-      result.setVariable(contextObject.getName(), contextObject.getValue());
-    }
-    return result;
   }
 
   /**
@@ -223,17 +319,22 @@ public class ContextObject {
    * @return
    */
   public final Bindings getScriptBindings(ScriptEngine engine) {
-    Bindings result = engine.createBindings();
-    if (singleContextItem != null) {
-      // We should set the root object and also the variable.
-      result.put(OBJ, singleContextItem.getValue());
-      result.put(OBJ_NODE, singleContextItem.objectNode());
+    rwLock.readLock().lock();
+    try {
+      Bindings result = engine.createBindings();
+      if (singleContextItem != null) {
+        // We should set the root object and also the variable.
+        result.put(OBJ, singleContextItem.getValue());
+        result.put(OBJ_NODE, singleContextItem.objectNode());
+      }
+      for (ContextObjectItem contextObject : items.values()) {
+        result.put(contextObject.getName(), contextObject.getValue());
+        result.put(contextObject.getName() + NODE_POSTFIX, contextObject.objectNode());
+      }
+      return result;
+    } finally {
+      rwLock.readLock().unlock();
     }
-    for (ContextObjectItem contextObject : items.values()) {
-      result.put(contextObject.getName(), contextObject.getValue());
-      result.put(contextObject.getName() + NODE_POSTFIX, contextObject.objectNode());
-    }
-    return result;
   }
 
   /**
@@ -244,87 +345,123 @@ public class ContextObject {
    */
   public final Object getValueFromContext(List<String> path) {
     Objects.requireNonNull(path);
-    ContextObjectItem contextObject;
-    List<String> finalPath = new ArrayList<>();
-    contextObject = findItem(path, finalPath);
-    if (finalPath.isEmpty()) {
-      // We arrived we need the context value as is.
-      return contextObject.getValue();
+    rwLock.readLock().lock();
+    try {
+      ContextObjectItem contextObject;
+      List<String> finalPath = new ArrayList<>();
+      contextObject = findItem(path, finalPath);
+      if (finalPath.isEmpty()) {
+        // We arrived we need the context value as is.
+        return contextObject.getValue();
+      }
+      ObjectNode objectNode = contextObject.objectNode();
+      if (objectNode == null) {
+        throw new IllegalArgumentException(
+            "Unable to load the context object " + contextObject.getName()
+                + " it is not set correctly.");
+      }
+      return objectNode.getValue(StringConstant.toArray(finalPath));
+    } finally {
+      rwLock.readLock().unlock();
     }
-    ObjectNode objectNode = contextObject.objectNode();
-    if (objectNode == null) {
-      throw new IllegalArgumentException(
-          "Unable to load the context object " + contextObject.getName()
-              + " it is not set correctly.");
-    }
-    return objectNode.getValue(StringConstant.toArray(finalPath));
   }
 
   private ContextObjectItem findItem(String itemName) {
-    return items.get(itemName);
+    rwLock.readLock().lock();
+    try {
+      return items.get(itemName);
+    } finally {
+      rwLock.readLock().unlock();
+    }
   }
 
   private ContextObjectItem findItem(List<String> path, List<String> finalPath) {
-    ContextObjectItem contextObject;
-    if (singleContextItem != null) {
-      // The whole path is evaluated inside the single context object.
-      contextObject = singleContextItem;
-      finalPath.addAll(path);
-    } else {
-      // The first segment of the path identifies the context object and the rest is the path
-      // inside.
-      if (path.size() < 1) {
-        throw new IllegalArgumentException(
-            "Unable to get value from context, at least the context object must be denoted.");
+    // Caller should hold at least the read lock; acquire read lock defensively.
+    rwLock.readLock().lock();
+    try {
+      ContextObjectItem contextObject;
+      if (singleContextItem != null) {
+        // The whole path is evaluated inside the single context object.
+        contextObject = singleContextItem;
+        finalPath.addAll(path);
+      } else {
+        // The first segment of the path identifies the context object and the rest is the path
+        // inside.
+        if (path.size() < 1) {
+          throw new IllegalArgumentException(
+              "Unable to get value from context, at least the context object must be denoted.");
+        }
+        String ctxName = path.get(0);
+        contextObject = items.get(ctxName);
+        if (contextObject == null) {
+          throw new IllegalArgumentException(
+              ctxName + " context object is not found.");
+        }
+        finalPath.addAll(path.subList(1, path.size()));
       }
-      String ctxName = path.get(0);
-      contextObject = items.get(ctxName);
-      if (contextObject == null) {
-        throw new IllegalArgumentException(
-            ctxName + " context object is not found.");
-      }
-      finalPath.addAll(path.subList(1, path.size()));
+      return contextObject;
+    } finally {
+      rwLock.readLock().unlock();
     }
-    return contextObject;
   }
 
   @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
-    if (path.size() == 1) {
-      // Set a context object itself
-      String itemName = path.get(0);
-      ContextObjectItem item = findItem(itemName);
-      if (item != null) {
-        ObjectNode objectNode = item.objectNode();
-        if (objectNode != null) {
-          if (merge) {
-            objectNode.setValues(objectApi().toMapObject(value));
+    rwLock.writeLock().lock();
+    try {
+      if (path.size() == 1) {
+        // Set a context object itself
+        String itemName = path.get(0);
+        ContextObjectItem item = items.get(itemName);
+        if (item != null) {
+          ObjectNode objectNode = item.objectNode();
+          if (objectNode != null) {
+            if (merge) {
+              objectNode.setValues(objectApi().toMapObject(value));
+            } else {
+              objectNode.setObject(value);
+            }
           } else {
-            objectNode.setObject(value);
+            items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
           }
         } else {
-          set(itemName, value);
+          items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
         }
-      } else {
-        set(itemName, value);
+        return;
       }
-      return;
-    }
-    ContextObjectItem contextObject;
-    List<String> finalPath = new ArrayList<>();
-    contextObject = findItem(path, finalPath);
-    ObjectNode objectNode = contextObject.objectNode();
-    if (objectNode != null) {
-      if (merge && !objectApi().isValue(value)) {
-        objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
+      ContextObjectItem contextObject;
+      List<String> finalPath = new ArrayList<>();
+      // findItem uses read lock; we already hold write lock which is exclusive, so call directly:
+      if (singleContextItem != null) {
+        contextObject = singleContextItem;
+        finalPath.addAll(path);
       } else {
-        if (ObjectUtils.isEmpty(finalPath)) {
-          objectNode.setObject(value);
+        if (path.isEmpty()) {
+          throw new IllegalArgumentException(
+              "Unable to get value from context, at least the context object must be denoted.");
+        }
+        String ctxName = path.get(0);
+        contextObject = items.get(ctxName);
+        if (contextObject == null) {
+          throw new IllegalArgumentException(ctxName + " context object is not found.");
+        }
+        finalPath.addAll(path.subList(1, path.size()));
+      }
+      ObjectNode objectNode = contextObject.objectNode();
+      if (objectNode != null) {
+        if (merge && !objectApi().isValue(value)) {
+          objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
         } else {
-          objectNode.setValue(value, StringConstant.toArray(finalPath));
+          if (ObjectUtils.isEmpty(finalPath)) {
+            objectNode.setObject(value);
+          } else {
+            objectNode.setValue(value, StringConstant.toArray(finalPath));
+          }
         }
       }
+    } finally {
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -349,19 +486,34 @@ public class ContextObject {
   }
 
   ContextObjectItem getItem(String name) {
-    return items.get(name);
+    rwLock.readLock().lock();
+    try {
+      return items.get(name);
+    } finally {
+      rwLock.readLock().unlock();
+    }
   }
 
   public ObjectNode getObjectNode(String name) {
-    ContextObjectItem item = findItem(name);
-    if (item == null) {
-      return null;
+    rwLock.readLock().lock();
+    try {
+      ContextObjectItem item = items.get(name);
+      if (item == null) {
+        return null;
+      }
+      return item.objectNode();
+    } finally {
+      rwLock.readLock().unlock();
     }
-    return item.objectNode();
   }
 
   public boolean exists(String name) {
-    return items.containsKey(name);
+    rwLock.readLock().lock();
+    try {
+      return items.containsKey(name);
+    } finally {
+      rwLock.readLock().unlock();
+    }
   }
 
   /**
@@ -370,27 +522,40 @@ public class ContextObject {
    * @return true, if there is an unnamed singular item being wrapped, false otherwise
    */
   public boolean isSingleItemContext() {
-    return singleContextItem != null;
+    rwLock.readLock().lock();
+    try {
+      return singleContextItem != null;
+    } finally {
+      rwLock.readLock().unlock();
+    }
   }
 
   Map<String, ContextObjectItem> getItems() {
-    if (isSingleItemContext()) {
-      return Collections.singletonMap(StringConstant.EMPTY, singleContextItem);
+    rwLock.readLock().lock();
+    try {
+      if (singleContextItem != null) {
+        return Collections.singletonMap(StringConstant.EMPTY, singleContextItem);
+      }
+      return Collections.unmodifiableMap(new HashMap<>(items));
+    } finally {
+      rwLock.readLock().unlock();
     }
-
-    return Collections.unmodifiableMap(items);
   }
 
   public List<String> getItemNames() {
-    if (isSingleItemContext()) {
-      return List.of(StringConstant.EMPTY);
+    rwLock.readLock().lock();
+    try {
+      if (singleContextItem != null) {
+        return List.of(StringConstant.EMPTY);
+      }
+      return new ArrayList<>(items.keySet());
+    } finally {
+      rwLock.readLock().unlock();
     }
-
-    return items.keySet().stream().toList();
   }
 
   public String toStringCtx() {
-    return items
+    return getItems()
         .entrySet()
         .stream()
         .map(e -> {
