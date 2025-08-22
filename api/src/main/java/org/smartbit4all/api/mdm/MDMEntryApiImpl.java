@@ -904,8 +904,8 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
   /**
-   * Ez az implementáció egy MDM (Master Data Management) rendszerben keres PONTOS egyezéseket a
-   * megadott értékek alapján.
+   * This implementation searches exact matches in the MDM (Master Data Management) based on given
+   * key value pairs.
    */
   @Override
   public ObjectLookup lookup() {
