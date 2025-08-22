@@ -1,5 +1,6 @@
 package org.smartbit4all.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -30,6 +31,7 @@ import org.smartbit4all.api.collection.StoredMap;
 import org.smartbit4all.api.collection.VectorCollection;
 import org.smartbit4all.api.collection.bean.ObjectLookupParameter;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
+import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
@@ -901,6 +903,10 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     }
   }
 
+  /**
+   * Ez az implementáció egy MDM (Master Data Management) rendszerben keres PONTOS egyezéseket a
+   * megadott értékek alapján.
+   */
   @Override
   public ObjectLookup lookup() {
     return new ObjectLookupMDMEntry(objectApi, this);
@@ -921,8 +927,18 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
     @Override
     public ObjectLookupResult lookup(Object valueObject, ObjectLookupParameter parameter) {
-      // TODO implement later on - If we have a map and a value inside that is
-      return null;
+      Map<String, Object> searchMap = switch (valueObject) {
+        case ObjectNode node -> node.getObjectAsMap();
+        case Map<?, ?> m -> (Map<String, Object>) m;
+        default -> entryApi.getObjectDefinition().toMap(valueObject);
+      };
+      return getList().nodesFromCache()
+          .filter(node -> {
+            return searchMap.entrySet().stream()
+                .anyMatch(e -> Objects.equals(e.getValue(), node.getValue(e.getKey())));
+          })
+          .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
+          .collect(collectingAndThen(toList(), new ObjectLookupResult()::items));
     }
 
     @Override
@@ -1013,3 +1029,5 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
   }
 
 }
+
+
