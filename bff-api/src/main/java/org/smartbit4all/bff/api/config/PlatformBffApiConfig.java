@@ -35,6 +35,8 @@ import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPa
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.invocation.JobDefinitionEditorPageApi;
 import org.smartbit4all.bff.api.mdm.invocation.JobDefinitionEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.invocation.MethodTemplateEditorPageApi;
+import org.smartbit4all.bff.api.mdm.invocation.MethodTemplateEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApi;
 import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
@@ -229,6 +231,12 @@ public class PlatformBffApiConfig {
   @ConditionalOnBean(MDMEntryListPageApi.class)
   ScheduledJobDefinitionEditorPageApi scheduledJobDefinitionEditPageApi() {
     return new ScheduledJobDefinitionEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  MethodTemplateEditorPageApi methodTemplateEditorPageApi() {
+    return new MethodTemplateEditorPageApiImpl();
   }
 
   @Bean
