@@ -938,18 +938,31 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
           switch (valueObject) {
             case ObjectNode node -> node.getObjectAsMap();
             case Map<?, ?> m -> (Map<String, Object>) m;
-            default -> entryApi.getObjectDefinition().toMap(valueObject);
+            default -> objectApi.toMapObject(valueObject);
           };
 
-      ObjectLookupResult collect = getList().nodesFromCache()
+      List<ObjectNode> collect2 = getList().nodesFromCache()
           .filter(node -> {
             return searchMap.entrySet().stream()
-                .anyMatch(e -> Objects.equals(e.getValue(), node.getValue(e.getKey())));
-          })
+                .anyMatch(e -> Objects.equals(e.getValue(), getNodeValue(node, e)));
+          }).collect(Collectors.toList());
+      ObjectLookupResult collect = collect2.stream()
           .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
+          .peek(node -> System.out.println(node))
           .collect(
               Collectors.collectingAndThen(Collectors.toList(), new ObjectLookupResult()::items));
       return collect;
+    }
+
+    // It is a temporary function which is created to test the lookup function to see if it works
+    // TODO delete this function
+    private Object getNodeValue(ObjectNode node, Entry<String, Object> e) {
+      for (Entry<String, Object> entry : node.getObjectAsMap().entrySet()) {
+        if (entry.getKey().toLowerCase().equals(e.getKey().toLowerCase())) {
+          return entry.getValue();
+        }
+      } ;
+      return node.getValue(e.getKey());
     }
 
     @Override
