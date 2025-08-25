@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -34,15 +33,11 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The invocation can be evaluated to a booleane value. This can be the condition for different conditional program structures like if, else,  switch - case, while and do while structures. ")
 @JsonPropertyOrder({
-  InvocationPredicate.PROPERTY_VALUE,
   InvocationPredicate.DEFINITION,
   InvocationPredicate.REQUEST
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class InvocationPredicate {
-  public static final String PROPERTY_VALUE = "propertyValue";
-  private URI propertyValue;
-
   public static final String DEFINITION = "definition";
   private ObjectMappingDefinition definition = null;
 
@@ -50,34 +45,6 @@ public class InvocationPredicate {
   private InvocationRequestDefinition request;
 
   public InvocationPredicate() {
-  }
-
-  public InvocationPredicate propertyValue(URI propertyValue) {
-    
-    this.propertyValue = propertyValue;
-    return this;
-  }
-
-  /**
-   * The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. This must be a boolean value. The predicate is true if the value is boolean and equals to true. 
-   * @return propertyValue
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(example = "state:/object/otherobject#property", requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The uri of the property entry with the scheme as the name of the related object from the context. The path defines the data access path. This must be a boolean value. The predicate is true if the value is boolean and equals to true. ")
-  @JsonProperty(PROPERTY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getPropertyValue() {
-    return propertyValue;
-  }
-
-
-  @JsonProperty(PROPERTY_VALUE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setPropertyValue(URI propertyValue) {
-    this.propertyValue = propertyValue;
   }
 
   public InvocationPredicate definition(ObjectMappingDefinition definition) {
@@ -145,21 +112,19 @@ public class InvocationPredicate {
       return false;
     }
     InvocationPredicate invocationPredicate = (InvocationPredicate) o;
-    return Objects.equals(this.propertyValue, invocationPredicate.propertyValue) &&
-        Objects.equals(this.definition, invocationPredicate.definition) &&
+    return Objects.equals(this.definition, invocationPredicate.definition) &&
         Objects.equals(this.request, invocationPredicate.request);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(propertyValue, definition, request);
+    return Objects.hash(definition, request);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationPredicate {\n");
-    sb.append("    propertyValue: ").append(toIndentedString(propertyValue)).append("\n");
     sb.append("    definition: ").append(toIndentedString(definition)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("}");

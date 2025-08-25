@@ -11,7 +11,6 @@ import org.smartbit4all.api.invocation.bean.JobDefinition;
 import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
-import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -86,10 +85,10 @@ public class InvocationApiMdmConfig {
         .publishedListName(MDM_ENTRY_METHOD_TEMPLATE)
         .name(MDM_ENTRY_METHOD_TEMPLATE)
         .adminGroupName(PlatformSecurityOption.methodTemplateEditor.getName())
+        .editorViewName(PlatformViewNames.METHOD_TEMPLATE_EDITOR)
         .addConstraintsItem(new MDMEntryConstraint()
             .kind(KindEnum.UNIQUECASEINSENSITIVE)
             .addPathItem(MethodTemplate.FULLY_QUALIFIED_NAME))
-        .editorViewName(MDMConstants.MDM_EDIT)
         .displayNameList(new LangString().defaultValue("Method templates")
             .putValueByLocaleItem(Locales.L_HU, "Metódus sablonok")
             .putValueByLocaleItem(Locales.L_EN, "Method templates"))

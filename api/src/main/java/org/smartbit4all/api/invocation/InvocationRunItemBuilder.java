@@ -3,14 +3,17 @@ package org.smartbit4all.api.invocation;
 import java.util.List;
 import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
+import org.smartbit4all.api.invocation.bean.InvocationPredicate;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import org.smartbit4all.api.invocation.bean.InvocationRunItem;
 import org.smartbit4all.api.object.bean.ContextMappingDefinition;
 import org.smartbit4all.api.object.bean.ContextMappingItem;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.core.object.ObjectMappingDefinitionBuilder;
+import org.smartbit4all.core.object.ObjectPropertyMappingBuilder;
 
 /**
  * Builder class for constructing {@link InvocationRunItem} instances.
@@ -23,14 +26,19 @@ import org.smartbit4all.core.object.ObjectMappingDefinitionBuilder;
  */
 public class InvocationRunItemBuilder {
   private final InvocationRunItem item;
-  private final InvocationRequestDefinition requestDefinition;
+
+  private final InvocationRequestDefinition getDefinition() {
+    if (item.getRequestDefinition() == null) {
+      item.setRequestDefinition(new InvocationRequestDefinition());
+    }
+    return item.getRequestDefinition();
+  }
 
   /**
    * Private constructor to enforce static factory usage.
    */
   private InvocationRunItemBuilder() {
     item = new InvocationRunItem();
-    requestDefinition = new InvocationRequestDefinition();
   }
 
   /**
@@ -50,12 +58,24 @@ public class InvocationRunItemBuilder {
    */
   public static InvocationRunItemBuilder withRequest(InvocationRequest request) {
     InvocationRunItemBuilder result = new InvocationRunItemBuilder();
-    result.requestDefinition.setRequest(request);
+    result.getDefinition().setRequest(request);
     return result;
   }
 
   public InvocationRunItemBuilder request(InvocationRequest request) {
-    requestDefinition.setRequest(request);
+    getDefinition().setRequest(request);
+    return this;
+  }
+
+  public InvocationRunItemBuilder conditional(Consumer<ObjectPropertyMappingBuilder> pb,
+      Consumer<InvocationRunBuilder> rb) {
+    ObjectMappingDefinitionBuilder mappingBuilder = ObjectMappingDefinitionBuilder.create();
+    InvocationRunBuilder runBuilder = new InvocationRunBuilder();
+    mappingBuilder.addMapping(pb);
+    rb.accept(runBuilder);
+    InvocationRunConditional conditional = new InvocationRunConditional()
+        .predicate(new InvocationPredicate().definition(mappingBuilder.build()))
+        .run(runBuilder.build());
     return this;
   }
 
@@ -70,7 +90,7 @@ public class InvocationRunItemBuilder {
   private final InvocationRunItemBuilder addResolver(ObjectMappingDefinition mappingDef) {
     InvocationParameterResolver resolver = new InvocationParameterResolver()
         .definition(mappingDef);
-    this.requestDefinition.addResolversItem(resolver);
+    getDefinition().addResolversItem(resolver);
     return this;
   }
 
@@ -80,7 +100,7 @@ public class InvocationRunItemBuilder {
     InvocationParameterResolver resolver = new InvocationParameterResolver()
         .definition(mappingDef)
         .position(position);
-    this.requestDefinition.addResolversItem(resolver);
+    getDefinition().addResolversItem(resolver);
     return this;
   }
 
@@ -95,7 +115,7 @@ public class InvocationRunItemBuilder {
     build.accept(builder);
     InvocationParameterResolver resolver =
         new InvocationParameterResolver().definition(builder.build());
-    this.requestDefinition.addResolversItem(resolver);
+    getDefinition().addResolversItem(resolver);
     return this;
   }
 
@@ -106,7 +126,7 @@ public class InvocationRunItemBuilder {
     InvocationParameterResolver resolver =
         new InvocationParameterResolver().definition(builder.build())
             .position(position);
-    this.requestDefinition.addResolversItem(resolver);
+    getDefinition().addResolversItem(resolver);
     return this;
   }
 
@@ -160,7 +180,7 @@ public class InvocationRunItemBuilder {
     ContextMappingDefinition ctxMap = new ContextMappingDefinition();
     ctxMap
         .addItemsItem(new ContextMappingItem().valueMapping(mapping).outputPath(outputPath));
-    requestDefinition.setApplyResult(ctxMap);
+    getDefinition().setApplyResult(ctxMap);
     return this;
   }
 
@@ -172,7 +192,7 @@ public class InvocationRunItemBuilder {
    * @return the builder instance
    */
   public InvocationRunItemBuilder applyResult(ContextMappingDefinition ctxMap) {
-    requestDefinition.setApplyResult(ctxMap);
+    getDefinition().setApplyResult(ctxMap);
     return this;
   }
 
@@ -183,7 +203,7 @@ public class InvocationRunItemBuilder {
    * @return the builder instance
    */
   public InvocationRunItemBuilder throwException(boolean value) {
-    requestDefinition.setThrowException(value);
+    getDefinition().setThrowException(value);
     return this;
   }
 
@@ -193,7 +213,6 @@ public class InvocationRunItemBuilder {
    * @return the constructed run item
    */
   public InvocationRunItem build() {
-    item.setRequestDefinition(requestDefinition);
     return item;
   }
 }

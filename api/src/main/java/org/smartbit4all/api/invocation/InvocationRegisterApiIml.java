@@ -1,5 +1,8 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -69,9 +72,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -430,7 +430,7 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
       activeApis.addAll(collectionApi.list(apiRegistryList).uris());
 
       methodTemplatesByFQN = collectionApi.list(methodTemplateRegistryList).nodesFromCache()
-          .collect(toMap(n -> Invocations.createFQN(n.getObject(MethodTemplate.class).getRequest()),
+          .collect(toMap(n -> n.getObject(MethodTemplate.class).getFullyQualifiedName(),
               n -> n.getObject(MethodTemplate.class)));
 
       List<URI> currentActiveApiUris = apiRegister.values().stream()

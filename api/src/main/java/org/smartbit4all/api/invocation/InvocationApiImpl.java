@@ -40,8 +40,10 @@ import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnu
 import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import org.smartbit4all.api.invocation.bean.InvocationRunItem;
+import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
+import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ContextObjectData;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
@@ -55,6 +57,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -125,6 +128,9 @@ public class InvocationApiImpl implements InvocationApi {
   @Autowired
   private ScriptEngineMgmtApi scriptEngineMgmtApi;
 
+  @Autowired
+  private ApplicationContext ctx;
+
   /**
    * By default the platform uses the rest client to access and call the api of a module over the
    * same storage.
@@ -136,11 +142,12 @@ public class InvocationApiImpl implements InvocationApi {
   public InvocationParameter invoke(InvocationRequest request, Object... args)
       throws ApiNotFoundException {
     Objects.requireNonNull(request);
-    // MethodTemplate methodTemplate =
-    // invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
-    // if (methodTemplate != null) {
-    //
-    // }
+    MethodTemplate methodTemplate =
+        invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
+    if (methodTemplate != null) {
+      InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
+      return invoke(methodTemplateRequest, args);
+    }
 
     if (Invocations.isScript(request)) {
       return invokeScript(request);
@@ -252,6 +259,7 @@ public class InvocationApiImpl implements InvocationApi {
   private final InvocationParameter invokeScript(InvocationRequest request)
       throws ApiNotFoundException {
     // Set all the parameters to the script as global variable.
+    addMandatoryScriptParams(request);
     List<Object> parameterObjects = Invocations.getParameterObjects(objectApi, request);
     int i = 0;
     ScriptEngine engine = scriptEngineMgmtApi.getEngine(request.getScriptKind());
@@ -274,6 +282,15 @@ public class InvocationApiImpl implements InvocationApi {
       throw new UnsupportedOperationException(
           "Failed to execute the script with the " + request.getScriptKind() + " engine.", e);
     }
+  }
+
+  private void addMandatoryScriptParams(InvocationRequest request) {
+    // TODO get beans to add from request
+    MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
+    request.addParametersItem(new InvocationParameter()
+        .name("mdmApi")
+        .value(mdmApi)
+        .typeClass(MasterDataManagementApi.class.getName()));
   }
 
   @Override
@@ -749,7 +766,7 @@ public class InvocationApiImpl implements InvocationApi {
   }
 
   String ctxToString(ContextObject ctx) {
-    return ctx.toStringCtx();
+    return ctx.toString();
   }
 
 }
