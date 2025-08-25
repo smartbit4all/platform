@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * Represents a container for contextual objects used during evaluation, scripting, or data mapping
@@ -107,7 +107,7 @@ public class ContextObject {
         items.putAll(from.items);
         return this;
       } finally {
-        rwLock.writeLock().unlock();
+        // rwLock.writeLock().unlock();
       }
     } finally {
       from.rwLock.readLock().unlock();
@@ -134,7 +134,7 @@ public class ContextObject {
           .collect(toMap(i -> i.getName(), i -> i)));
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -158,7 +158,7 @@ public class ContextObject {
       try {
         ctx.items.put(name, singleContextItem);
       } finally {
-        ctx.rwLock.writeLock().unlock();
+        // ctx.rwLock.writeLock().unlock();
       }
       return ctx;
     } finally {
@@ -182,12 +182,12 @@ public class ContextObject {
    */
   public ContextObject set(String name, URI uri) {
     checkName(name);
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, uri));
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -201,12 +201,12 @@ public class ContextObject {
    */
   public ContextObject set(String name, Object object) {
     checkName(name);
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, object));
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -225,7 +225,7 @@ public class ContextObject {
       items.put(name, new ContextObjectItem(objectApi(), name, node));
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -241,7 +241,7 @@ public class ContextObject {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -258,7 +258,7 @@ public class ContextObject {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -275,7 +275,7 @@ public class ContextObject {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 
@@ -307,7 +307,7 @@ public class ContextObject {
       }
       return this;
     } finally {
-      rwLock.writeLock().unlock();
+      // rwLock.writeLock().unlock();
     }
   }
 

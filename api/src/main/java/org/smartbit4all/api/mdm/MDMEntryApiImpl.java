@@ -927,11 +927,12 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
     @Override
     public ObjectLookupResult lookup(Object valueObject, ObjectLookupParameter parameter) {
-      Map<String, Object> searchMap = switch (valueObject) {
-        case ObjectNode node -> node.getObjectAsMap();
-        case Map<?, ?> m -> (Map<String, Object>) m;
-        default -> entryApi.getObjectDefinition().toMap(valueObject);
-      };
+      Map<String, Object> searchMap =
+          switch (valueObject) {
+            case ObjectNode node -> node.getObjectAsMap();
+            case Map<?, ?> m -> (Map<String, Object>) m;
+            default -> entryApi.getObjectDefinition().toMap(valueObject);
+          };
       return getList().nodesFromCache()
           .filter(node -> {
             return searchMap.entrySet().stream()
