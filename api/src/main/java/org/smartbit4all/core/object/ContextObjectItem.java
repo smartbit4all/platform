@@ -5,6 +5,8 @@ import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.smartbit4all.api.object.bean.ContextObjectDataItem;
 
 /**
@@ -22,6 +24,18 @@ class ContextObjectItem {
   final WeakReference<ObjectApi> objectApiRef;
 
   private static final String DEFAULT_SCHEMA = "defaultSchema";
+
+  /**
+   * The read write lock to ensure the thread safe access of the item.
+   */
+  final ReadWriteLock rwLock = new ReentrantReadWriteLock(true);
+
+  /**
+   * @return The read write lock to ensure the thread safe access of the item.
+   */
+  public ReadWriteLock getRwLock() {
+    return rwLock;
+  }
 
   ContextObjectItem(ObjectApi objectApi, ContextObjectDataItem item) {
     super();

@@ -59,10 +59,14 @@ public class ContextObject {
   /**
    * The read-write lock for the context object.
    */
-  private ReadWriteLock rwLock = new ReentrantReadWriteLock();
+  private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
 
   private ObjectApi objectApi() {
-    return objectApiRef.get();
+    ObjectApi result = objectApiRef == null ? null : objectApiRef.get();
+    if (result == null) {
+      throw new IllegalStateException("The object api is not set.");
+    }
+    return result;
   }
 
   /**
@@ -76,8 +80,13 @@ public class ContextObject {
   }
 
   public ContextObject getSubContext() {
-    ContextObject result = new ContextObject(objectApi());
-    return result.init(this);
+    rwLock.readLock().lock();
+    try {
+      ContextObject result = new ContextObject(objectApi());
+      return result.init(this);
+    } finally {
+      rwLock.readLock().unlock();
+    }
   }
 
   /**
@@ -138,6 +147,7 @@ public class ContextObject {
    *         name
    */
   public ContextObject toNamed(final String name) {
+    checkName(name);
     rwLock.readLock().lock();
     try {
       if (singleContextItem == null) {
@@ -156,6 +166,13 @@ public class ContextObject {
     }
   }
 
+  private final void checkName(String name) {
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException(
+          "The name of the context item can not be null, empty or blank.");
+    }
+  }
+
   /**
    * Set the context as an URI to load when the mapping tries to access the values of this object.
    * 
@@ -164,6 +181,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, URI uri) {
+    checkName(name);
     rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, uri));
@@ -182,6 +200,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, Object object) {
+    checkName(name);
     rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, object));
@@ -200,6 +219,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(String name, ObjectNode node) {
+    checkName(name);
     rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, node));
@@ -280,9 +300,9 @@ public class ContextObject {
         switch (e.getValue()) {
           case null -> {
           }
-          case URI uri -> items.put(key, new ContextObjectItem(objectApi(), key, uri));
-          case ObjectNode node -> items.put(key, new ContextObjectItem(objectApi(), key, node));
-          default -> items.put(key, new ContextObjectItem(objectApi(), key, e.getValue()));
+          case URI uri -> set(key, uri);
+          case ObjectNode node -> set(key, node);
+          default -> set(key, e.getValue());
         }
       }
       return this;
@@ -350,119 +370,129 @@ public class ContextObject {
       ContextObjectItem contextObject;
       List<String> finalPath = new ArrayList<>();
       contextObject = findItem(path, finalPath);
-      if (finalPath.isEmpty()) {
-        // We arrived we need the context value as is.
-        return contextObject.getValue();
+      contextObject.getRwLock().readLock().lock();
+      try {
+        if (finalPath.isEmpty()) {
+          // We arrived we need the context value as is.
+          return contextObject.getValue();
+        }
+        ObjectNode objectNode = contextObject.objectNode();
+        if (objectNode == null) {
+          throw new IllegalArgumentException(
+              "Unable to load the context object " + contextObject.getName()
+                  + " it is not set correctly.");
+        }
+        return objectNode.getValue(StringConstant.toArray(finalPath));
+      } finally {
+        contextObject.getRwLock().readLock().unlock();
       }
-      ObjectNode objectNode = contextObject.objectNode();
-      if (objectNode == null) {
-        throw new IllegalArgumentException(
-            "Unable to load the context object " + contextObject.getName()
-                + " it is not set correctly.");
-      }
-      return objectNode.getValue(StringConstant.toArray(finalPath));
     } finally {
       rwLock.readLock().unlock();
     }
   }
 
-  private ContextObjectItem findItem(String itemName) {
+  public final <T> T getItemAsObject(String itemName, Class<T> clazz) {
     rwLock.readLock().lock();
     try {
-      return items.get(itemName);
+      ContextObjectItem contextObject = items.get(itemName);
+      if (contextObject == null) {
+        return null;
+      }
+      contextObject.getRwLock().readLock().lock();
+      try {
+        return contextObject.objectNode().getObject(clazz);
+      } finally {
+        contextObject.getRwLock().readLock().unlock();
+      }
     } finally {
       rwLock.readLock().unlock();
     }
   }
 
-  private ContextObjectItem findItem(List<String> path, List<String> finalPath) {
+  private final ContextObjectItem findItem(List<String> path, List<String> finalPath) {
     // Caller should hold at least the read lock; acquire read lock defensively.
-    rwLock.readLock().lock();
-    try {
-      ContextObjectItem contextObject;
-      if (singleContextItem != null) {
-        // The whole path is evaluated inside the single context object.
-        contextObject = singleContextItem;
-        finalPath.addAll(path);
-      } else {
-        // The first segment of the path identifies the context object and the rest is the path
-        // inside.
-        if (path.size() < 1) {
-          throw new IllegalArgumentException(
-              "Unable to get value from context, at least the context object must be denoted.");
-        }
-        String ctxName = path.get(0);
-        contextObject = items.get(ctxName);
-        if (contextObject == null) {
-          throw new IllegalArgumentException(
-              ctxName + " context object is not found.");
-        }
-        finalPath.addAll(path.subList(1, path.size()));
+    ContextObjectItem contextObject;
+    if (singleContextItem != null) {
+      // The whole path is evaluated inside the single context object.
+      contextObject = singleContextItem;
+      finalPath.addAll(path);
+    } else {
+      // The first segment of the path identifies the context object and the rest is the path
+      // inside.
+      if (path.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Unable to get value from context, at least the context object must be denoted.");
       }
-      return contextObject;
-    } finally {
-      rwLock.readLock().unlock();
+      String ctxName = path.get(0);
+      contextObject = items.get(ctxName);
+      if (contextObject == null) {
+        throw new IllegalArgumentException(
+            ctxName + " context object is not found.");
+      }
+      finalPath.addAll(path.subList(1, path.size()));
     }
+    return contextObject;
   }
 
   @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
-    rwLock.writeLock().lock();
-    try {
-      if (path.size() == 1) {
-        // Set a context object itself
-        String itemName = path.get(0);
-        ContextObjectItem item = items.get(itemName);
-        if (item != null) {
-          ObjectNode objectNode = item.objectNode();
-          if (objectNode != null) {
+    if (path.size() == 1) {
+      // Set a context object itself
+      String itemName = path.get(0);
+      ContextObjectItem item = null;
+      ObjectNode objectNode = null;
+      rwLock.readLock().lock();
+      try {
+        item = items.get(itemName);
+        objectNode = item != null ? item.objectNode() : null;
+        if (objectNode != null) {
+          item.getRwLock().writeLock().lock();
+          try {
             if (merge) {
               objectNode.setValues(objectApi().toMapObject(value));
             } else {
               objectNode.setObject(value);
             }
-          } else {
-            items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
+          } finally {
+            item.getRwLock().writeLock().unlock();
           }
         } else {
-          items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
+          set(itemName, value);
         }
-        return;
+      } finally {
+        rwLock.readLock().unlock();
       }
-      ContextObjectItem contextObject;
-      List<String> finalPath = new ArrayList<>();
-      // findItem uses read lock; we already hold write lock which is exclusive, so call directly:
-      if (singleContextItem != null) {
-        contextObject = singleContextItem;
-        finalPath.addAll(path);
-      } else {
-        if (path.isEmpty()) {
-          throw new IllegalArgumentException(
-              "Unable to get value from context, at least the context object must be denoted.");
-        }
-        String ctxName = path.get(0);
-        contextObject = items.get(ctxName);
-        if (contextObject == null) {
-          throw new IllegalArgumentException(ctxName + " context object is not found.");
-        }
-        finalPath.addAll(path.subList(1, path.size()));
-      }
-      ObjectNode objectNode = contextObject.objectNode();
-      if (objectNode != null) {
-        if (merge && !objectApi().isValue(value)) {
-          objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
-        } else {
-          if (ObjectUtils.isEmpty(finalPath)) {
-            objectNode.setObject(value);
+      return;
+    }
+    List<String> finalPath = new ArrayList<>();
+
+    ContextObjectItem contextObject;
+    ObjectNode objectNode = null;
+    rwLock.readLock().lock();
+    try {
+      contextObject = findItem(path, finalPath);
+      objectNode = contextObject.objectNode();
+      if (contextObject != null && objectNode != null) {
+        contextObject.getRwLock().writeLock().lock();
+        try {
+          if (merge && !objectApi().isValue(value)) {
+            objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
           } else {
-            objectNode.setValue(value, StringConstant.toArray(finalPath));
+            if (ObjectUtils.isEmpty(finalPath)) {
+              objectNode.setObject(value);
+            } else {
+              objectNode.setValue(value, StringConstant.toArray(finalPath));
+            }
           }
+        } finally {
+          contextObject.getRwLock().writeLock().unlock();
         }
       }
     } finally {
-      rwLock.writeLock().unlock();
+      rwLock.readLock().unlock();
     }
+
   }
 
   private final Map<String, Object> getMergeMap(List<String> finalPath,
@@ -542,6 +572,19 @@ public class ContextObject {
     }
   }
 
+  public Map<String, Object> getItemValues() {
+    rwLock.readLock().lock();
+    try {
+      if (singleContextItem != null) {
+        return Collections.singletonMap(StringConstant.EMPTY, singleContextItem.getValue());
+      }
+      return items.entrySet().stream()
+          .collect(toMap(e -> e.getKey(), e -> e.getValue().getValue()));
+    } finally {
+      rwLock.readLock().unlock();
+    }
+  }
+
   public List<String> getItemNames() {
     rwLock.readLock().lock();
     try {
@@ -554,21 +597,9 @@ public class ContextObject {
     }
   }
 
-  public String toStringCtx() {
-    return getItems()
-        .entrySet()
-        .stream()
-        .map(e -> {
-          StringBuilder sb = new StringBuilder();
-          sb.append("Key: ");
-          sb.append(e.getKey());
-          sb.append('\n');
-          sb.append("Value: ");
-          sb.append(getValueFromContext(List.of(e.getKey())));
-          sb.append('\n');
-          return sb.toString();
-        })
-        .toList().toString();
+  @Override
+  public String toString() {
+    return getItemValues().toString();
   }
 
 }

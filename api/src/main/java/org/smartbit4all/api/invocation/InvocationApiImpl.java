@@ -766,7 +766,7 @@ public class InvocationApiImpl implements InvocationApi {
   }
 
   String ctxToString(ContextObject ctx) {
-    return ctx.toStringCtx();
+    return ctx.toString();
   }
 
 }
