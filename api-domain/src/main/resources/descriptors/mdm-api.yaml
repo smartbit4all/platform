@@ -626,3 +626,10 @@ components:
           type: string
           description: |
             Specifies the MDM entry containing the related objects.
+    MDMEntryReference:
+      type: object
+      properties:
+        definition:
+          type: string
+        entry:
+          type: string
