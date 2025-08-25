@@ -948,7 +948,6 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
           }).collect(Collectors.toList());
       ObjectLookupResult collect = collect2.stream()
           .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
-          .peek(node -> System.out.println(node))
           .collect(
               Collectors.collectingAndThen(Collectors.toList(), new ObjectLookupResult()::items));
       return collect;
@@ -963,6 +962,24 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
         }
       } ;
       return node.getValue(e.getKey());
+    }
+
+    @Override
+    public ObjectLookupResult lookupWithMultipleKeys(Object valueObject,
+        ObjectLookupParameter parameter) {
+      Map<String, List<Object>> searchMap = (Map<String, List<Object>>) valueObject;
+
+      List<ObjectNode> matchedNodes = getList().nodesFromCache()
+          .filter(node -> {
+            return searchMap.entrySet().stream()
+                .anyMatch(e -> e.getValue().contains(node.getValue(e.getKey())));
+          }).collect(Collectors.toList());
+
+      ObjectLookupResult result = matchedNodes.stream()
+          .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
+          .collect(Collectors.collectingAndThen(Collectors.toList(),
+              list -> new ObjectLookupResult().items(list)));
+      return result;
     }
 
     @Override

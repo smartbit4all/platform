@@ -192,4 +192,9 @@ public abstract class ObjectLookup {
     return null;
   }
 
+  public ObjectLookupResult lookupWithMultipleKeys(Object valueObject,
+      ObjectLookupParameter parameter) {
+    return null;
+  }
+
 }
