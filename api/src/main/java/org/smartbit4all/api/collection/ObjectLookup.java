@@ -14,8 +14,8 @@ import org.smartbit4all.api.collection.bean.ObjectLookupResultItem;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.core.object.ObjectApi;
-import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectMapping;
+import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 
 /**
@@ -185,6 +185,11 @@ public abstract class ObjectLookup {
         value.getValue());
     ObjectLookupResult lookupResult = lookup(valueObject, new ObjectLookupParameter().limit(1));
     return lookupResult;
+  }
+
+  public List<Map<String, Object>> transformData(ObjectLookupResult result) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

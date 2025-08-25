@@ -1,6 +1,5 @@
 package org.smartbit4all.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -926,6 +925,14 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     }
 
     @Override
+    public List<Map<String, Object>> transformData(ObjectLookupResult result) {
+      List<Map<String, Object>> maps = result.getItems().stream()
+          .map(ObjectLookupResultItem::getObjectAsMap)
+          .collect(Collectors.toList());
+      return maps;
+    }
+
+    @Override
     public ObjectLookupResult lookup(Object valueObject, ObjectLookupParameter parameter) {
       Map<String, Object> searchMap =
           switch (valueObject) {
@@ -933,13 +940,16 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
             case Map<?, ?> m -> (Map<String, Object>) m;
             default -> entryApi.getObjectDefinition().toMap(valueObject);
           };
-      return getList().nodesFromCache()
+
+      ObjectLookupResult collect = getList().nodesFromCache()
           .filter(node -> {
             return searchMap.entrySet().stream()
                 .anyMatch(e -> Objects.equals(e.getValue(), node.getValue(e.getKey())));
           })
           .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
-          .collect(collectingAndThen(toList(), new ObjectLookupResult()::items));
+          .collect(
+              Collectors.collectingAndThen(Collectors.toList(), new ObjectLookupResult()::items));
+      return collect;
     }
 
     @Override
