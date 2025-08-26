@@ -941,27 +941,15 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
             default -> objectApi.toMapObject(valueObject);
           };
 
-      List<ObjectNode> collect2 = getList().nodesFromCache()
+      ObjectLookupResult collect = getList().nodesFromCache()
           .filter(node -> {
             return searchMap.entrySet().stream()
-                .anyMatch(e -> Objects.equals(e.getValue(), getNodeValue(node, e)));
-          }).collect(Collectors.toList());
-      ObjectLookupResult collect = collect2.stream()
+                .anyMatch(e -> Objects.equals(e.getValue(), node.getValue(e.getKey())));
+          })
           .map(node -> new ObjectLookupResultItem().objectAsMap(node.getObjectAsMap()))
           .collect(
               Collectors.collectingAndThen(Collectors.toList(), new ObjectLookupResult()::items));
       return collect;
-    }
-
-    // It is a temporary function which is created to test the lookup function to see if it works
-    // TODO delete this function
-    private Object getNodeValue(ObjectNode node, Entry<String, Object> e) {
-      for (Entry<String, Object> entry : node.getObjectAsMap().entrySet()) {
-        if (entry.getKey().toLowerCase().equals(e.getKey().toLowerCase())) {
-          return entry.getValue();
-        }
-      } ;
-      return node.getValue(e.getKey());
     }
 
     @Override
