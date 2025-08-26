@@ -579,6 +579,8 @@ public class ContextObject {
         return Collections.singletonMap(StringConstant.EMPTY, singleContextItem.getValue());
       }
       return items.entrySet().stream()
+          .filter(
+              e -> e.getKey() != null && e.getValue() != null && e.getValue().getValue() != null)
           .collect(toMap(e -> e.getKey(), e -> e.getValue().getValue()));
     } finally {
       rwLock.readLock().unlock();
