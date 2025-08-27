@@ -301,11 +301,15 @@ public class InvocationApiImpl implements InvocationApi {
 
   private void addMandatoryScriptParams(InvocationRequest request) {
     // TODO get beans to add from request
-    MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
-    request.addParametersItem(new InvocationParameter()
-        .name("mdmApi")
-        .value(mdmApi)
-        .typeClass(MasterDataManagementApi.class.getName()));
+    try {
+      MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
+      request.addParametersItem(new InvocationParameter()
+          .name("mdmApi")
+          .value(mdmApi)
+          .typeClass(MasterDataManagementApi.class.getName()));
+    } catch (Exception e) {
+      log.error("Couldn't add mdmApi to InvocationRequest", e);
+    }
   }
 
   @Override
