@@ -57,10 +57,10 @@ public interface ApplicationRuntimeDef extends EntityDefinition {
   String OBJECT_CONTENT_COL = "OBJECT_CONTENT";
 
   @OwnProperty(name = URI, columnName = URI_COL)
+  @Id
   Property<String> uri();
 
   @OwnProperty(name = UUID, columnName = UUID_COL)
-  @Id
   Property<String> uuid();
 
   @OwnProperty(name = BASEURL, columnName = BASEURL_COL)
