@@ -291,6 +291,10 @@ public class InvocationApiImpl implements InvocationApi {
         .name("mdmApi")
         .value(mdmApi)
         .typeClass(MasterDataManagementApi.class.getName()));
+    request.addParametersItem(new InvocationParameter()
+        .name("log")
+        .value(log)
+        .typeClass(log.getClass().getName()));
   }
 
   @Override
