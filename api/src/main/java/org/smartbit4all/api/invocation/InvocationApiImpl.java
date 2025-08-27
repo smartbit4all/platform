@@ -145,8 +145,9 @@ public class InvocationApiImpl implements InvocationApi {
     MethodTemplate methodTemplate =
         invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
     if (methodTemplate != null) {
-      InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
-      return invoke(methodTemplateRequest, args);
+      // InvocationRequest methodTemplateRequest =
+      // copyMethodTemplateParameters(request, methodTemplate);
+      // request = methodTemplateRequest;
     }
 
     if (Invocations.isScript(request)) {
@@ -167,6 +168,20 @@ public class InvocationApiImpl implements InvocationApi {
     }
 
     return invoke(apiDescriptor, request);
+  }
+
+  private InvocationRequest copyMethodTemplateParameters(InvocationRequest request,
+      MethodTemplate methodTemplate) {
+    InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
+    methodTemplateRequest.getParameters().stream().forEach(param -> {
+      String name = param.getName();
+      request.getParameters().stream()
+          .filter(p -> Objects.equals(name, p.getName()))
+          .findFirst()
+          .ifPresent(p -> param.setValue(p.getValue()));
+
+    });
+    return methodTemplateRequest;
   }
 
   @Override
@@ -286,15 +301,19 @@ public class InvocationApiImpl implements InvocationApi {
 
   private void addMandatoryScriptParams(InvocationRequest request) {
     // TODO get beans to add from request
-    MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
-    request.addParametersItem(new InvocationParameter()
-        .name("mdmApi")
-        .value(mdmApi)
-        .typeClass(MasterDataManagementApi.class.getName()));
+    try {
+      MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
+      request.addParametersItem(new InvocationParameter()
+          .name("mdmApi")
+          .value(mdmApi)
+          .typeClass(MasterDataManagementApi.class.getName()));
     request.addParametersItem(new InvocationParameter()
         .name("log")
         .value(log)
         .typeClass(log.getClass().getName()));
+    } catch (Exception e) {
+      log.error("Couldn't add default params to InvocationRequest", e);
+    }
   }
 
   @Override
