@@ -761,6 +761,9 @@ public class ObjectApiImpl implements ObjectApi {
     if (o == null) {
       return null;
     }
+    if (o instanceof String) {
+      return (String) o;
+    }
     try {
       return definition(o.getClass()).writeValueAsString(o);
     } catch (JsonProcessingException e) {
