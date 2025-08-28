@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
@@ -39,6 +40,23 @@ public class ObjectPropertyMappingBuilder {
   }
 
   /**
+   * Sets the source path of the property from which the value is mapped.
+   * <p>
+   * The path segments identify the source object and property in the context. This is ignored if an
+   * expression is set.
+   *
+   * @param fromPath list of path segments to the source property
+   * @return the builder instance
+   */
+  public ObjectPropertyMappingBuilder from(String... fromPath) {
+    if (fromPath == null) {
+      return this;
+    }
+    fromPath(Arrays.asList(fromPath));
+    return this;
+  }
+
+  /**
    * Sets the target path of the property to which the value should be mapped.
    * <p>
    * If the path is empty, the mapping applies to the whole object.
@@ -48,6 +66,22 @@ public class ObjectPropertyMappingBuilder {
    */
   public ObjectPropertyMappingBuilder toPath(List<String> toPath) {
     mapping.setToPath(toPath);
+    return this;
+  }
+
+  /**
+   * Sets the target path of the property to which the value should be mapped.
+   * <p>
+   * If the path is empty, the mapping applies to the whole object.
+   *
+   * @param toPath list of path segments to the target property
+   * @return the builder instance
+   */
+  public ObjectPropertyMappingBuilder to(String... toPath) {
+    if (toPath == null) {
+      return this;
+    }
+    mapping.setToPath(Arrays.asList(toPath));
     return this;
   }
 

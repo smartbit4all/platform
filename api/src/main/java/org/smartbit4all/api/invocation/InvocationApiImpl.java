@@ -357,6 +357,11 @@ public class InvocationApiImpl implements InvocationApi {
   }
 
   @Override
+  public boolean asyncChannelExists(String channel) {
+    return invocationRegisterApi.asyncChannelExists(channel);
+  }
+
+  @Override
   public void invokeAsyncAndWait(InvocationRequest request, String channel,
       AsyncCompletableFuture future) {
     invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, future);
