@@ -217,6 +217,8 @@ public final class ObjectMapping {
       } else if (propertyMapping.getFromPath() != null
           && !propertyMapping.getFromPath().isEmpty()) {
         value = context.getValueFromContext(propertyMapping.getFromPath());
+      } else if (propertyMapping.getConstant() != null) {
+        value = propertyMapping.getConstant();
       } else {
         // Error the given mapping is skipped.
         throw new IllegalStateException("The " + propertyMapping + " mapping is not correct.");
