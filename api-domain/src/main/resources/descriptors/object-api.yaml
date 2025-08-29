@@ -995,6 +995,9 @@ components:
             necessary to execute the expression. The expression can refer to the objects on the context directly as variable.
             If we use expression then the from path is ignored.
           type: string
+        constant:
+          description: If the mapping is so simple to produce a constant value then it can be set.
+          type: object
         scriptBody:
           description: |
             The script can be groovy tipically but all other script language is available that are supported by the InvocationApi.

@@ -115,6 +115,10 @@ public class InvocationApiImpl implements InvocationApi {
 
   @Autowired
   @Lazy
+  private MasterDataManagementApi mdmApi;
+
+  @Autowired
+  @Lazy
   private InvocationApi self;
 
   @Autowired
@@ -145,9 +149,9 @@ public class InvocationApiImpl implements InvocationApi {
     MethodTemplate methodTemplate =
         invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
     if (methodTemplate != null) {
-      // InvocationRequest methodTemplateRequest =
-      // copyMethodTemplateParameters(request, methodTemplate);
-      // request = methodTemplateRequest;
+      InvocationRequest methodTemplateRequest =
+          copyMethodTemplateParameters(request, methodTemplate);
+      request = methodTemplateRequest;
     }
 
     if (Invocations.isScript(request)) {
@@ -301,18 +305,24 @@ public class InvocationApiImpl implements InvocationApi {
 
   private void addMandatoryScriptParams(InvocationRequest request) {
     // TODO get beans to add from request
+    addBeanToParams(request, "mdmApi", mdmApi);
+    addBeanToParams(request, "objectApi", objectApi);
+    addBeanToParams(request, "log", log);
+  }
+
+  private void addBeanToParams(InvocationRequest request, String name, Object value) {
     try {
-      MasterDataManagementApi mdmApi = ctx.getBean(MasterDataManagementApi.class);
-      request.addParametersItem(new InvocationParameter()
-          .name("mdmApi")
-          .value(mdmApi)
-          .typeClass(MasterDataManagementApi.class.getName()));
-    request.addParametersItem(new InvocationParameter()
-        .name("log")
-        .value(log)
-        .typeClass(log.getClass().getName()));
+      boolean hasParam = request.getParameters().stream()
+          .anyMatch(p -> name.equals(p.getName()));
+
+      if (!hasParam) {
+        request.addParametersItem(new InvocationParameter()
+            .name(name)
+            .value(value)
+            .typeClass(value.getClass().getName()));
+      }
     } catch (Exception e) {
-      log.error("Couldn't add default params to InvocationRequest", e);
+      log.error("Couldn't add " + name + " params to InvocationRequest", e);
     }
   }
 
@@ -344,6 +354,11 @@ public class InvocationApiImpl implements InvocationApi {
   @Override
   public void invokeAsync(InvocationRequest request, String channel) {
     invocationRegisterApi.saveAndEnqueueAsyncInvocationRequest(request, channel, null);
+  }
+
+  @Override
+  public boolean asyncChannelExists(String channel) {
+    return invocationRegisterApi.asyncChannelExists(channel);
   }
 
   @Override

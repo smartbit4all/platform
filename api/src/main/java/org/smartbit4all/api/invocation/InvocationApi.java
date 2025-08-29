@@ -124,6 +124,15 @@ public interface InvocationApi {
    */
   void invokeAsync(InvocationRequest request, String channel);
 
+  /**
+   * Check whether or not the given asynchronous channel configured and exists.
+   * 
+   * @param channel The channel name.
+   * @return True if the channel is configured so the subsequent
+   *         {@link #invokeAsync(InvocationRequest, String)} is going to be executed successfuly.
+   */
+  boolean asyncChannelExists(String channel);
+
   void invokeAsyncAndWait(InvocationRequest request, String channel, AsyncCompletableFuture future);
 
   /**

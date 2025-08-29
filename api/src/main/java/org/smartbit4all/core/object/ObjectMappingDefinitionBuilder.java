@@ -4,6 +4,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
+import org.smartbit4all.core.utility.StringConstant;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Builder class for constructing {@link ObjectMappingDefinition} instances.
@@ -108,4 +110,55 @@ public class ObjectMappingDefinitionBuilder {
   public ObjectMappingDefinition build() {
     return definition;
   }
+
+  /**
+   * Converts the given {@link ObjectMappingDefinition} into a human-readable string representation.
+   * <p>
+   * If the definition is {@code null}, an empty string is returned. If the definition has a
+   * constant value, the constant is returned as a string. Otherwise, all contained
+   * {@link ObjectPropertyMapping} entries are converted to strings and joined with
+   * {@link StringConstant#COMMA_SPACE}.
+   *
+   * @param def the {@code ObjectMappingDefinition} to convert, may be {@code null}
+   * @return a string representation of the given definition, never {@code null}
+   */
+  public static final String toString(ObjectMappingDefinition def) {
+    if (def == null) {
+      return StringConstant.EMPTY;
+    }
+    if (def.getConstant() != null) {
+      return def.getConstant().toString();
+    }
+    return def.getMappings().stream().map(p -> toString(p))
+        .collect(joining(StringConstant.COMMA_SPACE));
+  }
+
+  /**
+   * Converts the given {@link ObjectPropertyMapping} into a human-readable string representation.
+   * <p>
+   * If the property mapping is {@code null}, an empty string is returned. Otherwise, the source
+   * path (fromPath) is joined with {@link StringConstant#DOT}, followed by an arrow
+   * ({@link StringConstant#SPACE_ARROW_SPACE}), and then the target path (toPath), also joined with
+   * {@link StringConstant#DOT}.
+   *
+   * <p>
+   * Example format:
+   * 
+   * <pre>
+   *   source.field1.field2 -> target.fieldX.fieldY
+   * </pre>
+   *
+   * @param p the {@code ObjectPropertyMapping} to convert, may be {@code null}
+   * @return a string representation of the given property mapping, never {@code null}
+   */
+  public static final String toString(ObjectPropertyMapping p) {
+    if (p == null) {
+      return StringConstant.EMPTY;
+    }
+    return p.getFromPath().stream().collect(joining(StringConstant.DOT))
+        + StringConstant.SPACE_ARROW_SPACE
+        + p.getToPath().stream().collect(joining(StringConstant.DOT));
+  }
+
+
 }

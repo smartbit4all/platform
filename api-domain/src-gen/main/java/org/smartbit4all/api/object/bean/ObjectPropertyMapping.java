@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
   ObjectPropertyMapping.FROM_PATH,
   ObjectPropertyMapping.ITERATION_DEFINITION,
   ObjectPropertyMapping.EXPRESSION,
+  ObjectPropertyMapping.CONSTANT,
   ObjectPropertyMapping.SCRIPT_BODY,
   ObjectPropertyMapping.SCRIPT_KIND,
   ObjectPropertyMapping.TO_PATH,
@@ -53,6 +54,9 @@ public class ObjectPropertyMapping {
 
   public static final String EXPRESSION = "expression";
   private String expression;
+
+  public static final String CONSTANT = "constant";
+  private Object constant;
 
   public static final String SCRIPT_BODY = "scriptBody";
   private String scriptBody;
@@ -157,6 +161,33 @@ public class ObjectPropertyMapping {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setExpression(String expression) {
     this.expression = expression;
+  }
+
+  public ObjectPropertyMapping constant(Object constant) {
+    
+    this.constant = constant;
+    return this;
+  }
+
+  /**
+   * If the mapping is so simple to produce a constant value then it can be set.
+   * @return constant
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the mapping is so simple to produce a constant value then it can be set.")
+  @JsonProperty(CONSTANT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getConstant() {
+    return constant;
+  }
+
+
+  @JsonProperty(CONSTANT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setConstant(Object constant) {
+    this.constant = constant;
   }
 
   public ObjectPropertyMapping scriptBody(String scriptBody) {
@@ -287,6 +318,7 @@ public class ObjectPropertyMapping {
     return Objects.equals(this.fromPath, objectPropertyMapping.fromPath) &&
         Objects.equals(this.iterationDefinition, objectPropertyMapping.iterationDefinition) &&
         Objects.equals(this.expression, objectPropertyMapping.expression) &&
+        Objects.equals(this.constant, objectPropertyMapping.constant) &&
         Objects.equals(this.scriptBody, objectPropertyMapping.scriptBody) &&
         Objects.equals(this.scriptKind, objectPropertyMapping.scriptKind) &&
         Objects.equals(this.toPath, objectPropertyMapping.toPath) &&
@@ -295,7 +327,7 @@ public class ObjectPropertyMapping {
 
   @Override
   public int hashCode() {
-    return Objects.hash(fromPath, iterationDefinition, expression, scriptBody, scriptKind, toPath, typeClass);
+    return Objects.hash(fromPath, iterationDefinition, expression, constant, scriptBody, scriptKind, toPath, typeClass);
   }
 
   @Override
@@ -305,6 +337,7 @@ public class ObjectPropertyMapping {
     sb.append("    fromPath: ").append(toIndentedString(fromPath)).append("\n");
     sb.append("    iterationDefinition: ").append(toIndentedString(iterationDefinition)).append("\n");
     sb.append("    expression: ").append(toIndentedString(expression)).append("\n");
+    sb.append("    constant: ").append(toIndentedString(constant)).append("\n");
     sb.append("    scriptBody: ").append(toIndentedString(scriptBody)).append("\n");
     sb.append("    scriptKind: ").append(toIndentedString(scriptKind)).append("\n");
     sb.append("    toPath: ").append(toIndentedString(toPath)).append("\n");
