@@ -126,7 +126,8 @@ public class ObjectPropertyMappingBuilder {
     return this;
   }
 
-  public ObjectPropertyMappingBuilder constant() {
+  public ObjectPropertyMappingBuilder constant(Object o) {
+    mapping.setConstant(o);
     return this;
   }
 

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
+import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.meta.Property;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 
 /**
  * SQL implementation of the {@link DataSetApi}. It saves the data set into a temporary SQL table.
@@ -148,9 +150,21 @@ public class DataSetApiSql implements DataSetApi, InitializingBean {
     String integerDataSetTableName = db.getIntegerDataSetTableName();
     String stringDataSetTableName = db.getStringDataSetTableName();
 
-    Connection connection = jdbcTemplate.getDataSource().getConnection();
-    checkTable(connection, integerDataSetTableName);
-    checkTable(connection, stringDataSetTableName);
+    final DataSource dataSource = jdbcTemplate.getDataSource();
+    if (dataSource == null) {
+      throw new IllegalStateException(
+          "Cannot check temp tables - No DataSource set in JdbcTemplate!");
+    }
+
+    final Connection connection = dataSource.getConnection();
+    try {
+
+      checkTable(connection, integerDataSetTableName);
+      checkTable(connection, stringDataSetTableName);
+
+    } finally {
+      DataSourceUtils.releaseConnection(connection, dataSource);
+    }
   }
 
   private void checkTable(Connection connection, String tableName) throws Exception {
