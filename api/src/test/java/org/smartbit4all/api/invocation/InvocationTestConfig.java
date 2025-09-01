@@ -35,6 +35,17 @@ public class InvocationTestConfig {
   }
 
   @Bean
+  public TestRunHelperApi testRunHelperApi() {
+    return new TestRunHelperApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<TestRunHelperApi> testRunHelperApiProvider(
+      TestRunHelperApi testRunHelperApi) {
+    return ProviderApiInvocationHandler.providerOf(TestRunHelperApi.class, testRunHelperApi);
+  }
+
+  @Bean
   public TestPrimaryApi primaryApi() {
     return new TestPrimaryApiImpl(TestContributionApi.class);
   }
@@ -96,5 +107,4 @@ public class InvocationTestConfig {
       TestEventSubscriberApi api) {
     return ProviderApiInvocationHandler.providerOf(TestEventSubscriberApi.class, api);
   }
-
 }

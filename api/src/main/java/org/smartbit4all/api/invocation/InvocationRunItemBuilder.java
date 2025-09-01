@@ -6,6 +6,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationPredicate;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.InvocationRunConditional;
 import org.smartbit4all.api.invocation.bean.InvocationRunItem;
 import org.smartbit4all.api.object.bean.ContextMappingDefinition;
@@ -67,6 +68,30 @@ public class InvocationRunItemBuilder {
     return this;
   }
 
+  public InvocationRunItemBuilder setElse(InvocationRun elseRun) {
+    item._else(elseRun);
+    return this;
+  }
+
+  public InvocationRunItemBuilder setElse(Consumer<InvocationRunBuilder> rb) {
+    InvocationRunBuilder runBuilder = new InvocationRunBuilder();
+    rb.accept(runBuilder);
+    item._else(runBuilder.build());
+    return this;
+  }
+
+  public InvocationRunItemBuilder addParallel(InvocationRun run) {
+    item.addParallelsItem(run);
+    return this;
+  }
+
+  public InvocationRunItemBuilder addParallel(Consumer<InvocationRunBuilder> rb) {
+    InvocationRunBuilder runBuilder = new InvocationRunBuilder();
+    rb.accept(runBuilder);
+    item.addParallelsItem(runBuilder.build());
+    return this;
+  }
+
   public InvocationRunItemBuilder conditional(Consumer<ObjectPropertyMappingBuilder> pb,
       Consumer<InvocationRunBuilder> rb) {
     ObjectMappingDefinitionBuilder mappingBuilder = ObjectMappingDefinitionBuilder.create();
@@ -76,6 +101,33 @@ public class InvocationRunItemBuilder {
     InvocationRunConditional conditional = new InvocationRunConditional()
         .predicate(new InvocationPredicate().definition(mappingBuilder.build()))
         .run(runBuilder.build());
+    item.addConditionalsItem(conditional);
+    return this;
+  }
+
+  public InvocationRunItemBuilder setWhile(Consumer<ObjectPropertyMappingBuilder> pb,
+      Consumer<InvocationRunBuilder> rb) {
+    ObjectMappingDefinitionBuilder mappingBuilder = ObjectMappingDefinitionBuilder.create();
+    InvocationRunBuilder runBuilder = new InvocationRunBuilder();
+    mappingBuilder.addMapping(pb);
+    rb.accept(runBuilder);
+    InvocationRunConditional conditional = new InvocationRunConditional()
+        .predicate(new InvocationPredicate().definition(mappingBuilder.build()))
+        .run(runBuilder.build());
+    item.setWhileLoop(conditional);
+    return this;
+  }
+
+  public InvocationRunItemBuilder setDoWhile(Consumer<ObjectPropertyMappingBuilder> pb,
+      Consumer<InvocationRunBuilder> rb) {
+    ObjectMappingDefinitionBuilder mappingBuilder = ObjectMappingDefinitionBuilder.create();
+    InvocationRunBuilder runBuilder = new InvocationRunBuilder();
+    mappingBuilder.addMapping(pb);
+    rb.accept(runBuilder);
+    InvocationRunConditional conditional = new InvocationRunConditional()
+        .predicate(new InvocationPredicate().definition(mappingBuilder.build()))
+        .run(runBuilder.build());
+    item.setDoWhileLoop(conditional);
     return this;
   }
 
