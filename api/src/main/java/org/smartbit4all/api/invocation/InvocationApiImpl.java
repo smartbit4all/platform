@@ -45,6 +45,7 @@ import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ContextObjectData;
+import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
 import org.smartbit4all.api.session.bean.SessionInfoData;
@@ -738,7 +739,9 @@ public class InvocationApiImpl implements InvocationApi {
    * @return
    */
   private final boolean evaluate(ContextObject ctx, InvocationPredicate predicate) {
-    return true;
+    ObjectMappingDefinition valueMapping = predicate.getDefinition();
+    Object value = objectApi.mapper().mapping(valueMapping).setContext(ctx).execute();
+    return Boolean.TRUE.equals(value);
   }
 
   @Override
@@ -795,8 +798,8 @@ public class InvocationApiImpl implements InvocationApi {
         }
       } else if (item.getDoWhileLoop() != null) {
         do {
-          run(ctx.getSubContext(), item.getWhileLoop().getRun());
-        } while (evaluate(ctx, item.getWhileLoop().getPredicate()));
+          run(ctx.getSubContext(), item.getDoWhileLoop().getRun());
+        } while (evaluate(ctx, item.getDoWhileLoop().getPredicate()));
       } else if (!item.getParallels().isEmpty()) {
         item.getParallels().parallelStream().forEach(p -> run(ctx.getSubContext(), p));
       }

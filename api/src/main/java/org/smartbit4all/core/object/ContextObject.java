@@ -100,7 +100,7 @@ public class ContextObject {
     // Acquire source read lock first, then this write lock to copy a stable snapshot.
     from.rwLock.readLock().lock();
     try {
-      rwLock.writeLock().lock();
+      // rwLock.writeLock().lock();
       try {
         singleContextItem = from.singleContextItem;
         items.clear();
@@ -122,7 +122,7 @@ public class ContextObject {
    * @return this instance for method chaining
    */
   public ContextObject init(ContextObjectData from) {
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       if (from.getSingleItem() != null) {
         singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
@@ -154,7 +154,7 @@ public class ContextObject {
         throw new IllegalStateException("This instance holds multiple items already!");
       }
       final var ctx = new ContextObject(objectApi());
-      ctx.rwLock.writeLock().lock();
+      // ctx.rwLock.writeLock().lock();
       try {
         ctx.items.put(name, singleContextItem);
       } finally {
@@ -220,7 +220,7 @@ public class ContextObject {
    */
   public ContextObject set(String name, ObjectNode node) {
     checkName(name);
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, node));
       return this;
@@ -236,7 +236,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(URI uri) {
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
       return this;
@@ -253,7 +253,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(Object object) {
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
       return this;
@@ -270,7 +270,7 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(ObjectNode node) {
-    rwLock.writeLock().lock();
+    // rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
       return this;
