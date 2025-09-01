@@ -108,6 +108,8 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
         return reconstructPath(cameFrom, current);
       }
       openSet.remove(current);
+      String current2 = current;
+      neighborMap.values().forEach(v -> v.remove(current2));
       for (String neighbor : neighborMap.get(current)) {
         Long temp = gScore.getOrDefault(current, MAX_VALUE);
         tentaitiveGScore = temp == MAX_VALUE ? MAX_VALUE
