@@ -51,6 +51,10 @@ public final class UiActions {
 
   public static final String TOOLBAR_SUFFIX = "_toolbar";
 
+  public static final String TOOLBAR_HEADER_SUFFIX = "_headerToolbar";
+
+  public static final String TOOLBAR_DEFAULT_ACTION_COLUMN = "toolbarDefaultActionColumn";
+
   public static class Color {
     private Color() {}
 
