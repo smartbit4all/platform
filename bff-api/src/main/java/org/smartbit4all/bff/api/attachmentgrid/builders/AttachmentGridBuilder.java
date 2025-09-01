@@ -14,6 +14,7 @@ import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
+import org.smartbit4all.bff.api.attachmentgrid.bean.ToolbarPosition;
 
 public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> {
   protected final AttachmentGridApi attachmentGridApi;
@@ -160,6 +161,18 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
   public T editable(Boolean value) {
     Objects.requireNonNull(value, "value cannot be null!");
     this.options.isEditable(value);
+    return self();
+  }
+
+  public T useIconActions(Boolean value) {
+    Objects.requireNonNull(value, "value cannot be null!");
+    this.options.useIconActions(value);
+    return self();
+  }
+
+  public T toolbarPosition(ToolbarPosition toolbarPosition) {
+    Objects.requireNonNull(toolbarPosition, "toolbarPosition cannot be null!");
+    this.options.toolbarPosition(toolbarPosition);
     return self();
   }
 

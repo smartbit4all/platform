@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.smartbit4all.bff.api.attachmentgrid.bean.ToolbarPosition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -36,7 +37,9 @@ import jakarta.validation.Valid;
   AttachmentGridOptions.CLOSE_ON_SAVE,
   AttachmentGridOptions.AUTO_SAVE,
   AttachmentGridOptions.IS_MULTIPLE_INPUT,
-  AttachmentGridOptions.DIALOG_TITLE
+  AttachmentGridOptions.DIALOG_TITLE,
+  AttachmentGridOptions.USE_ICON_ACTIONS,
+  AttachmentGridOptions.TOOLBAR_POSITION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridOptions {
@@ -60,6 +63,12 @@ public class AttachmentGridOptions {
 
   public static final String DIALOG_TITLE = "dialogTitle";
   private String dialogTitle;
+
+  public static final String USE_ICON_ACTIONS = "useIconActions";
+  private Boolean useIconActions = false;
+
+  public static final String TOOLBAR_POSITION = "toolbarPosition";
+  private ToolbarPosition toolbarPosition;
 
   public AttachmentGridOptions() {
   }
@@ -253,6 +262,61 @@ public class AttachmentGridOptions {
     this.dialogTitle = dialogTitle;
   }
 
+  public AttachmentGridOptions useIconActions(Boolean useIconActions) {
+    
+    this.useIconActions = useIconActions;
+    return this;
+  }
+
+  /**
+   * Get useIconActions
+   * @return useIconActions
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(USE_ICON_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getUseIconActions() {
+    return useIconActions;
+  }
+
+
+  @JsonProperty(USE_ICON_ACTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUseIconActions(Boolean useIconActions) {
+    this.useIconActions = useIconActions;
+  }
+
+  public AttachmentGridOptions toolbarPosition(ToolbarPosition toolbarPosition) {
+    
+    this.toolbarPosition = toolbarPosition;
+    return this;
+  }
+
+  /**
+   * Get toolbarPosition
+   * @return toolbarPosition
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(TOOLBAR_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ToolbarPosition getToolbarPosition() {
+    return toolbarPosition;
+  }
+
+
+  @JsonProperty(TOOLBAR_POSITION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setToolbarPosition(ToolbarPosition toolbarPosition) {
+    this.toolbarPosition = toolbarPosition;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -268,12 +332,14 @@ public class AttachmentGridOptions {
         Objects.equals(this.closeOnSave, attachmentGridOptions.closeOnSave) &&
         Objects.equals(this.autoSave, attachmentGridOptions.autoSave) &&
         Objects.equals(this.isMultipleInput, attachmentGridOptions.isMultipleInput) &&
-        Objects.equals(this.dialogTitle, attachmentGridOptions.dialogTitle);
+        Objects.equals(this.dialogTitle, attachmentGridOptions.dialogTitle) &&
+        Objects.equals(this.useIconActions, attachmentGridOptions.useIconActions) &&
+        Objects.equals(this.toolbarPosition, attachmentGridOptions.toolbarPosition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle);
+    return Objects.hash(isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle, useIconActions, toolbarPosition);
   }
 
   @Override
@@ -287,6 +353,8 @@ public class AttachmentGridOptions {
     sb.append("    autoSave: ").append(toIndentedString(autoSave)).append("\n");
     sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
     sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
+    sb.append("    useIconActions: ").append(toIndentedString(useIconActions)).append("\n");
+    sb.append("    toolbarPosition: ").append(toIndentedString(toolbarPosition)).append("\n");
     sb.append("}");
     return sb.toString();
   }
