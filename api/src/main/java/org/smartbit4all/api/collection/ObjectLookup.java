@@ -52,6 +52,10 @@ public abstract class ObjectLookup {
   public abstract ObjectLookupResult lookup(Object valueObject,
       ObjectLookupParameter parameter);
 
+  public ObjectLookupResult lookup(Object valueObject) {
+    return lookup(valueObject, null);
+  }
+
   /**
    * Walks through on the list of objects and call the lookup for all of them.
    * 
