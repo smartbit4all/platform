@@ -49,12 +49,14 @@ import org.smartbit4all.domain.meta.EntityDefinitionBuilder;
 import org.smartbit4all.domain.meta.Expression;
 import org.smartbit4all.domain.meta.JoinPath;
 import org.smartbit4all.domain.meta.Property;
+import org.smartbit4all.domain.meta.PropertyFunction;
 import org.smartbit4all.domain.meta.PropertyObject;
 import org.smartbit4all.domain.meta.PropertyRef;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
+import com.google.common.base.Strings;
 
 public class SearchIndexMappingObject extends SearchIndexMapping {
 
@@ -938,8 +940,19 @@ public class SearchIndexMappingObject extends SearchIndexMapping {
   public static Expression existDetailBetweenExpression(String fieldName, Object lower,
       Object upper,
       SearchIndexMappingObject objectMapping) {
+    return existDetailBetweenExpression(fieldName, lower, upper, objectMapping, null);
+  }
+
+  public static Expression existDetailBetweenExpression(String fieldName, Object lower,
+      Object upper,
+      SearchIndexMappingObject objectMapping, String transformFnName) {
     return existDetailExpression(fieldName, lower, objectMapping,
-        prop -> prop.between(lower, upper));
+        prop -> {
+          if (!Strings.isNullOrEmpty(transformFnName)) {
+            prop = prop.function(PropertyFunction.withSelfPropertyArgument(transformFnName));
+          }
+          return prop.between(lower, upper);
+        });
   }
 
 

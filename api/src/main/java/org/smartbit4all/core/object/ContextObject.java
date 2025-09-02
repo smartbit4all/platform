@@ -100,14 +100,14 @@ public class ContextObject {
     // Acquire source read lock first, then this write lock to copy a stable snapshot.
     from.rwLock.readLock().lock();
     try {
-      // rwLock.writeLock().lock();
+      rwLock.writeLock().lock();
       try {
         singleContextItem = from.singleContextItem;
         items.clear();
         items.putAll(from.items);
         return this;
       } finally {
-        // rwLock.writeLock().unlock();
+        rwLock.writeLock().unlock();
       }
     } finally {
       from.rwLock.readLock().unlock();
@@ -122,7 +122,7 @@ public class ContextObject {
    * @return this instance for method chaining
    */
   public ContextObject init(ContextObjectData from) {
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       if (from.getSingleItem() != null) {
         singleContextItem = new ContextObjectItem(objectApi(), from.getSingleItem());
@@ -134,7 +134,7 @@ public class ContextObject {
           .collect(toMap(i -> i.getName(), i -> i)));
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -154,11 +154,11 @@ public class ContextObject {
         throw new IllegalStateException("This instance holds multiple items already!");
       }
       final var ctx = new ContextObject(objectApi());
-      // ctx.rwLock.writeLock().lock();
+      ctx.rwLock.writeLock().lock();
       try {
         ctx.items.put(name, singleContextItem);
       } finally {
-        // ctx.rwLock.writeLock().unlock();
+        ctx.rwLock.writeLock().unlock();
       }
       return ctx;
     } finally {
@@ -182,12 +182,12 @@ public class ContextObject {
    */
   public ContextObject set(String name, URI uri) {
     checkName(name);
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, uri));
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -201,12 +201,12 @@ public class ContextObject {
    */
   public ContextObject set(String name, Object object) {
     checkName(name);
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, object));
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -220,12 +220,12 @@ public class ContextObject {
    */
   public ContextObject set(String name, ObjectNode node) {
     checkName(name);
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       items.put(name, new ContextObjectItem(objectApi(), name, node));
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -236,12 +236,12 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(URI uri) {
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, uri);
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -253,12 +253,12 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(Object object) {
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, object);
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -270,12 +270,12 @@ public class ContextObject {
    * @return
    */
   public ContextObject set(ObjectNode node) {
-    // rwLock.writeLock().lock();
+    rwLock.writeLock().lock();
     try {
       singleContextItem = new ContextObjectItem(objectApi(), SINGLE_CONTEXT_ITEM, node);
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -307,7 +307,7 @@ public class ContextObject {
       }
       return this;
     } finally {
-      // rwLock.writeLock().unlock();
+      rwLock.writeLock().unlock();
     }
   }
 
@@ -394,15 +394,15 @@ public class ContextObject {
   public final <T> T getItemAsObject(String itemName, Class<T> clazz) {
     rwLock.readLock().lock();
     try {
-      ContextObjectItem contextObject = items.get(itemName);
-      if (contextObject == null) {
+      ContextObjectItem contextObjectItem = items.get(itemName);
+      if (contextObjectItem == null) {
         return null;
       }
-      contextObject.getRwLock().readLock().lock();
+      contextObjectItem.getRwLock().readLock().lock();
       try {
-        return contextObject.objectNode().getObject(clazz);
+        return contextObjectItem.objectNode().getObject(clazz);
       } finally {
-        contextObject.getRwLock().readLock().unlock();
+        contextObjectItem.getRwLock().readLock().unlock();
       }
     } finally {
       rwLock.readLock().unlock();
@@ -434,47 +434,38 @@ public class ContextObject {
     return contextObject;
   }
 
-  @SuppressWarnings("unchecked")
   public void setValue(List<String> path, Object value, boolean merge) {
     Objects.requireNonNull(path);
     if (path.size() == 1) {
       // Set a context object itself
       String itemName = path.get(0);
-      ContextObjectItem item = null;
-      ObjectNode objectNode = null;
+      boolean setValue = false;
       rwLock.readLock().lock();
       try {
-        item = items.get(itemName);
-        objectNode = item != null ? item.objectNode() : null;
-        if (objectNode != null) {
-          item.getRwLock().writeLock().lock();
-          try {
-            if (merge) {
-              objectNode.setValues(objectApi().toMapObject(value));
-            } else {
-              objectNode.setObject(value);
-            }
-          } finally {
-            item.getRwLock().writeLock().unlock();
-          }
-        } else {
-          set(itemName, value);
-        }
+        setValue = setValueImpl(itemName, value, merge, false);
       } finally {
         rwLock.readLock().unlock();
+      }
+      if (setValue) {
+        rwLock.writeLock().lock();
+        try {
+          setValueImpl(itemName, value, merge, true);
+        } finally {
+          rwLock.writeLock().unlock();
+        }
       }
       return;
     }
     List<String> finalPath = new ArrayList<>();
 
-    ContextObjectItem contextObject;
+    ContextObjectItem contextObjectItem;
     ObjectNode objectNode = null;
     rwLock.readLock().lock();
     try {
-      contextObject = findItem(path, finalPath);
-      objectNode = contextObject.objectNode();
-      if (contextObject != null && objectNode != null) {
-        contextObject.getRwLock().writeLock().lock();
+      contextObjectItem = findItem(path, finalPath);
+      objectNode = contextObjectItem.objectNode();
+      if (contextObjectItem != null && objectNode != null) {
+        contextObjectItem.getRwLock().writeLock().lock();
         try {
           if (merge && !objectApi().isValue(value)) {
             objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
@@ -486,13 +477,39 @@ public class ContextObject {
             }
           }
         } finally {
-          contextObject.getRwLock().writeLock().unlock();
+          contextObjectItem.getRwLock().writeLock().unlock();
         }
       }
     } finally {
       rwLock.readLock().unlock();
     }
 
+  }
+
+  private final boolean setValueImpl(String itemName, Object value, boolean merge,
+      boolean executeSet) {
+    ContextObjectItem item;
+    ObjectNode objectNode;
+    item = items.get(itemName);
+    objectNode = item != null ? item.objectNode() : null;
+    if (objectNode != null) {
+      item.getRwLock().writeLock().lock();
+      try {
+        if (merge) {
+          objectNode.setValues(objectApi().toMapObject(value));
+        } else {
+          objectNode.setObject(value);
+        }
+      } finally {
+        item.getRwLock().writeLock().unlock();
+      }
+      return false;
+    } else {
+      if (executeSet) {
+        items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
+      }
+      return true;
+    }
   }
 
   private final Map<String, Object> getMergeMap(List<String> finalPath,

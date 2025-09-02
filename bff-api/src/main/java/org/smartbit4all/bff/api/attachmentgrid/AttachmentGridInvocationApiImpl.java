@@ -49,7 +49,6 @@ import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
-import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import org.smartbit4all.api.view.bean.UploadedFile;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
@@ -61,6 +60,7 @@ import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
+import org.smartbit4all.bff.api.attachmentgrid.bean.ToolbarPosition;
 import org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridHelper;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapHelper;
@@ -106,6 +106,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .model(true)
             .code(ATTACHMENT_OPEN_HANDLER)
             .descriptor(new UiActionDescriptor()
+                .type(UiActionButtonType.RAISED)
+                .color(UiActions.Color.PRIMARY)
+                .icon("eye").iconPosition(IconPosition.PRE)
                 .title(localeSettingApi.get("open.attachment"))));
       }
       if (Boolean.TRUE.equals(options.getIsDownloadable())) {
@@ -113,6 +116,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .model(true)
             .code(ATTACHMENT_DOWNLOAD_HANDLER)
             .descriptor(new UiActionDescriptor()
+                .type(UiActionButtonType.RAISED)
+                .color(UiActions.Color.PRIMARY)
+                .icon("download").iconPosition(IconPosition.PRE)
                 .title(localeSettingApi.get("download.attachment"))));
       }
       if (Boolean.TRUE.equals(options.getIsEditable())) {
@@ -122,6 +128,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .code(ATTACHMENT_REMOVE_HANDLER)
             .descriptor(new UiActionDescriptor()
                 .title(localeSettingApi.get("remove.attachment"))
+                .type(UiActionButtonType.RAISED)
+                .color(UiActions.Color.WARN)
+                .icon("times").iconPosition(IconPosition.PRE)
                 .confirmDialog(new UiActionDialogDescriptor()
                     .title(localeSettingApi.get("remove.attachment.confirm.header"))
                     .text(localeSettingApi.get("remove.attachment.confirm.text"))
@@ -133,6 +142,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
                         .color(UiActions.Color.PRIMARY)))));
       }
 
+
       // Add custom actions
       if (!ObjectUtils.isEmpty(descriptor.getAdditionalActions())) {
         for (AdditionalAttachmentAction action : descriptor.getAdditionalActions()) {
@@ -142,6 +152,19 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
               .descriptor(action.getDescriptor()));
         }
       }
+
+      if (Boolean.TRUE.equals(options.getUseIconActions())) {
+        List<String> actionCodes = new ArrayList<>();
+
+        row.getActions().stream().forEach(action -> {
+          action.getDescriptor().title("");
+          actionCodes.add(action.getCode());
+        });
+
+        row.putColumnActionsItem(
+            UiActions.TOOLBAR_DEFAULT_ACTION_COLUMN, actionCodes);
+      }
+
     }
     return page;
   }
@@ -418,6 +441,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   public UiAction getAddAttachmentAction(AttachmentGridDescriptor descriptor) {
     AttachmentGridOptions options = descriptor.getOptions();
 
+    String toolbarId = descriptor.getGridWidgetId()
+        + getToolbarPosition(options.getToolbarPosition());
+
     UiAction action = new UiAction()
         .input2Type(
             Boolean.TRUE.equals(options.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
@@ -425,7 +451,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         .code(ATTACHMENT_UPLOAD_HANDLER)
         .model(true)
         .identifier(descriptor.getGridWidgetId())
-        .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
+        .toolbar(toolbarId)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
             .icon("plus").iconPosition(IconPosition.PRE)
@@ -443,11 +469,16 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     return action;
   }
 
+
   public UiAction getRefreshToOriginalGridAction(AttachmentGridDescriptor descriptor) {
+
+    String toolbarId = descriptor.getGridWidgetId()
+        + getToolbarPosition(descriptor.getOptions().getToolbarPosition());
+
     UiAction action = new UiAction()
         .model(true)
         .code(ATTACHMENT_REFRESH_LIST_HANDLER)
-        .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
+        .toolbar(toolbarId)
         .descriptor(new UiActionDescriptor()
             .type(UiActionButtonType.ICON)
             .icon("refresh").iconPosition(IconPosition.PRE)
@@ -461,9 +492,12 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
   public UiAction getSaveListAction(AttachmentGridDescriptor descriptor) {
 
+    String toolbarId = descriptor.getGridWidgetId()
+        + getToolbarPosition(descriptor.getOptions().getToolbarPosition());
+
     UiAction action = new UiAction()
         .code(ATTACHMENT_SAVE_LIST_HANDLER)
-        .toolbar(descriptor.getGridWidgetId() + UiActions.TOOLBAR_SUFFIX)
+        .toolbar(toolbarId)
         .disabled(true)
         .submit(true)
         .model(true)
@@ -676,5 +710,17 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
 
     return action;
+  }
+
+  private String getToolbarPosition(ToolbarPosition pos) {
+    switch (pos) {
+      case ABOVE:
+        return UiActions.TOOLBAR_SUFFIX;
+      case HEADER:
+        return UiActions.TOOLBAR_HEADER_SUFFIX;
+      default:
+        return UiActions.TOOLBAR_HEADER_SUFFIX;
+    }
+
   }
 }

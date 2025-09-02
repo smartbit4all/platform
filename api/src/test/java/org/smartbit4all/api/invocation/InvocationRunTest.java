@@ -196,9 +196,7 @@ public class InvocationRunTest {
     assertEquals("condTrue", ctx.getValueFromContext(List.of("resultMap", "result")));
   }
 
-  // FIXME enable once evaluate gets implemented in InvocationApiImpl
   @Test
-  // @Disabled
   @Order(41)
   void testConditionals_falseBranchElseExecuted() {
     ctx.set("resultMap", new HashMap<>());

@@ -168,9 +168,7 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
       attachmentList = new ArrayList<>();
     }
 
-
     setGridData(descriptor);
-
     AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
   }
 
