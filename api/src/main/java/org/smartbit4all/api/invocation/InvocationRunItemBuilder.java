@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
@@ -13,6 +14,7 @@ import org.smartbit4all.api.object.bean.ContextMappingDefinition;
 import org.smartbit4all.api.object.bean.ContextMappingItem;
 import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
+import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectMappingDefinitionBuilder;
 import org.smartbit4all.core.object.ObjectPropertyMappingBuilder;
 
@@ -234,6 +236,14 @@ public class InvocationRunItemBuilder {
         .addItemsItem(new ContextMappingItem().valueMapping(mapping).outputPath(outputPath));
     getDefinition().setApplyResult(ctxMap);
     return this;
+  }
+
+  public InvocationRunItemBuilder applyResult(List<String> outputPath) {
+    return applyResult(outputPath, List.of(ContextObject.INVOCATION_RESULT));
+  }
+
+  public InvocationRunItemBuilder applyResult(String... outputPath) {
+    return applyResult(Arrays.asList(outputPath), List.of(ContextObject.INVOCATION_RESULT));
   }
 
   /**
