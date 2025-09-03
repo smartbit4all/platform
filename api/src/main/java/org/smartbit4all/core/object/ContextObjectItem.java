@@ -81,7 +81,7 @@ class ContextObjectItem {
         loadedObjectNode =
             objectApi().create(DEFAULT_SCHEMA, objectApi().definition(Map.class),
                 (Map<String, Object>) data.getObject());
-      } else if (data.getObject() != null) {
+      } else if (data.getObject() != null && !isValue(data.getObject())) {
         loadedObjectNode = objectApi().create(DEFAULT_SCHEMA, data.getObject());
       }
     }

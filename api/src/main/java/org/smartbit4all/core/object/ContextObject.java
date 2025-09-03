@@ -486,30 +486,49 @@ public class ContextObject {
 
   }
 
+  /**
+   * @param itemName
+   * @param value
+   * @param merge
+   * @param executeSet This indicator is true if this function can add new item to the context - so
+   *        we have write lock for the whole context object. If it is false then the existing item
+   *        can be modified or set only because we have a readLock for the context object.
+   * @return
+   */
   private final boolean setValueImpl(String itemName, Object value, boolean merge,
       boolean executeSet) {
     ContextObjectItem item;
     ObjectNode objectNode;
     item = items.get(itemName);
-    objectNode = item != null ? item.objectNode() : null;
-    if (objectNode != null) {
+
+    if (item != null) {
       item.getRwLock().writeLock().lock();
       try {
-        if (merge) {
-          objectNode.setValues(objectApi().toMapObject(value));
+        objectNode = item.objectNode();
+        if (objectNode != null) {
+          if (merge) {
+            objectNode.setValues(objectApi().toMapObject(value));
+          } else {
+            objectNode.setObject(value);
+          }
         } else {
-          objectNode.setObject(value);
+          item.data._object(value);
         }
       } finally {
         item.getRwLock().writeLock().unlock();
       }
+      // Managed to set or merge the value so there is no need to set in a writeLock block.
       return false;
     } else {
       if (executeSet) {
         items.put(itemName, new ContextObjectItem(objectApi(), itemName, value));
+        return false;
       }
+      // In this case we would add a new item to the context object but we have only a readLock on
+      // instead of writeLock. So it is not safe to add any item to the items map of the context.
       return true;
     }
+
   }
 
   private final Map<String, Object> getMergeMap(List<String> finalPath,
