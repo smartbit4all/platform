@@ -74,6 +74,30 @@ public final class ObjectLayoutBuilder {
   }
 
   /**
+   * Constructs a Diagram layout definition with the provided diagram identifier.
+   *
+   * @param diagramIdentifier the {@code String} diagram identifier for the diagram to use, not null
+   *
+   * @return a {@link SmartComponentLayoutDefinition} representing a diagram
+   */
+  public static SmartComponentLayoutDefinition diagram(String diagramIdentifier) {
+    return diagram(null, diagramIdentifier);
+  }
+
+  /**
+   * Constructs a Diagram layout definition with the provided diagram identifier.
+   * 
+   * @param layoutIdentifier the {@code String} layout identifier to uniquely mark the widget's
+   *        layout itself (useful for styling), nullable
+   * @param diagramIdentifier the {@code String} diagram identifier for the diagram to use, not null
+   * @return a {@link SmartComponentLayoutDefinition} representing a diagram
+   */
+  public static SmartComponentLayoutDefinition diagram(String layoutIdentifier,
+      String diagramIdentifier) {
+    return widget(layoutIdentifier, ComponentWidgetType.DIAGRAM, diagramIdentifier);
+  }
+
+  /**
    * Constructs a form layout definition with the provided widget definitions.
    *
    * @param layoutDirection the cardinal direction in which form elements are placed after each

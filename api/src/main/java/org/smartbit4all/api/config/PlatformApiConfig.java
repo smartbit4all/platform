@@ -143,6 +143,8 @@ import org.smartbit4all.api.view.action.ToolbarManagementApiImpl;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApi;
 import org.smartbit4all.api.view.constraint.ViewConstraintManagementApiImpl;
+import org.smartbit4all.api.view.diagram.DiagramApi;
+import org.smartbit4all.api.view.diagram.DiagramApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApi;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionBuilderApiImpl;
 import org.smartbit4all.api.view.filterexpression.FilterExpressionFieldUiConverter;
@@ -301,6 +303,12 @@ public class PlatformApiConfig {
   @Bean
   public GeoMapDataLoadingStrategyFactory geoMapDataLoadingStrategyFactory() {
     return new GeoMapDataLoadingStrategyFactoryImpl();
+  }
+
+
+  @Bean
+  public DiagramApi diagramApi() {
+    return new DiagramApiImpl();
   }
 
   @Bean

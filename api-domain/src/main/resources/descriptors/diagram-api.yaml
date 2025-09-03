@@ -1,0 +1,233 @@
+openapi: 3.0.1
+info:
+  title: diagram API
+  description: Describes a model for a diagram.
+  contact:
+    email: info@it4all.hu
+  version: 1.0.0
+tags:
+  - name: DiagramService
+    description: diagramService
+paths:
+  /diagram/{uuid}/{identifier}/load:
+    post:
+      tags:
+        - DiagramService
+      summary: ''
+      operationId: 'load'
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+            format: uuid
+          required: true
+        - in: path
+          name: identifier
+          schema:
+            type: string
+          required: true
+          description: ''
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DiagramWidgetModel'
+components:
+  schemas:
+    DiagramWidgetModel:
+      type: object
+      properties:
+        viewUuid:
+          type: string
+          format: uuid
+        identifier:
+          type: string
+        diagramModel:
+          $ref: '#/components/schemas/DiagramModel'
+    DiagramModel:
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        descriptor:
+          $ref: '#/components/schemas/DiagramDescriptor'
+        diagramData:
+          $ref: '#/components/schemas/DiagramDataContainer'
+    DiagramDataItem:
+      type: object
+      description: Contains an items data, based on the type of the diagram.
+      properties:
+        uri:
+          type: string
+          format: uri
+        label:
+          type: string
+        xValue:
+          type: number
+          format: double
+        yValue:
+          type: number
+          format: double
+        rValue:
+          description: This property specifies the radius of each bubble in a bubble chart. It is used to determine the size of the bubbles relative to their data values.
+          type: number
+          format: double
+        itemColor:
+          type: string
+    DiagramDataSet:
+      type: object
+      required: [items]
+      properties:
+        dataSetType:
+          description: The type can be set specifically for the dataset. This allows the dataset to be rendered as the specified type, while other datasets in the diagram remain rendered as the basic chart type. For example, you can render one dataset as a 'line' type in a 'bar' chart.
+          type: string
+        label:
+          type: string
+        dataSetcolor:
+          type: string
+        pointStyle:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagramDataItem'
+    DiagramDataContainer:
+      type: object
+      description: Contains sets of data for a diagram.
+      required: [items, labels]
+      properties:
+        uri:
+          type: string
+          format: uri
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagramDataSet'
+        labels:
+          type: array
+          items:
+            type: string
+    DiagramDescriptor:
+      type: object
+      description: A descriptor for the diagram.
+      properties:
+        uri:
+          type: string
+          format: uri
+        type:
+          description: The type of the diagram.
+          type: string
+        title:
+          description: The type of the diagram.
+          $ref: '#/components/schemas/LabelText'
+        minX:
+          description: Specifies the starting point for rendering the chart's X-axis. For example, if the minimum X value in the dataset is -30 and this property is set to -35, an extra "padding" of 5 units will be added below the lowest data point.
+          type: number
+          format: float
+        maxX:
+          description: Specifies the ending point for rendering the chart's X-axis. For instance, if the maximum X value in the dataset is 30 and this property is set to 35, an additional "padding" of 5 units will be added above the highest data point.
+          type: number
+          format: float
+        minY:
+          description: Specifies the starting point for rendering the chart's Y-axis. For example, if the minimum Y value in the dataset is -30 and this property is set to -35, an extra "padding" of 5 units will be added below the lowest data point.
+          type: number
+          format: float
+        maxY:
+          description: Specifies the ending point for rendering the chart's Y-axis. For instance, if the maximum Y value in the dataset is 30 and this property is set to 35, an additional "padding" of 5 units will be added above the highest data point.
+          type: number
+          format: float
+        showLabelsForXAxis:
+          description: Determines whether the labels on the X-Axis are displayed on the chart. Set to `true` to show the labels, or `false` to hide them.
+          type: boolean
+        showLabelsForYAxis:
+          description: Determines whether the labels on the Y-Axis are displayed on the chart. Set to `true` to show the labels, or `false` to hide them.
+          type: boolean
+        showLegendForChart:
+          description: Determines whether the legend for the chart is displayed. Set to `true` to show the legend, or `false` to hide it.
+          type: boolean
+        backgroundColor:
+          $ref: '#/components/schemas/DiagramColor'
+        shapes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DiagramShape'
+    DiagramShape:
+      type: object
+      required: [shapeType]
+      properties:
+        shapeType:
+          type: string
+        xMin:
+          type: number
+          format: float
+        xMax:
+          type: number
+          format: float
+        yMin:
+          type: number
+          format: float
+        yMax:
+          type: number
+          format: float
+        backgroundColor:
+          $ref: '#/components/schemas/DiagramColor'
+        borderColor:
+          $ref: '#/components/schemas/DiagramColor'
+        borderWidth:
+          type: integer
+          format: int32
+        borderDashLength:
+          type: integer
+          format: int32
+        borderDashGap:
+          type: integer
+          format: int32
+        drawTime:
+          $ref: '#/components/schemas/DrawTime'
+        labelText:
+          description: 'Only works with label type.'
+          $ref: '#/components/schemas/LabelText'
+    DrawTime:
+      type: string
+      enum:
+        - beforeDraw
+        - beforeDatasetsDraw
+        - afterDatasetsDraw
+        - afterDraw
+    DiagramColor:
+      type: object
+      properties:
+        red:
+          type: integer
+          format: int32
+        green:
+          type: integer
+          format: int32
+        blue:
+          type: integer
+          format: int32
+        alpha:
+          type: number
+          format: float
+    LabelText:
+      type: object
+      properties:
+        content:
+          type: string
+        color:
+          $ref: '#/components/schemas/DiagramColor'
+        textAlign:
+          type: string
+        size:
+          type: number
+          format: float
+        weight:
+          type: string
+        style:
+          type: string
+        family:
+          type: string

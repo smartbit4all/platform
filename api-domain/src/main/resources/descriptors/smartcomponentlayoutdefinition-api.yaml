@@ -82,6 +82,7 @@ components:
         - tree
         - toolbar
         - map
+        - diagram
     LayoutDefinitionDescriptor:
       type: object
       properties:
