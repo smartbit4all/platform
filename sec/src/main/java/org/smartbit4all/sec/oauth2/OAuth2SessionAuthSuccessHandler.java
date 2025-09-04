@@ -274,25 +274,25 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     this.authorizationErrorPath = authorizationErrorPath;
   }
 
-  public static interface OrgUserHandler {
+  public static interface OrgUserHandler<T extends AbstractAuthenticationToken> {
     /**
      * Creates a new org user based on the received OAuth2Token
      */
-    URI onMissingUser(OAuth2AuthenticationToken oauthToken) throws Exception;
+    URI onMissingUser(T oauthToken) throws Exception;
 
     /**
      * Throws exception if the user can not be logged in. <br/>
      * e.g.: check permissions
      */
-    void checkUser(User user, OAuth2AuthenticationToken oauthToken) throws Exception;
+    void checkUser(User user, T oauthToken) throws Exception;
 
   }
 
-  public class DefaultOAuth2OrgUserHandler implements OrgUserHandler {
+  public class DefaultOAuth2OrgUserHandler implements OrgUserHandler<AbstractAuthenticationToken> {
 
 
     @Override
-    public URI onMissingUser(OAuth2AuthenticationToken oauthToken) throws Exception {
+    public URI onMissingUser(AbstractAuthenticationToken oauthToken) throws Exception {
       if (createMissingUser) {
         log.warn(
             "A user logined with sso but there was no mathcing local User object. Creating a new one...");
@@ -305,7 +305,7 @@ public class OAuth2SessionAuthSuccessHandler extends SimpleUrlAuthenticationSucc
     }
 
     @Override
-    public void checkUser(User user, OAuth2AuthenticationToken oauthToken) throws Exception {
+    public void checkUser(User user, AbstractAuthenticationToken oauthToken) throws Exception {
       // nope
     }
 

@@ -25,7 +25,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.util.ObjectUtils;
 
-public class DynamicOAuthOrgUserHandler implements OrgUserHandler {
+public class DynamicOAuthOrgUserHandler implements OrgUserHandler<OAuth2AuthenticationToken> {
 
   private static final Logger log = LoggerFactory.getLogger(DynamicOAuthOrgUserHandler.class);
 
