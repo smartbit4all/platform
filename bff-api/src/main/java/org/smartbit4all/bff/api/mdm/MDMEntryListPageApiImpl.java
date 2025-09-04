@@ -2,15 +2,9 @@ package org.smartbit4all.bff.api.mdm;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.URI;
-import java.nio.charset.Charset;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +38,7 @@ import org.smartbit4all.api.mdm.MDMConstants;
 import org.smartbit4all.api.mdm.MDMDefinitionOption;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMModificationApi;
+import org.smartbit4all.api.mdm.MDMSetupApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -51,8 +46,6 @@ import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.mdm.bean.MDMModification;
 import org.smartbit4all.api.mdm.bean.MDMModificationItem;
 import org.smartbit4all.api.mdm.bean.MDMModificationItem.StateEnum;
-import org.smartbit4all.api.mdm.bean.MDMModificationRequest;
-import org.smartbit4all.api.mdm.bean.MDMModificationRequestData;
 import org.smartbit4all.api.mdm.bean.MDMTableColumnDescriptor;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry.BranchingStateEnum;
@@ -66,7 +59,6 @@ import org.smartbit4all.api.view.UiActions.UiActionBuilder;
 import org.smartbit4all.api.view.ViewContexts;
 import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ImageResource;
-import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -160,6 +152,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Autowired
   private MDMRelationEditorService mdmRelationEditorService;
+
+  @Autowired
+  private MDMSetupApi mdmSetupApi;
 
   /**
    * The name of the default editor in the application. It is opened as editor if the editor view is
@@ -767,44 +762,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   @Override
   public void importEntries(UUID viewUuid, UiActionRequest request) {
-    PageContext context = getContextByViewUUID(viewUuid);
+    PageContext ctx = getContextByViewUUID(viewUuid);
     UploadedFile uploadedFile =
         actionRequestHelper(request).get(UiActions.INPUT, UploadedFile.class);
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(
-        new BufferedInputStream(uploadedFile.getData().inputStream()), Charset.defaultCharset()));
-    String entryDescriptorSeparator = context.getEntryDescriptor().getCsvSeparator();
-    String separator = ObjectUtils.isEmpty(entryDescriptorSeparator) ? StringConstant.COMMA
-        : entryDescriptorSeparator;
-    List<Map<String, String>> items = new ArrayList<>();
-    int index = 1;
-    try {
-      String line = bufferedReader.readLine();
-      List<String> keySet = Arrays.asList(line.split(separator));
-      line = bufferedReader.readLine();
-      while (line != null) {
-        String[] fields = line.split(separator);
-        Map<String, String> item = new HashMap<>();
-        for (int i = 0; i < fields.length; ++i) {
-          item.put(keySet.get(i), fields[i]);
-        }
-        items.add(item);
-        line = bufferedReader.readLine();
-        ++index;
-      }
-      MDMModificationRequest mdmModRequest =
-          new MDMModificationRequest()
-              .data(new MDMModificationRequestData().definition(items));
-
-      masterDataManagementApi.importData(context.definition.getName(),
-          context.entryDescriptor.getName(), mdmModRequest,
-          context.mdmBranch);
-      refreshGrid(context);
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-      viewApi
-          .showMessage(new MessageData().viewUuid(viewUuid).header(localeSettingApi.get("error"))
-              .text(MessageFormat.format(localeSettingApi.get("importEntriesError"), index)));
-    }
+    mdmSetupApi
+        .importEntriesFromCsvFile(ctx.definition.getName(), ctx.entryDescriptor.getName(),
+            uploadedFile.getData(), ctx.entryDescriptor.getCsvSeparator(), ctx.mdmBranch);
   }
 
   @Override

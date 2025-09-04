@@ -651,3 +651,24 @@ components:
             additionalProperties: true
         typeClass:
           type: string
+    MDMValueSetSetupEntry:
+      type: object
+      properties:
+        definition:
+          type: string
+        name:
+          type: string
+        code:
+          type: string
+        vectorCollection:
+          type: VectorCollectionDescriptor
+        importable:
+          type: boolean
+        csvSeparator:
+          type: string
+        displayedColumns:
+          type: array
+          items:
+            type: string
+        fullCsvPath:
+          type: string

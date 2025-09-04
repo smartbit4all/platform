@@ -132,6 +132,26 @@ public interface MasterDataManagementApi {
   Map<String, MDMEntryDescriptor> getEntryDescriptors(MDMDefinition definition, URI branch);
 
   /**
+   * Retrieve the entry descriptor from a MDM definition.
+   *
+   * @param definitionName The {@link MDMDefinition} name.
+   * @param entryName The name of the entry.
+   * @param branchUri URI of branch (currently only globalBranch is supported)
+   * @return Whether the entry with the given name in the given definition exists.
+   */
+  Boolean entryDescriptorExists(String definitionName, String entryName, URI branchUri);
+
+  /**
+   * Retrieve the entry descriptor from a MDM definition.
+   *
+   * @param definition The {@link MDMDefinition}.
+   * @param entryName The name of the entry.
+   * @param branchUri URI of branch (currently only globalBranch is supported)
+   * @return Whether the entry with the given name in the given definition exists.
+   */
+  Boolean entryDescriptorExists(MDMDefinition definition, String entryName, URI branchUri);
+
+  /**
    * Add a new descriptor to the definition
    *
    * @param definition The {@link MDMDefinition}.

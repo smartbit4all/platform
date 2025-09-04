@@ -278,6 +278,16 @@ public class MasterDataManagementApiImpl implements MasterDataManagementApi {
   }
 
   @Override
+  public Boolean entryDescriptorExists(String definitionName, String entryName, URI branchUri) {
+    return entryDescriptorExists(getDefinition(definitionName), entryName, branchUri);
+  }
+
+  @Override
+  public Boolean entryDescriptorExists(MDMDefinition definition, String entryName, URI branchUri) {
+    return getEntryDescriptors(definition, branchUri).get(entryName) != null;
+  }
+
+  @Override
   public MDMDefinition getDefinition(String definition) {
     synchronizeOptions();
     return MdmDefinitionCache.get(definition, () -> {
