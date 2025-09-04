@@ -633,3 +633,21 @@ components:
           type: string
         entry:
           type: string
+    MDMSetupEntry:
+      type: object
+      properties:
+        definition:
+          type: string
+        entry:
+          type: string
+        uniquePath:
+          type: array
+          items:
+            type: string
+        entries:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        typeClass:
+          type: string

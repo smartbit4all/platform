@@ -48,6 +48,8 @@ import org.smartbit4all.api.mdm.MDMRelationApi;
 import org.smartbit4all.api.mdm.MDMRelationApiImpl;
 import org.smartbit4all.api.mdm.MDMSearchIndexApi;
 import org.smartbit4all.api.mdm.MDMSearchIndexApiImpl;
+import org.smartbit4all.api.mdm.MDMSetupApi;
+import org.smartbit4all.api.mdm.MDMSetupApiImpl;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApiImpl;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
@@ -438,6 +440,11 @@ public class PlatformApiConfig {
   @Bean
   public MasterDataManagementApi masterDataManagementApi() {
     return new MasterDataManagementApiImpl();
+  }
+
+  @Bean
+  public MDMSetupApi mdmSetupApi() {
+    return new MDMSetupApiImpl();
   }
 
   @Bean
