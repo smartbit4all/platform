@@ -340,6 +340,10 @@ public final class ObjectLayoutBuilder {
     return String.join(StringConstant.DOT, elements);
   }
 
+  public static SelectionDefinition selectionDefinition(String valueSetName) {
+    return selectionDefinition(valueSetName, null);
+  }
+
   public static SelectionDefinition selectionDefinition(String valueSetName,
       String displayProperty) {
     return new SelectionDefinition()
