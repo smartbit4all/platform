@@ -52,7 +52,8 @@ import jakarta.validation.Valid;
   GridModel.PAGE_SIZE,
   GridModel.PAGE_SIZE_OPTIONS,
   GridModel.DEFAULT_ROW_ACTIONS,
-  GridModel.PAGINATOR
+  GridModel.PAGINATOR,
+  GridModel.TITLE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class GridModel {
@@ -100,6 +101,9 @@ public class GridModel {
 
   public static final String PAGINATOR = "paginator";
   private Boolean paginator;
+
+  public static final String TITLE = "title";
+  private String title;
 
   public GridModel() {
   }
@@ -539,6 +543,33 @@ public class GridModel {
     this.paginator = paginator;
   }
 
+  public GridModel title(String title) {
+    
+    this.title = title;
+    return this;
+  }
+
+  /**
+   * Get title
+   * @return title
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getTitle() {
+    return title;
+  }
+
+
+  @JsonProperty(TITLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -562,12 +593,13 @@ public class GridModel {
         Objects.equals(this.pageSize, gridModel.pageSize) &&
         Objects.equals(this.pageSizeOptions, gridModel.pageSizeOptions) &&
         Objects.equals(this.defaultRowActions, gridModel.defaultRowActions) &&
-        Objects.equals(this.paginator, gridModel.paginator);
+        Objects.equals(this.paginator, gridModel.paginator) &&
+        Objects.equals(this.title, gridModel.title);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(viewUuid, identifier, qualifier, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions, paginator);
+    return Objects.hash(viewUuid, identifier, qualifier, availableViews, view, accessConfig, page, totalRowCount, selectedRowCount, allRowsSelected, pageIndex, pageSize, pageSizeOptions, defaultRowActions, paginator, title);
   }
 
   @Override
@@ -589,6 +621,7 @@ public class GridModel {
     sb.append("    pageSizeOptions: ").append(toIndentedString(pageSizeOptions)).append("\n");
     sb.append("    defaultRowActions: ").append(toIndentedString(defaultRowActions)).append("\n");
     sb.append("    paginator: ").append(toIndentedString(paginator)).append("\n");
+    sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("}");
     return sb.toString();
   }

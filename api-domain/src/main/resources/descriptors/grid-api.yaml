@@ -310,6 +310,8 @@ components:
             type: string
         paginator:
           type: boolean
+        title:
+          type: string
     GridServerModel:
       type: object
       description: |
