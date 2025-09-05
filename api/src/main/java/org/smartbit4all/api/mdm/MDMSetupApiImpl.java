@@ -167,7 +167,14 @@ public class MDMSetupApiImpl implements MDMSetupApi {
       mdmApi.importData(definition,
           entry, mdmModRequest,
           branchUri);
+      MDMEntryApi entryApi = mdmApi.getApi(definition, entry);
+      if (entryApi.getDescriptor().getVectorCollection() != null
+          && !ObjectUtils
+              .isEmpty(entryApi.getDescriptor().getVectorCollection().getVectorCollectionName())) {
+        entryApi.updateAllIndices();
+      }
     } catch (Exception e) {
+      log.error("Error with the following entry:" + definition + StringConstant.DOT + entry);
       throw new BusinessLogicException(
           MessageFormat.format(localeSettingApi.get("importEntriesError"), index), e);
     }
