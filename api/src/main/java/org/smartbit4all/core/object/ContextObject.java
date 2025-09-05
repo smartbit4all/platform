@@ -467,7 +467,8 @@ public class ContextObject {
       if (contextObjectItem != null && objectNode != null) {
         contextObjectItem.getRwLock().writeLock().lock();
         try {
-          if (merge && !objectApi().isValue(value)) {
+          Object currentValue = objectNode.getValue(StringConstant.toArray(finalPath));
+          if (merge && !objectApi().isValue(value) && !objectApi().isValue(currentValue)) {
             objectNode.mergeValues(getMergeMap(finalPath, objectApi().toMapObject(value)));
           } else {
             if (ObjectUtils.isEmpty(finalPath)) {
