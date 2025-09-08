@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.container;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.grid;
@@ -88,6 +86,8 @@ import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageModel>
     implements MDMEntryChangesPageApi {
@@ -316,10 +316,6 @@ public class MDMEntryChangesPageApiImpl extends PageApiImpl<MDMEntryChangesPageM
       ctx.view.actions(uiActions.build());
 
       // Refresh the actions on the admin page
-      UUID parentUuid = parameters(ctx.view).get(PARAM_PARENT_UUID, UUID.class);
-      if (parentUuid != null) {
-        mdmAdminPageApi.refreshUiActions(parentUuid);
-      }
 
     }
   }
