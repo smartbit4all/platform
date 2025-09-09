@@ -1,6 +1,8 @@
 package org.smartbit4all.api.invocation.restclient;
 
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -36,5 +38,17 @@ public class InvocationRestClientConfig {
     return new InvocationExecutionApiRestclient();
   }
 
+  @Bean
+  public DynamicRestCallerApi dynamicRestCallerApi() {
+    return new DynamicRestCallerApiImpl();
+  }
+
+  @Bean
+  ProviderApiInvocationHandler<DynamicRestCallerApi> dynamicRestCallerApiProvider(
+      DynamicRestCallerApi api) {
+    return Invocations.asProvider(
+        DynamicRestCallerApi.class,
+        api);
+  }
 
 }
