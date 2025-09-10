@@ -30,8 +30,9 @@ smartbit4all {
         "${rootDir}/api-domain/src/main/resources/descriptors/grid-api.yaml"                  : "grid",
         "${rootDir}/api-domain/src/main/resources/descriptors/filterexpression-api.yaml"      : "filterexpression",
         "${rootDir}/api-domain/src/main/resources/descriptors/wellknown-api.yaml"             : "wellknown",
-        "${rootDir}/api-domain/src/main/resources/descriptors/geomap-api.yaml"             : "geomap",
-        "${rootDir}/api-domain/src/main/resources/descriptors/mdm-api.yaml"             : "mdm"
+        "${rootDir}/api-domain/src/main/resources/descriptors/geomap-api.yaml"                : "geomap",
+        "${rootDir}/api-domain/src/main/resources/descriptors/mdm-api.yaml"                   : "mdm",
+        "${rootDir}/api-domain/src/main/resources/descriptors/diagram-api.yaml"               : "diagram"
     ]
     apiPackagePrefix = "org.smartbit4all.api"
     apiPackagePostfix = "restserver"

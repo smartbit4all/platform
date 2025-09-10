@@ -1,6 +1,8 @@
 package org.smartbit4all.api.view.restserver.config;
 
-import org.smartbit4all.api.filterexpression.restserver.FilterApi;
+import org.smartbit4all.api.diagram.restserver.DiagramServiceApiController;
+import org.smartbit4all.api.diagram.restserver.DiagramServiceApiDelegate;
+import org.smartbit4all.api.diagram.restserver.DiagramServiceApiDelegateImpl;
 import org.smartbit4all.api.filterexpression.restserver.FilterApiController;
 import org.smartbit4all.api.filterexpression.restserver.FilterApiDelegate;
 import org.smartbit4all.api.filterexpression.restserver.impl.FilterApiDelegateImpl;
@@ -97,6 +99,17 @@ public class ViewSrvRestConfig {
   @Bean
   public GeoMapApiController geoMapApiController(GeoMapApiDelegate delegate) {
     return new GeoMapApiController(delegate);
+  }
+
+  @Bean
+  public DiagramServiceApiDelegate diagramServiceApiDelegate() {
+    return new DiagramServiceApiDelegateImpl();
+  }
+
+  @Bean
+  public DiagramServiceApiController diagramServiceApiController(
+      DiagramServiceApiDelegate delegate) {
+    return new DiagramServiceApiController(delegate);
   }
 
   @Bean

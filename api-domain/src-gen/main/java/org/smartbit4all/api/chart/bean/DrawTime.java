@@ -1,6 +1,6 @@
 /*
- * Form layout definition
- * Contains form layout definition objects.
+ * smartchart API
+ * Describes a model for smart chart.
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.smartcomponentlayoutdefinition.bean;
+package org.smartbit4all.api.chart.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -24,25 +24,21 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Gets or Sets ComponentWidgetType
+ * Gets or Sets DrawTime
  */
-public enum ComponentWidgetType {
+public enum DrawTime {
   
-  GRID("grid"),
+  BEFORE_DRAW("beforeDraw"),
   
-  FILTER("filter"),
+  BEFORE_DATASETS_DRAW("beforeDatasetsDraw"),
   
-  TREE("tree"),
+  AFTER_DATASETS_DRAW("afterDatasetsDraw"),
   
-  TOOLBAR("toolbar"),
-  
-  MAP("map"),
-  
-  DIAGRAM("diagram");
+  AFTER_DRAW("afterDraw");
 
   private String value;
 
-  ComponentWidgetType(String value) {
+  DrawTime(String value) {
     this.value = value;
   }
 
@@ -57,8 +53,8 @@ public enum ComponentWidgetType {
   }
 
   @JsonCreator
-  public static ComponentWidgetType fromValue(String value) {
-    for (ComponentWidgetType b : ComponentWidgetType.values()) {
+  public static DrawTime fromValue(String value) {
+    for (DrawTime b : DrawTime.values()) {
       if (b.value.equals(value)) {
         return b;
       }
