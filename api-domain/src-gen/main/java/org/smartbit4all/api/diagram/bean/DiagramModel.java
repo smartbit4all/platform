@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.net.URI;
+import java.util.UUID;
 import org.smartbit4all.api.diagram.bean.DiagramDataContainer;
 import org.smartbit4all.api.diagram.bean.DiagramDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -33,14 +33,18 @@ import jakarta.validation.Valid;
  * DiagramModel
  */
 @JsonPropertyOrder({
-  DiagramModel.URI,
+  DiagramModel.VIEW_UUID,
+  DiagramModel.IDENTIFIER,
   DiagramModel.DESCRIPTOR,
   DiagramModel.DIAGRAM_DATA
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramModel {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String VIEW_UUID = "viewUuid";
+  private UUID viewUuid;
+
+  public static final String IDENTIFIER = "identifier";
+  private String identifier;
 
   public static final String DESCRIPTOR = "descriptor";
   private DiagramDescriptor descriptor;
@@ -51,32 +55,59 @@ public class DiagramModel {
   public DiagramModel() {
   }
 
-  public DiagramModel uri(URI uri) {
+  public DiagramModel viewUuid(UUID viewUuid) {
     
-    this.uri = uri;
+    this.viewUuid = viewUuid;
     return this;
   }
 
   /**
-   * Get uri
-   * @return uri
+   * Get viewUuid
+   * @return viewUuid
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(URI)
+  @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getUri() {
-    return uri;
+  public UUID getViewUuid() {
+    return viewUuid;
   }
 
 
-  @JsonProperty(URI)
+  @JsonProperty(VIEW_UUID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setViewUuid(UUID viewUuid) {
+    this.viewUuid = viewUuid;
+  }
+
+  public DiagramModel identifier(String identifier) {
+    
+    this.identifier = identifier;
+    return this;
+  }
+
+  /**
+   * Get identifier
+   * @return identifier
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
+  @JsonProperty(IDENTIFIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
   }
 
   public DiagramModel descriptor(DiagramDescriptor descriptor) {
@@ -144,21 +175,23 @@ public class DiagramModel {
       return false;
     }
     DiagramModel diagramModel = (DiagramModel) o;
-    return Objects.equals(this.uri, diagramModel.uri) &&
+    return Objects.equals(this.viewUuid, diagramModel.viewUuid) &&
+        Objects.equals(this.identifier, diagramModel.identifier) &&
         Objects.equals(this.descriptor, diagramModel.descriptor) &&
         Objects.equals(this.diagramData, diagramModel.diagramData);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, descriptor, diagramData);
+    return Objects.hash(viewUuid, identifier, descriptor, diagramData);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DiagramModel {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    viewUuid: ").append(toIndentedString(viewUuid)).append("\n");
+    sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("    diagramData: ").append(toIndentedString(diagramData)).append("\n");
     sb.append("}");

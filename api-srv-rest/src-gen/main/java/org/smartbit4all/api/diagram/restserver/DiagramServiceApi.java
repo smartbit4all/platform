@@ -5,7 +5,7 @@
  */
 package org.smartbit4all.api.diagram.restserver;
 
-import org.smartbit4all.api.diagram.bean.DiagramWidgetModel;
+import org.smartbit4all.api.diagram.bean.DiagramModel;
 import java.util.UUID;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,7 +51,7 @@ public interface DiagramServiceApi {
         tags = { "DiagramService" },
         responses = {
             @ApiResponse(responseCode = "200", description = "", content = {
-                @Content(mediaType = "application/json", schema = @Schema(implementation = DiagramWidgetModel.class))
+                @Content(mediaType = "application/json", schema = @Schema(implementation = DiagramModel.class))
             })
         }
     )
@@ -61,7 +61,7 @@ public interface DiagramServiceApi {
         produces = { "application/json" }
     )
     
-    default ResponseEntity<DiagramWidgetModel> load(
+    default ResponseEntity<DiagramModel> load(
         @Parameter(name = "uuid", description = "", required = true, in = ParameterIn.PATH) @PathVariable("uuid") UUID uuid,
         @Parameter(name = "identifier", description = "", required = true, in = ParameterIn.PATH) @PathVariable("identifier") String identifier
     ) throws Exception {

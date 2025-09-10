@@ -34,10 +34,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DiagramWidgetModel'
+                $ref: '#/components/schemas/DiagramModel'
 components:
   schemas:
-    DiagramWidgetModel:
+    DiagramModel:
       type: object
       properties:
         viewUuid:
@@ -45,14 +45,6 @@ components:
           format: uuid
         identifier:
           type: string
-        diagramModel:
-          $ref: '#/components/schemas/DiagramModel'
-    DiagramModel:
-      type: object
-      properties:
-        uri:
-          type: string
-          format: uri
         descriptor:
           $ref: '#/components/schemas/DiagramDescriptor'
         diagramData:
@@ -61,7 +53,7 @@ components:
       type: object
       description: Contains an items data, based on the type of the diagram.
       properties:
-        uri:
+        itemUri:
           type: string
           format: uri
         label:
@@ -82,12 +74,12 @@ components:
       type: object
       required: [items]
       properties:
-        dataSetType:
+        type:
           description: The type can be set specifically for the dataset. This allows the dataset to be rendered as the specified type, while other datasets in the diagram remain rendered as the basic chart type. For example, you can render one dataset as a 'line' type in a 'bar' chart.
           type: string
         label:
           type: string
-        dataSetcolor:
+        color:
           type: string
         pointStyle:
           type: string
@@ -100,9 +92,6 @@ components:
       description: Contains sets of data for a diagram.
       required: [items, labels]
       properties:
-        uri:
-          type: string
-          format: uri
         items:
           type: array
           items:
@@ -115,9 +104,6 @@ components:
       type: object
       description: A descriptor for the diagram.
       properties:
-        uri:
-          type: string
-          format: uri
         type:
           description: The type of the diagram.
           type: string

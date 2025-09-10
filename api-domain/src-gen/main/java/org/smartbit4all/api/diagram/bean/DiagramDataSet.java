@@ -34,22 +34,22 @@ import jakarta.validation.Valid;
  * DiagramDataSet
  */
 @JsonPropertyOrder({
-  DiagramDataSet.DATA_SET_TYPE,
+  DiagramDataSet.TYPE,
   DiagramDataSet.LABEL,
-  DiagramDataSet.DATA_SETCOLOR,
+  DiagramDataSet.COLOR,
   DiagramDataSet.POINT_STYLE,
   DiagramDataSet.ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramDataSet {
-  public static final String DATA_SET_TYPE = "dataSetType";
-  private String dataSetType;
+  public static final String TYPE = "type";
+  private String type;
 
   public static final String LABEL = "label";
   private String label;
 
-  public static final String DATA_SETCOLOR = "dataSetcolor";
-  private String dataSetcolor;
+  public static final String COLOR = "color";
+  private String color;
 
   public static final String POINT_STYLE = "pointStyle";
   private String pointStyle;
@@ -60,31 +60,31 @@ public class DiagramDataSet {
   public DiagramDataSet() {
   }
 
-  public DiagramDataSet dataSetType(String dataSetType) {
+  public DiagramDataSet type(String type) {
     
-    this.dataSetType = dataSetType;
+    this.type = type;
     return this;
   }
 
   /**
    * The type can be set specifically for the dataset. This allows the dataset to be rendered as the specified type, while other datasets in the diagram remain rendered as the basic chart type. For example, you can render one dataset as a &#39;line&#39; type in a &#39;bar&#39; chart.
-   * @return dataSetType
+   * @return type
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The type can be set specifically for the dataset. This allows the dataset to be rendered as the specified type, while other datasets in the diagram remain rendered as the basic chart type. For example, you can render one dataset as a 'line' type in a 'bar' chart.")
-  @JsonProperty(DATA_SET_TYPE)
+  @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getDataSetType() {
-    return dataSetType;
+  public String getType() {
+    return type;
   }
 
 
-  @JsonProperty(DATA_SET_TYPE)
+  @JsonProperty(TYPE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDataSetType(String dataSetType) {
-    this.dataSetType = dataSetType;
+  public void setType(String type) {
+    this.type = type;
   }
 
   public DiagramDataSet label(String label) {
@@ -114,31 +114,31 @@ public class DiagramDataSet {
     this.label = label;
   }
 
-  public DiagramDataSet dataSetcolor(String dataSetcolor) {
+  public DiagramDataSet color(String color) {
     
-    this.dataSetcolor = dataSetcolor;
+    this.color = color;
     return this;
   }
 
   /**
-   * Get dataSetcolor
-   * @return dataSetcolor
+   * Get color
+   * @return color
    */
   @jakarta.annotation.Nullable
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(DATA_SETCOLOR)
+  @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getDataSetcolor() {
-    return dataSetcolor;
+  public String getColor() {
+    return color;
   }
 
 
-  @JsonProperty(DATA_SETCOLOR)
+  @JsonProperty(COLOR)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDataSetcolor(String dataSetcolor) {
-    this.dataSetcolor = dataSetcolor;
+  public void setColor(String color) {
+    this.color = color;
   }
 
   public DiagramDataSet pointStyle(String pointStyle) {
@@ -214,25 +214,25 @@ public class DiagramDataSet {
       return false;
     }
     DiagramDataSet diagramDataSet = (DiagramDataSet) o;
-    return Objects.equals(this.dataSetType, diagramDataSet.dataSetType) &&
+    return Objects.equals(this.type, diagramDataSet.type) &&
         Objects.equals(this.label, diagramDataSet.label) &&
-        Objects.equals(this.dataSetcolor, diagramDataSet.dataSetcolor) &&
+        Objects.equals(this.color, diagramDataSet.color) &&
         Objects.equals(this.pointStyle, diagramDataSet.pointStyle) &&
         Objects.equals(this.items, diagramDataSet.items);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(dataSetType, label, dataSetcolor, pointStyle, items);
+    return Objects.hash(type, label, color, pointStyle, items);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DiagramDataSet {\n");
-    sb.append("    dataSetType: ").append(toIndentedString(dataSetType)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
-    sb.append("    dataSetcolor: ").append(toIndentedString(dataSetcolor)).append("\n");
+    sb.append("    color: ").append(toIndentedString(color)).append("\n");
     sb.append("    pointStyle: ").append(toIndentedString(pointStyle)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("}");

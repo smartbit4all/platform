@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,7 +37,6 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "A descriptor for the diagram.")
 @JsonPropertyOrder({
-  DiagramDescriptor.URI,
   DiagramDescriptor.TYPE,
   DiagramDescriptor.TITLE,
   DiagramDescriptor.MIN_X,
@@ -53,9 +51,6 @@ import jakarta.validation.Valid;
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramDescriptor {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String TYPE = "type";
   private String type;
 
@@ -90,34 +85,6 @@ public class DiagramDescriptor {
   private List<@Valid DiagramShape> shapes = new ArrayList<>();
 
   public DiagramDescriptor() {
-  }
-
-  public DiagramDescriptor uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-  /**
-   * Get uri
-   * @return uri
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
   }
 
   public DiagramDescriptor type(String type) {
@@ -437,8 +404,7 @@ public class DiagramDescriptor {
       return false;
     }
     DiagramDescriptor diagramDescriptor = (DiagramDescriptor) o;
-    return Objects.equals(this.uri, diagramDescriptor.uri) &&
-        Objects.equals(this.type, diagramDescriptor.type) &&
+    return Objects.equals(this.type, diagramDescriptor.type) &&
         Objects.equals(this.title, diagramDescriptor.title) &&
         Objects.equals(this.minX, diagramDescriptor.minX) &&
         Objects.equals(this.maxX, diagramDescriptor.maxX) &&
@@ -453,14 +419,13 @@ public class DiagramDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, type, title, minX, maxX, minY, maxY, showLabelsForXAxis, showLabelsForYAxis, showLegendForChart, backgroundColor, shapes);
+    return Objects.hash(type, title, minX, maxX, minY, maxY, showLabelsForXAxis, showLabelsForYAxis, showLegendForChart, backgroundColor, shapes);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DiagramDescriptor {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    minX: ").append(toIndentedString(minX)).append("\n");

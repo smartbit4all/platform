@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,15 +35,11 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "Contains sets of data for a diagram.")
 @JsonPropertyOrder({
-  DiagramDataContainer.URI,
   DiagramDataContainer.ITEMS,
   DiagramDataContainer.LABELS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramDataContainer {
-  public static final String URI = "uri";
-  private URI uri;
-
   public static final String ITEMS = "items";
   private List<@Valid DiagramDataSet> items = new ArrayList<>();
 
@@ -52,34 +47,6 @@ public class DiagramDataContainer {
   private List<String> labels = new ArrayList<>();
 
   public DiagramDataContainer() {
-  }
-
-  public DiagramDataContainer uri(URI uri) {
-    
-    this.uri = uri;
-    return this;
-  }
-
-  /**
-   * Get uri
-   * @return uri
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public URI getUri() {
-    return uri;
-  }
-
-
-  @JsonProperty(URI)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
   }
 
   public DiagramDataContainer items(List<@Valid DiagramDataSet> items) {
@@ -164,21 +131,19 @@ public class DiagramDataContainer {
       return false;
     }
     DiagramDataContainer diagramDataContainer = (DiagramDataContainer) o;
-    return Objects.equals(this.uri, diagramDataContainer.uri) &&
-        Objects.equals(this.items, diagramDataContainer.items) &&
+    return Objects.equals(this.items, diagramDataContainer.items) &&
         Objects.equals(this.labels, diagramDataContainer.labels);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, items, labels);
+    return Objects.hash(items, labels);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DiagramDataContainer {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("    labels: ").append(toIndentedString(labels)).append("\n");
     sb.append("}");

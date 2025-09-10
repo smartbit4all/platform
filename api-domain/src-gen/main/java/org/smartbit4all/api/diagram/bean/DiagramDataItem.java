@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "Contains an items data, based on the type of the diagram.")
 @JsonPropertyOrder({
-  DiagramDataItem.URI,
+  DiagramDataItem.ITEM_URI,
   DiagramDataItem.LABEL,
   DiagramDataItem.X_VALUE,
   DiagramDataItem.Y_VALUE,
@@ -41,8 +41,8 @@ import jakarta.validation.Valid;
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramDataItem {
-  public static final String URI = "uri";
-  private URI uri;
+  public static final String ITEM_URI = "itemUri";
+  private URI itemUri;
 
   public static final String LABEL = "label";
   private String label;
@@ -62,32 +62,32 @@ public class DiagramDataItem {
   public DiagramDataItem() {
   }
 
-  public DiagramDataItem uri(URI uri) {
+  public DiagramDataItem itemUri(URI itemUri) {
     
-    this.uri = uri;
+    this.itemUri = itemUri;
     return this;
   }
 
   /**
-   * Get uri
-   * @return uri
+   * Get itemUri
+   * @return itemUri
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(URI)
+  @JsonProperty(ITEM_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public URI getUri() {
-    return uri;
+  public URI getItemUri() {
+    return itemUri;
   }
 
 
-  @JsonProperty(URI)
+  @JsonProperty(ITEM_URI)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUri(URI uri) {
-    this.uri = uri;
+  public void setItemUri(URI itemUri) {
+    this.itemUri = itemUri;
   }
 
   public DiagramDataItem label(String label) {
@@ -234,7 +234,7 @@ public class DiagramDataItem {
       return false;
     }
     DiagramDataItem diagramDataItem = (DiagramDataItem) o;
-    return Objects.equals(this.uri, diagramDataItem.uri) &&
+    return Objects.equals(this.itemUri, diagramDataItem.itemUri) &&
         Objects.equals(this.label, diagramDataItem.label) &&
         Objects.equals(this.xValue, diagramDataItem.xValue) &&
         Objects.equals(this.yValue, diagramDataItem.yValue) &&
@@ -244,14 +244,14 @@ public class DiagramDataItem {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, label, xValue, yValue, rValue, itemColor);
+    return Objects.hash(itemUri, label, xValue, yValue, rValue, itemColor);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class DiagramDataItem {\n");
-    sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
+    sb.append("    itemUri: ").append(toIndentedString(itemUri)).append("\n");
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    xValue: ").append(toIndentedString(xValue)).append("\n");
     sb.append("    yValue: ").append(toIndentedString(yValue)).append("\n");

@@ -1,6 +1,6 @@
 package org.smartbit4all.api.diagram.restserver;
 
-import org.smartbit4all.api.diagram.bean.DiagramWidgetModel;
+import org.smartbit4all.api.diagram.bean.DiagramModel;
 import java.util.UUID;
 
 
