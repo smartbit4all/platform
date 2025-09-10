@@ -1,10 +1,10 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toMap;
 import java.util.Collection;
 import java.util.Map;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
-import static java.util.stream.Collectors.toMap;
 
 public class ObjectDefinitionBuilder {
 
@@ -39,6 +39,15 @@ public class ObjectDefinitionBuilder {
         definition.getOutgoingReferences().putIfAbsent(refDef.getSourcePropertyPath(), refDef);
       }
     }
+    return this;
+  }
+
+  public ObjectDefinitionBuilder addProperty(PropertyDefinitionData newProperty) {
+    propertiesByName.computeIfAbsent(newProperty.getName(), name -> {
+      definition.getDefinitionData().addPropertiesItem(newProperty);
+      changed = true;
+      return newProperty;
+    });
     return this;
   }
 
