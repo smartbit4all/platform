@@ -461,6 +461,7 @@ public final class ObjectValidations {
   private static ObjectValidationItem mandatoryItem(String[] keys) {
     return new ObjectValidationItem()
         .severity(ObjectValidationSeverity.WARNING)
+        .propertyPath(Arrays.asList(keys))
         .message(new LangString()
             .defaultValue(LOCALE_MANDATORY + StringConstant.DOT
                 + Arrays.stream(keys).collect(Collectors.joining(StringConstant.DOT))));

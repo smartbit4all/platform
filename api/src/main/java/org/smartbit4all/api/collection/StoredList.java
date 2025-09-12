@@ -31,14 +31,15 @@ public interface StoredList extends StoredContainer {
    */
   Stream<ObjectNode> nodesFromCache();
 
-  void add(URI uri);
+  URI add(URI uri);
 
-  void addAll(Collection<URI> uris);
+  List<URI> addAll(Collection<URI> uris);
 
-  void addAll(Stream<URI> uris);
+  List<URI> addAll(Stream<URI> uris);
 
   List<URI> update(UnaryOperator<List<URI>> update);
 
+  @Override
   boolean removeAll(Collection<URI> uris);
 
   boolean remove(URI uri);
