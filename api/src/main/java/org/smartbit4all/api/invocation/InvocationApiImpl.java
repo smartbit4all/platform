@@ -278,8 +278,6 @@ public class InvocationApiImpl implements InvocationApi {
 
   private final InvocationParameter invokeScript(InvocationRequest request)
       throws ApiNotFoundException {
-    // Set all the parameters to the script as global variable.
-    addMandatoryScriptParams(request);
     List<Object> parameterObjects = Invocations.getParameterObjects(objectApi, request);
     int i = 0;
     ScriptEngine engine = scriptEngineMgmtApi.getEngine(request.getScriptKind());
@@ -287,6 +285,8 @@ public class InvocationApiImpl implements InvocationApi {
       throw new ApiNotFoundException(request);
     }
     Bindings bindings = engine.createBindings();
+    // Set all the parameters to the script as global variable.
+    addMandatoryScriptParams(bindings);
     for (InvocationParameter p : request.getParameters()) {
       // We must ensure that the parameters are converted to the referred types.
       bindings.put(p.getName(), parameterObjects.get(i++));
@@ -304,27 +304,10 @@ public class InvocationApiImpl implements InvocationApi {
     }
   }
 
-  private void addMandatoryScriptParams(InvocationRequest request) {
-    // TODO get beans to add from request
-    addBeanToParams(request, "mdmApi", mdmApi);
-    addBeanToParams(request, "objectApi", objectApi);
-    addBeanToParams(request, "log", log);
-  }
-
-  private void addBeanToParams(InvocationRequest request, String name, Object value) {
-    try {
-      boolean hasParam = request.getParameters().stream()
-          .anyMatch(p -> name.equals(p.getName()));
-
-      if (!hasParam) {
-        request.addParametersItem(new InvocationParameter()
-            .name(name)
-            .value(value)
-            .typeClass(value.getClass().getName()));
-      }
-    } catch (Exception e) {
-      log.error("Couldn't add " + name + " params to InvocationRequest", e);
-    }
+  private void addMandatoryScriptParams(Bindings bindings) {
+    bindings.put("mdmApi", mdmApi);
+    bindings.put("objectApi", objectApi);
+    bindings.put("log", log);
   }
 
   @Override
