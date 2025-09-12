@@ -364,6 +364,10 @@ public final class ObjectLayoutBuilder {
     return String.join(StringConstant.DOT, elements);
   }
 
+  public static String widgetKey(Iterable<String> elements) {
+    return String.join(StringConstant.DOT, elements);
+  }
+
   public static SelectionDefinition selectionDefinition(String valueSetName) {
     return selectionDefinition(valueSetName, null);
   }
