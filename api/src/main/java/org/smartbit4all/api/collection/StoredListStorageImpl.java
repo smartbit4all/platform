@@ -22,6 +22,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import org.springframework.util.ObjectUtils;
 import static java.util.stream.Collectors.toList;
 
 public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
@@ -84,19 +85,25 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
   }
 
   @Override
-  public void add(URI uri) {
-    addAll(Stream.of(uri));
-  }
-
-  @Override
-  public void addAll(Collection<URI> uris) {
-    if (uris != null) {
-      addAll(uris.stream());
+  public URI add(URI uri) {
+    List<URI> all = addAll(Stream.of(uri));
+    if (!ObjectUtils.isEmpty(all)) {
+      return all.get(0);
     }
+    return null;
   }
 
   @Override
-  public void addAll(Stream<URI> uris) {
+  public List<URI> addAll(Collection<URI> uris) {
+    if (uris != null) {
+      return addAll(uris.stream());
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public List<URI> addAll(Stream<URI> uris) {
+    List<URI> result = new ArrayList<>();
     modifyOnBranch(on -> {
       on.modify(StoredListData.class, data -> {
         Set<URI> currentUris = new HashSet<>();
@@ -118,10 +125,14 @@ public class StoredListStorageImpl extends AbstractStoredContainerStorageImpl
             return !currentUris.contains(objectApi.getLatestUri(u));
           }
           return true;
-        }).forEach(data::addUrisItem);
+        }).forEach(u -> {
+          data.addUrisItem(u);
+          result.add(u);
+        });
         return data;
       });
     });
+    return result;
   }
 
   @Override
