@@ -1,6 +1,5 @@
 package org.smartbit4all.api.view.filterexpression;
 
-import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,9 +9,12 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.formdefinition.bean.TextFieldProperties;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFieldUiConverter {
 
@@ -45,6 +47,8 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         layoutDefinition.widgets(convertSelectMultipleFilter(field));
       } else if (FilterExpressionFieldWidgetType.TEXT_FIELD_LOOKUP == field.getWidgetType()) {
         layoutDefinition.widgets(convertLookupFilter(field));
+      } else if (FilterExpressionFieldWidgetType.TEXT_FIELD == field.getWidgetType()) {
+        layoutDefinition.widgets(convertTextField(field));
       } else {
         layoutDefinition.addWidgetsItem(
             new SmartWidgetDefinition()
@@ -112,6 +116,16 @@ public class FilterExpressionFieldUiConverterImpl implements FilterExpressionFie
         .type(getSelectLayoutTypeFromField(field))
         .label(field.getLabel())
         .values(field.getPossibleValues()));
+    return result;
+  }
+
+  private List<SmartWidgetDefinition> convertTextField(final FilterExpressionField field) {
+    List<SmartWidgetDefinition> result = new ArrayList<>();
+
+    field.getExpressionData().getOperand2().getSelectedObjects();
+    result.add(ObjectLayoutBuilder.textfield(
+        EXPRESSION_DATA_OPERAND2,
+        field.getLabel(), new TextFieldProperties().clearable(true)));
     return result;
   }
 

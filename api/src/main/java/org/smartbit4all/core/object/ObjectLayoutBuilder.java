@@ -12,6 +12,7 @@ import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.formdefinition.bean.TextFieldProperties;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
@@ -32,6 +33,8 @@ import org.smartbit4all.core.utility.RichTextEditorFeatures.Properties;
 import org.smartbit4all.core.utility.StringConstant;
 
 public final class ObjectLayoutBuilder {
+
+  private static final String PROPERTIES_SUFFIX = "_properties";
 
   /**
    * Constructs a grid layout definition with the provided grid identifier.
@@ -216,6 +219,17 @@ public final class ObjectLayoutBuilder {
         .type(SmartFormWidgetType.TEXT_FIELD)
         .key(key)
         .label(label);
+  }
+
+  public static SmartWidgetDefinition textfield(String key, String label,
+      TextFieldProperties properties) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.TEXT_FIELD)
+        .key(key)
+        .label(label)
+        .putPropertiesItem(
+            SmartFormWidgetType.TEXT_FIELD.getValue() + PROPERTIES_SUFFIX,
+            properties);
   }
 
   public static SmartWidgetDefinition textfieldWithAutoComplete(String key, String label,
