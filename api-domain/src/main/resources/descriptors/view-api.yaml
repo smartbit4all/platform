@@ -612,6 +612,11 @@ components:
           format: uuid
         model:
           type: object
+        backgroundProcesses:
+          type: array
+          description: List of processes (related and important to the view's content) running in the background.
+          items:
+            $ref: '#/components/schemas/BackgroundProcessInfo'
         constraint:
           $ref: '#/components/schemas/ViewConstraint'
         closedChildrenViews:
@@ -1049,6 +1054,8 @@ components:
         disabled:
           description: Whether this action should appear disabled or not.
           type: boolean
+        backgroundProcess:
+          $ref: '#/components/schemas/BackgroundProcessInfo'
     UiActionInputType:
       type: string
       default: none
@@ -1563,3 +1570,20 @@ components:
           type: string
         relation:
           type: string
+    BackgroundProcessInfo:
+      type: object
+      properties:
+        code:
+          description: Code of the running process.
+          type: string
+        headline:
+          description: The message displayed to the user to describe the process.
+          type: string
+        progress:
+          type: double
+        refreshAction:
+          description: Action to display for refreshing the page to check if the processes finished.
+          $ref: '#/components/schemas/UiAction'
+        cancelAction:
+          description: Action to display for cancelling the running process.
+          $ref: '#/components/schemas/UiAction'

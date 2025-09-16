@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
+import org.smartbit4all.api.view.bean.BackgroundProcessInfo;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.ValueSet;
@@ -57,6 +58,7 @@ import jakarta.validation.Valid;
   View.TYPE,
   View.CONTAINER_UUID,
   View.MODEL,
+  View.BACKGROUND_PROCESSES,
   View.CONSTRAINT,
   View.CLOSED_CHILDREN_VIEWS,
   View.DOWNLOADABLE_ITEMS,
@@ -104,6 +106,9 @@ public class View {
 
   public static final String MODEL = "model";
   private Object model;
+
+  public static final String BACKGROUND_PROCESSES = "backgroundProcesses";
+  private List<@Valid BackgroundProcessInfo> backgroundProcesses = new ArrayList<>();
 
   public static final String CONSTRAINT = "constraint";
   private ViewConstraint constraint;
@@ -443,6 +448,42 @@ public class View {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setModel(Object model) {
     this.model = model;
+  }
+
+  public View backgroundProcesses(List<@Valid BackgroundProcessInfo> backgroundProcesses) {
+    
+    this.backgroundProcesses = backgroundProcesses;
+    return this;
+  }
+
+  public View addBackgroundProcessesItem(BackgroundProcessInfo backgroundProcessesItem) {
+    if (this.backgroundProcesses == null) {
+      this.backgroundProcesses = new ArrayList<>();
+    }
+    this.backgroundProcesses.add(backgroundProcessesItem);
+    return this;
+  }
+
+  /**
+   * List of processes (related and important to the view&#39;s content) running in the background.
+   * @return backgroundProcesses
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "List of processes (related and important to the view's content) running in the background.")
+  @JsonProperty(BACKGROUND_PROCESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid BackgroundProcessInfo> getBackgroundProcesses() {
+    return backgroundProcesses;
+  }
+
+
+  @JsonProperty(BACKGROUND_PROCESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBackgroundProcesses(List<@Valid BackgroundProcessInfo> backgroundProcesses) {
+    this.backgroundProcesses = backgroundProcesses;
   }
 
   public View constraint(ViewConstraint constraint) {
@@ -948,6 +989,7 @@ public class View {
         Objects.equals(this.type, view.type) &&
         Objects.equals(this.containerUuid, view.containerUuid) &&
         Objects.equals(this.model, view.model) &&
+        Objects.equals(this.backgroundProcesses, view.backgroundProcesses) &&
         Objects.equals(this.constraint, view.constraint) &&
         Objects.equals(this.closedChildrenViews, view.closedChildrenViews) &&
         Objects.equals(this.downloadableItems, view.downloadableItems) &&
@@ -967,7 +1009,7 @@ public class View {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style, parentStyle, module);
+    return Objects.hash(uuid, viewName, objectUri, branchUri, parameters, variables, state, type, containerUuid, model, backgroundProcesses, constraint, closedChildrenViews, downloadableItems, actions, eventHandlers, widgetModels, widgetServerModels, valueSets, keepModelOnImplicitClose, callbacks, layouts, componentLayouts, style, parentStyle, module);
   }
 
   @Override
@@ -984,6 +1026,7 @@ public class View {
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    containerUuid: ").append(toIndentedString(containerUuid)).append("\n");
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
+    sb.append("    backgroundProcesses: ").append(toIndentedString(backgroundProcesses)).append("\n");
     sb.append("    constraint: ").append(toIndentedString(constraint)).append("\n");
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("    downloadableItems: ").append(toIndentedString(downloadableItems)).append("\n");

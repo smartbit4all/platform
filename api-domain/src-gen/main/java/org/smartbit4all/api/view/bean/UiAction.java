@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.smartbit4all.api.view.bean.BackgroundProcessInfo;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -49,7 +50,8 @@ import jakarta.validation.Valid;
   UiAction.DESCRIPTOR,
   UiAction.SUB_ACTIONS,
   UiAction.TOOLBAR,
-  UiAction.DISABLED
+  UiAction.DISABLED,
+  UiAction.BACKGROUND_PROCESS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiAction {
@@ -91,6 +93,9 @@ public class UiAction {
 
   public static final String DISABLED = "disabled";
   private Boolean disabled;
+
+  public static final String BACKGROUND_PROCESS = "backgroundProcess";
+  private BackgroundProcessInfo backgroundProcess;
 
   public UiAction() {
   }
@@ -466,6 +471,34 @@ public class UiAction {
     this.disabled = disabled;
   }
 
+  public UiAction backgroundProcess(BackgroundProcessInfo backgroundProcess) {
+    
+    this.backgroundProcess = backgroundProcess;
+    return this;
+  }
+
+  /**
+   * Get backgroundProcess
+   * @return backgroundProcess
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(BACKGROUND_PROCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public BackgroundProcessInfo getBackgroundProcess() {
+    return backgroundProcess;
+  }
+
+
+  @JsonProperty(BACKGROUND_PROCESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBackgroundProcess(BackgroundProcessInfo backgroundProcess) {
+    this.backgroundProcess = backgroundProcess;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -487,12 +520,13 @@ public class UiAction {
         Objects.equals(this.descriptor, uiAction.descriptor) &&
         Objects.equals(this.subActions, uiAction.subActions) &&
         Objects.equals(this.toolbar, uiAction.toolbar) &&
-        Objects.equals(this.disabled, uiAction.disabled);
+        Objects.equals(this.disabled, uiAction.disabled) &&
+        Objects.equals(this.backgroundProcess, uiAction.backgroundProcess);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions, toolbar, disabled);
+    return Objects.hash(code, path, identifier, inputType, input2Type, submit, model, confirm, params, descriptor, subActions, toolbar, disabled, backgroundProcess);
   }
 
   @Override
@@ -512,6 +546,7 @@ public class UiAction {
     sb.append("    subActions: ").append(toIndentedString(subActions)).append("\n");
     sb.append("    toolbar: ").append(toIndentedString(toolbar)).append("\n");
     sb.append("    disabled: ").append(toIndentedString(disabled)).append("\n");
+    sb.append("    backgroundProcess: ").append(toIndentedString(backgroundProcess)).append("\n");
     sb.append("}");
     return sb.toString();
   }
