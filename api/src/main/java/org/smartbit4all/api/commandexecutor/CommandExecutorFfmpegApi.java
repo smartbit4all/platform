@@ -13,11 +13,13 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.config.PlatformApiConfig;
+import org.smartbit4all.api.mimetype.MimeTypeApi;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -86,6 +88,11 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
     commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(SPACE);
 
+    if (isAudio(toExtension)) {
+      commandBuilder.append("-vn");
+      commandBuilder.append(SPACE);
+    }
+
     Path uniqueOutputFilePath = getTempFilePath(inputContentData, toExtension);
     commandBuilder.append(DOUBLE_QUOTE);
     commandBuilder.append(uniqueOutputFilePath.toString());
@@ -101,6 +108,13 @@ public class CommandExecutorFfmpegApi extends CommandExecutorApiAbs implements C
       log.error(e.getMessage(), e);
       return null;
     }
+  }
+
+  private static final Set<String> audioExtensions =
+      Set.of(MimeTypeApi.MP3_EXT, MimeTypeApi.WEBM_AUDIO_EXT);
+
+  private boolean isAudio(String toMimeType) {
+    return audioExtensions.contains(toMimeType);
   }
 
   public BinaryData split(BinaryContentData inputContentData, Long start, Long end)
