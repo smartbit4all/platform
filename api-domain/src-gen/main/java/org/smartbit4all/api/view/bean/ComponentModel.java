@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
+import org.smartbit4all.api.view.bean.BackgroundProcessInfo;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiAction;
@@ -50,6 +51,7 @@ import jakarta.validation.Valid;
   ComponentModel.LAYOUTS,
   ComponentModel.COMPONENT_LAYOUTS,
   ComponentModel.ACTIONS,
+  ComponentModel.BACKGROUND_PROCESSES,
   ComponentModel.VALUE_SETS,
   ComponentModel.WIDGETS,
   ComponentModel.STYLE,
@@ -77,6 +79,9 @@ public class ComponentModel {
 
   public static final String ACTIONS = "actions";
   private List<@Valid UiAction> actions = new ArrayList<>();
+
+  public static final String BACKGROUND_PROCESSES = "backgroundProcesses";
+  private List<@Valid BackgroundProcessInfo> backgroundProcesses = new ArrayList<>();
 
   public static final String VALUE_SETS = "valueSets";
   private Map<String, ValueSet> valueSets = new HashMap<>();
@@ -321,6 +326,42 @@ public class ComponentModel {
     this.actions = actions;
   }
 
+  public ComponentModel backgroundProcesses(List<@Valid BackgroundProcessInfo> backgroundProcesses) {
+    
+    this.backgroundProcesses = backgroundProcesses;
+    return this;
+  }
+
+  public ComponentModel addBackgroundProcessesItem(BackgroundProcessInfo backgroundProcessesItem) {
+    if (this.backgroundProcesses == null) {
+      this.backgroundProcesses = new ArrayList<>();
+    }
+    this.backgroundProcesses.add(backgroundProcessesItem);
+    return this;
+  }
+
+  /**
+   * List of processes (related and important to the view&#39;s content) running in the background.
+   * @return backgroundProcesses
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "List of processes (related and important to the view's content) running in the background.")
+  @JsonProperty(BACKGROUND_PROCESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid BackgroundProcessInfo> getBackgroundProcesses() {
+    return backgroundProcesses;
+  }
+
+
+  @JsonProperty(BACKGROUND_PROCESSES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBackgroundProcesses(List<@Valid BackgroundProcessInfo> backgroundProcesses) {
+    this.backgroundProcesses = backgroundProcesses;
+  }
+
   public ComponentModel valueSets(Map<String, ValueSet> valueSets) {
     
     this.valueSets = valueSets;
@@ -464,6 +505,7 @@ public class ComponentModel {
         Objects.equals(this.layouts, componentModel.layouts) &&
         Objects.equals(this.componentLayouts, componentModel.componentLayouts) &&
         Objects.equals(this.actions, componentModel.actions) &&
+        Objects.equals(this.backgroundProcesses, componentModel.backgroundProcesses) &&
         Objects.equals(this.valueSets, componentModel.valueSets) &&
         Objects.equals(this.widgets, componentModel.widgets) &&
         Objects.equals(this.style, componentModel.style) &&
@@ -472,7 +514,7 @@ public class ComponentModel {
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, valueSets, widgets, style, parentStyle);
+    return Objects.hash(uuid, name, data, constraints, layouts, componentLayouts, actions, backgroundProcesses, valueSets, widgets, style, parentStyle);
   }
 
   @Override
@@ -486,6 +528,7 @@ public class ComponentModel {
     sb.append("    layouts: ").append(toIndentedString(layouts)).append("\n");
     sb.append("    componentLayouts: ").append(toIndentedString(componentLayouts)).append("\n");
     sb.append("    actions: ").append(toIndentedString(actions)).append("\n");
+    sb.append("    backgroundProcesses: ").append(toIndentedString(backgroundProcesses)).append("\n");
     sb.append("    valueSets: ").append(toIndentedString(valueSets)).append("\n");
     sb.append("    widgets: ").append(toIndentedString(widgets)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");

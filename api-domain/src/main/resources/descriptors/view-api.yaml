@@ -764,6 +764,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UiAction'
+        backgroundProcesses:
+          type: array
+          description: List of processes (related and important to the view's content) running in the background.
+          items:
+            $ref: '#/components/schemas/BackgroundProcessInfo'
         valueSets:
           type: string
           additionalProperties:
