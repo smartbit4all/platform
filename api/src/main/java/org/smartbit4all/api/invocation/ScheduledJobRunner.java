@@ -9,6 +9,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.JobDefinition;
 import org.smartbit4all.api.invocation.bean.JobInstance;
 import org.smartbit4all.api.invocation.bean.JobParameter;
@@ -35,6 +37,7 @@ import jakarta.validation.Valid;
  * execution, execution lifecycle, and managing job state and instances.
  */
 public abstract class ScheduledJobRunner {
+  private static final Logger log = LoggerFactory.getLogger(ScheduledJobRunner.class);
 
   // JobDefinition
   protected final ScheduledJobDefinition scheduledJobDef;
@@ -234,6 +237,7 @@ public abstract class ScheduledJobRunner {
 
       } catch (Exception ex) {
         error = ex.getMessage();
+        log.error("Cannot execute schedule job " + scheduledJobDef.getCode(), ex);
       } finally {
         // Always cleanup, remove instance entry, update runtimeSchedules (for node), etc.
         OffsetDateTime finishedAt = OffsetDateTime.now();
