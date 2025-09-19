@@ -713,13 +713,17 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   }
 
   private String getToolbarPosition(ToolbarPosition pos) {
+    if (pos == null) {
+      return UiActions.TOOLBAR_SUFFIX;
+    }
+
     switch (pos) {
       case ABOVE:
         return UiActions.TOOLBAR_SUFFIX;
       case HEADER:
         return UiActions.TOOLBAR_HEADER_SUFFIX;
       default:
-        return UiActions.TOOLBAR_HEADER_SUFFIX;
+        return UiActions.TOOLBAR_SUFFIX;
     }
 
   }

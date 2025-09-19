@@ -16,7 +16,7 @@ import org.smartbit4all.api.collection.EmbeddingApiImpl;
 import org.smartbit4all.api.collection.FilterExpressionApi;
 import org.smartbit4all.api.collection.FilterExpressionApiImpl;
 import org.smartbit4all.api.collection.VectorDBApi;
-import org.smartbit4all.api.collection.VectorDDBApiImpl;
+import org.smartbit4all.api.collection.VectorDBApiImpl;
 import org.smartbit4all.api.collection.bean.StoredListData;
 import org.smartbit4all.api.collection.bean.StoredMapData;
 import org.smartbit4all.api.collection.bean.StoredReferenceData;
@@ -991,7 +991,7 @@ public class PlatformApiConfig {
 
   @Bean
   public VectorDBApi vectorDbManagementApi() {
-    return new VectorDDBApiImpl();
+    return new VectorDBApiImpl();
   }
 
   @Bean

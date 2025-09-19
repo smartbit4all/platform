@@ -10,14 +10,14 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public final class VectorDDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi>
+public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi>
     implements VectorDBApi {
 
-  public VectorDDBApiImpl() {
+  public VectorDBApiImpl() {
     super(VectorDBContibutionApi.class);
   }
 
-  private static final Logger log = LoggerFactory.getLogger(VectorDDBApiImpl.class);
+  private static final Logger log = LoggerFactory.getLogger(VectorDBApiImpl.class);
 
   @Override
   public String addPoint(ServiceConnection dbConnection, String collectionName,
