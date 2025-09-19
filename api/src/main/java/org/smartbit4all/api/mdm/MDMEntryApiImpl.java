@@ -35,6 +35,7 @@ import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.bean.MDMBranchingStrategy;
 import org.smartbit4all.api.mdm.bean.MDMDefinition;
 import org.smartbit4all.api.mdm.bean.MDMDefinitionState;
@@ -404,7 +405,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
               && !objectApi.equalsIgnoreVersion(uriToUniqueValue,
                   objectNodeAndUriToCheck.getValue()))
               || uniqueValues.contains(uniqueValueStr)) {
-            throw new IllegalArgumentException(
+            throw new BusinessLogicException(
                 localeSettingApi.get("mdm", descriptor.getName(), "notunique",
                     String.join(".", path)));
           } else {
@@ -467,9 +468,6 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     MDMBranchingStrategy branchingStrategy = descriptor.getBranchingStrategy();
     if (branchingStrategy == null) {
       branchingStrategy = definition.getBranchingStrategy();
-    }
-    if (branchingStrategy == MDMBranchingStrategy.NONE) {
-      return null;
     }
     MDMDefinitionState mdmDefinitionState = definitionStateCache.get(definition.getState());
     URI editorBranchUri = null;

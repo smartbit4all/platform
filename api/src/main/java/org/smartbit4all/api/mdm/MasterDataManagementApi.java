@@ -37,6 +37,11 @@ public interface MasterDataManagementApi {
    */
   static final String MDM_DEFINITION_SYSTEM_INTEGRATION = "systemIntegration";
 
+  /**
+   * The definition name of the non-brancheds definition.
+   */
+  static final String MDM_DEFINITION_PARAMETERS = "parameters";
+
   /** The canonical name of this API, used by listeners to identify this service. */
   static final String API = "org.smartbit4all.api.mdm.MasterDataManagementApi";
 
