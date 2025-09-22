@@ -1,7 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +15,9 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectMapping;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
+import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link ObjectLookup} is a generic abstract class for lookup a collection by the values of an
@@ -166,7 +167,10 @@ public abstract class ObjectLookup {
 
   public <T> T findByUnique(ObjectPropertyValue value, Class<T> clazz) {
     ObjectLookupResult lookupResult = findByUniqueResult(value);
-    return lookupResult.getItems().isEmpty() ? null
+    if (lookupResult == null) {
+      return null;
+    }
+    return ObjectUtils.isEmpty(lookupResult.getItems()) ? null
         : objectApi.asType(clazz, lookupResult.getItems().get(0).getObjectAsMap());
   }
 
