@@ -14,8 +14,6 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -23,14 +21,32 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.data.storage.Storage;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public abstract class UriUtils {
 
   private static final Logger log = LoggerFactory.getLogger(UriUtils.class);
+
+  // RFC 3986 compliant URI regex
+  private static final Pattern URI_PATTERN = Pattern.compile(
+      "^(?:(?:[a-zA-Z][a-zA-Z0-9+.-]*):)" + // scheme
+          "(?://(?:[\\w\\-._~%!$&'()*+,;=:]+@)?" + // userinfo
+          "(?:\\[[0-9A-Fa-f:.]+]|[\\w\\-._~%]+)" + // host (IP-literal / IPv4 / name)
+          "(?::\\d{2,5})?)?" + // port
+          "(?:/[\\w\\-._~%!$&'()*+,;=:@]*)*" + // path
+          "(?:\\?[\\w\\-._~%!$&'()*+,;=:@/?]*)?" + // query
+          "(?:#[\\w\\-._~%!$&'()*+,;=:@/?]*)?$" // fragment
+  );
+
+  public static boolean looksLikeUri(String str) {
+    return str != null && URI_PATTERN.matcher(str).matches();
+  }
 
   public static void checkURI(URI uriToCheck, String scheme, String host, String path) {
     try {
