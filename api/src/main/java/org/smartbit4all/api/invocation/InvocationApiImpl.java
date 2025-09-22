@@ -784,7 +784,11 @@ public class InvocationApiImpl implements InvocationApi {
           run(ctx.getSubContext(), item.getDoWhileLoop().getRun());
         } while (evaluate(ctx, item.getDoWhileLoop().getPredicate()));
       } else if (!item.getParallels().isEmpty()) {
-        item.getParallels().parallelStream().forEach(p -> run(ctx.getSubContext(), p));
+        URI sessionUri = sessionApi.getSessionUri();
+        item.getParallels().parallelStream().forEach(p -> {
+          sessionManagementApi.setSession(sessionUri);
+          run(ctx.getSubContext(), p);
+        });
       }
     }
   }
