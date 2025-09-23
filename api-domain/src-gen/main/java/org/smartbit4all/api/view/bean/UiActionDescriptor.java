@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.BadgeDescriptor;
 import org.smartbit4all.api.view.bean.IconPosition;
+import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
@@ -41,6 +42,7 @@ import jakarta.validation.Valid;
   UiActionDescriptor.TITLE,
   UiActionDescriptor.TYPE,
   UiActionDescriptor.COLOR,
+  UiActionDescriptor.ICON_RESOURCE,
   UiActionDescriptor.ICON,
   UiActionDescriptor.ICON_COLOR,
   UiActionDescriptor.ICON_POSITION,
@@ -64,6 +66,9 @@ public class UiActionDescriptor {
 
   public static final String COLOR = "color";
   private String color;
+
+  public static final String ICON_RESOURCE = "iconResource";
+  private ImageResource iconResource;
 
   public static final String ICON = "icon";
   private String icon;
@@ -187,6 +192,34 @@ public class UiActionDescriptor {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setColor(String color) {
     this.color = color;
+  }
+
+  public UiActionDescriptor iconResource(ImageResource iconResource) {
+    
+    this.iconResource = iconResource;
+    return this;
+  }
+
+  /**
+   * Get iconResource
+   * @return iconResource
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(ICON_RESOURCE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ImageResource getIconResource() {
+    return iconResource;
+  }
+
+
+  @JsonProperty(ICON_RESOURCE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIconResource(ImageResource iconResource) {
+    this.iconResource = iconResource;
   }
 
   public UiActionDescriptor icon(String icon) {
@@ -534,6 +567,7 @@ public class UiActionDescriptor {
     return Objects.equals(this.title, uiActionDescriptor.title) &&
         Objects.equals(this.type, uiActionDescriptor.type) &&
         Objects.equals(this.color, uiActionDescriptor.color) &&
+        Objects.equals(this.iconResource, uiActionDescriptor.iconResource) &&
         Objects.equals(this.icon, uiActionDescriptor.icon) &&
         Objects.equals(this.iconColor, uiActionDescriptor.iconColor) &&
         Objects.equals(this.iconPosition, uiActionDescriptor.iconPosition) &&
@@ -550,7 +584,7 @@ public class UiActionDescriptor {
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, badge, upload, tooltip);
+    return Objects.hash(title, type, color, iconResource, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, badge, upload, tooltip);
   }
 
   @Override
@@ -560,6 +594,7 @@ public class UiActionDescriptor {
     sb.append("    title: ").append(toIndentedString(title)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
+    sb.append("    iconResource: ").append(toIndentedString(iconResource)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    iconColor: ").append(toIndentedString(iconColor)).append("\n");
     sb.append("    iconPosition: ").append(toIndentedString(iconPosition)).append("\n");

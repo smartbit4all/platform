@@ -1,6 +1,8 @@
 package org.smartbit4all.api.setting;
 
 import java.util.Locale;
+import java.util.UUID;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.view.bean.ImageResource;
 
 /**
@@ -46,5 +48,14 @@ public interface ImageSettingApi {
    * @return
    */
   ImageResource get(Enum<?> enumValue);
+
+  /**
+   * Create an ImageResource from the given BinaryContentData, then put it into the view as a
+   * downloadable item.
+   * 
+   * @param image
+   * @return
+   */
+  ImageResource create(UUID viewUuid, BinaryContentData image);
 
 }

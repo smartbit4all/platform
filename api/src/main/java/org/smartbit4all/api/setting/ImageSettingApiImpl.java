@@ -3,11 +3,17 @@ package org.smartbit4all.api.setting;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
+import java.util.Objects;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.session.SessionApi;
+import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.bean.ImageResource;
+import org.smartbit4all.api.view.bean.ImageResource.KindEnum;
 import org.smartbit4all.api.view.bean.UiActionTooltip;
+import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,9 @@ public class ImageSettingApiImpl implements ImageSettingApi {
 
   @Autowired(required = false)
   private SessionApi sessionApi;
+
+  @Autowired(required = false)
+  private ViewApi viewApi;
 
   @Autowired
   private ObjectSerializerByObjectMapper serializer;
@@ -101,6 +110,30 @@ public class ImageSettingApiImpl implements ImageSettingApi {
   private final ImageResource getDefaultImage(String... keys) {
     return new ImageResource().source(SOURCE_SMART_ICON).identifier("X")
         .tooltip(new UiActionTooltip().tooltip("No image defined for " + Arrays.toString(keys)));
+  }
+
+  @Override
+  public ImageResource create(UUID viewUuid, BinaryContentData image) {
+    Objects.requireNonNull(image.getDataUri(), "DataUri cannot be null");
+
+    String fullPath = image.getDataUri().toString();
+
+    String lastSegment = fullPath.substring(fullPath.lastIndexOf("/") + 1);
+    String identifier = lastSegment.contains(".")
+        ? lastSegment.substring(0, lastSegment.indexOf("."))
+        : lastSegment;
+
+    View view = viewApi.getView(viewUuid);
+    String source = String.format("/api/component/%s/download/%s",
+        viewUuid.toString(),
+        identifier);
+    view.putDownloadableItemsItem(identifier, image.getDataUri());
+
+    ImageResource imageResource = new ImageResource()
+        .kind(KindEnum.URL)
+        .identifier(identifier)
+        .source(source);
+    return imageResource;
   }
 
 }

@@ -457,7 +457,7 @@ paths:
           description: Smartlink's unique identifier
       responses:
         '200':
-          description: ''     
+          description: ''
 components:
   schemas:
     ViewContext:
@@ -1275,6 +1275,8 @@ components:
           $ref: '#/components/schemas/UiActionButtonType'
         color:
           type: string
+        iconResource:
+          $ref: '#/components/schemas/ImageResource'
         icon:
           type: string
         iconColor:
