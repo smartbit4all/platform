@@ -1166,12 +1166,17 @@ public class ViewContextServiceImpl implements ViewContextService {
 
   @Override
   public ViewContextChange performViewCall(ViewCall viewCall, String methodName, UUID viewUuid) {
-    final View view = getViewFromCurrentSession(viewUuid);
+    String viewName;
+    try {
+      viewName = getViewFromCurrentSession(viewUuid).getViewName();
+    } catch (Exception e) {
+      viewName = "unknown";
+    }
     startServerRequest(new ServerRequestTrack()
         .startTime(OffsetDateTime.now())
         .type(ServerRequestType.WIDGET_ACTION)
         .viewUuid(viewUuid)
-        .viewName(view.getViewName()));
+        .viewName(viewName));
     ObjectNode before = beforeInvoke(methodName);
     Object result;
     try {
