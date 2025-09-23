@@ -114,6 +114,8 @@ public class ImageSettingApiImpl implements ImageSettingApi {
 
   @Override
   public ImageResource create(UUID viewUuid, BinaryContentData image) {
+    Objects.requireNonNull(viewUuid, "viewUuid cannot be null");
+    Objects.requireNonNull(image, "image cannot be null");
     Objects.requireNonNull(image.getDataUri(), "DataUri cannot be null");
 
     String fullPath = image.getDataUri().toString();
