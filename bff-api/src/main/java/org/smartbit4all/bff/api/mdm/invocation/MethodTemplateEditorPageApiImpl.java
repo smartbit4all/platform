@@ -1,13 +1,12 @@
 package org.smartbit4all.bff.api.mdm.invocation;
 
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
@@ -28,6 +27,8 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 
 public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements MethodTemplateEditorPageApi {
@@ -39,6 +40,8 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
 
   private static final String INVOCATION_REQUEST_AS_STRING = "INVOCATION_REQUEST_AS_STRING";
 
+  private static final String INVOCATION_REQUEST_DEFINITION_AS_STRING =
+      "INVOCATION_REQUEST_DEFINITION_AS_STRING";
 
   @Autowired
   private ObjectApi objectApi;
@@ -52,8 +55,11 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
     Map<String, Object> model = objectApi.asType(Map.class, initModel);
 
     String requestAsString = convertJsonToString(model, MethodTemplate.REQUEST);
+    String requestDefinitionAsString =
+        convertJsonToString(model, MethodTemplate.REQUEST_DEFINITION);
 
     model.put(INVOCATION_REQUEST_AS_STRING, requestAsString);
+    model.put(INVOCATION_REQUEST_DEFINITION_AS_STRING, requestDefinitionAsString);
     initLayout(view);
     // initGrid(view, model.getItemDefinition());
     initConstraints(view);
@@ -88,8 +94,7 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
                 .mandatory(true)
                 .visible(true),
             new ComponentConstraint()
-                .dataName(widgetKey(
-                    MethodTemplate.TEMPLATE))
+                .dataName(widgetKey(INVOCATION_REQUEST_DEFINITION_AS_STRING))
                 .enabled(true)
                 .mandatory(false)
                 .visible(true),
@@ -113,11 +118,11 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
                     localeSettingApi.get(
                         MethodTemplate.class.getName(),
                         MethodTemplate.FULLY_QUALIFIED_NAME)),
-                ObjectLayoutBuilder.textfield(
-                    widgetKey(MethodTemplate.TEMPLATE),
+                ObjectLayoutBuilder.textbox(
+                    widgetKey(INVOCATION_REQUEST_DEFINITION_AS_STRING),
                     localeSettingApi.get(
                         MethodTemplate.class.getName(),
-                        MethodTemplate.TEMPLATE)),
+                        MethodTemplate.REQUEST_DEFINITION)),
                 ObjectLayoutBuilder.textbox(
                     widgetKey(INVOCATION_REQUEST_AS_STRING),
                     localeSettingApi.get(
@@ -137,15 +142,28 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
       throw new IllegalAccessError();
     }
 
+    {
+      final var requestAsStr = String.valueOf(m.remove(INVOCATION_REQUEST_AS_STRING));
 
-    final var requestAsStr = String.valueOf(m.remove(INVOCATION_REQUEST_AS_STRING));
+      if (StringUtils.hasText(requestAsStr)) {
+        InvocationRequest invocationRequest =
+            objectApi.fromString(requestAsStr, InvocationRequest.class);
+        m.put(MethodTemplate.REQUEST, invocationRequest);
+      } else {
+        m.remove(MethodTemplate.REQUEST);
+      }
+    }
 
-    if (StringUtils.hasText(requestAsStr)) {
-      InvocationRequest invocationRequest =
-          objectApi.fromString(requestAsStr, InvocationRequest.class);
-      m.put(MethodTemplate.REQUEST, invocationRequest);
-    } else {
-      m.remove(MethodTemplate.REQUEST);
+    {
+      final var requestDefinitionAsStr =
+          String.valueOf(m.remove(INVOCATION_REQUEST_DEFINITION_AS_STRING));
+      if (StringUtils.hasText(requestDefinitionAsStr)) {
+        InvocationRequestDefinition invocationRequestDefinition =
+            objectApi.fromString(requestDefinitionAsStr, InvocationRequestDefinition.class);
+        m.put(MethodTemplate.REQUEST_DEFINITION, invocationRequestDefinition);
+      } else {
+        m.remove(MethodTemplate.REQUEST_DEFINITION);
+      }
     }
 
     setModel(viewUuid, m);

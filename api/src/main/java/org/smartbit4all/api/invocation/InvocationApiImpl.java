@@ -63,6 +63,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.base.Strings;
+import jakarta.validation.Valid;
 
 /**
  * The implementation of the {@link InvocationApi}. It collects all the
@@ -177,6 +178,15 @@ public class InvocationApiImpl implements InvocationApi {
 
   private InvocationRequest copyMethodTemplateParameters(InvocationRequest request,
       MethodTemplate methodTemplate) {
+    InvocationRequestDefinition requestDefinition = methodTemplate.getRequestDefinition();
+    if (requestDefinition != null) {
+      ContextObject contextObject = objectApi.contextObject();
+      for (@Valid
+      InvocationParameter parameter : request.getParameters()) {
+        contextObject.set(parameter.getName(), parameter.getValue());
+      }
+      return resolve(requestDefinition, contextObject);
+    }
     InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
     methodTemplateRequest.getParameters().stream().forEach(param -> {
       String name = param.getName();

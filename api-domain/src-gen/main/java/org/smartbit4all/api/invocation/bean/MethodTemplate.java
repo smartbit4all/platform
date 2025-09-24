@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -36,7 +37,7 @@ import jakarta.validation.Valid;
   MethodTemplate.URI,
   MethodTemplate.FULLY_QUALIFIED_NAME,
   MethodTemplate.REQUEST,
-  MethodTemplate.TEMPLATE
+  MethodTemplate.REQUEST_DEFINITION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodTemplate {
@@ -49,8 +50,8 @@ public class MethodTemplate {
   public static final String REQUEST = "request";
   private InvocationRequest request;
 
-  public static final String TEMPLATE = "template";
-  private String template;
+  public static final String REQUEST_DEFINITION = "requestDefinition";
+  private InvocationRequestDefinition requestDefinition;
 
   public MethodTemplate() {
   }
@@ -141,31 +142,32 @@ public class MethodTemplate {
     this.request = request;
   }
 
-  public MethodTemplate template(String template) {
+  public MethodTemplate requestDefinition(InvocationRequestDefinition requestDefinition) {
     
-    this.template = template;
+    this.requestDefinition = requestDefinition;
     return this;
   }
 
   /**
-   * Get template
-   * @return template
+   * Get requestDefinition
+   * @return requestDefinition
    */
   @jakarta.annotation.Nullable
+  @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(TEMPLATE)
+  @JsonProperty(REQUEST_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getTemplate() {
-    return template;
+  public InvocationRequestDefinition getRequestDefinition() {
+    return requestDefinition;
   }
 
 
-  @JsonProperty(TEMPLATE)
+  @JsonProperty(REQUEST_DEFINITION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setTemplate(String template) {
-    this.template = template;
+  public void setRequestDefinition(InvocationRequestDefinition requestDefinition) {
+    this.requestDefinition = requestDefinition;
   }
 
   @Override
@@ -180,12 +182,12 @@ public class MethodTemplate {
     return Objects.equals(this.uri, methodTemplate.uri) &&
         Objects.equals(this.fullyQualifiedName, methodTemplate.fullyQualifiedName) &&
         Objects.equals(this.request, methodTemplate.request) &&
-        Objects.equals(this.template, methodTemplate.template);
+        Objects.equals(this.requestDefinition, methodTemplate.requestDefinition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, fullyQualifiedName, request, template);
+    return Objects.hash(uri, fullyQualifiedName, request, requestDefinition);
   }
 
   @Override
@@ -195,7 +197,7 @@ public class MethodTemplate {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    fullyQualifiedName: ").append(toIndentedString(fullyQualifiedName)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
-    sb.append("    template: ").append(toIndentedString(template)).append("\n");
+    sb.append("    requestDefinition: ").append(toIndentedString(requestDefinition)).append("\n");
     sb.append("}");
     return sb.toString();
   }
