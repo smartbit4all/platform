@@ -1,6 +1,7 @@
 package org.smartbit4all.api.setting;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -113,10 +114,19 @@ public class ImageSettingApiImpl implements ImageSettingApi {
   }
 
   @Override
+  public ImageResource create(UUID viewUuid, URI dataUri) {
+    Objects.requireNonNull(viewUuid, "viewUuid cannot be null");
+    Objects.requireNonNull(dataUri, "dataUri cannot be null");
+
+    return create(viewUuid, new BinaryContentData()
+        .dataUri(dataUri));
+  }
+
+  @Override
   public ImageResource create(UUID viewUuid, BinaryContentData image) {
     Objects.requireNonNull(viewUuid, "viewUuid cannot be null");
     Objects.requireNonNull(image, "image cannot be null");
-    Objects.requireNonNull(image.getDataUri(), "DataUri cannot be null");
+    Objects.requireNonNull(image.getDataUri(), "dataUri cannot be null");
 
     String fullPath = image.getDataUri().toString();
 
@@ -137,5 +147,6 @@ public class ImageSettingApiImpl implements ImageSettingApi {
         .source(source);
     return imageResource;
   }
+
 
 }

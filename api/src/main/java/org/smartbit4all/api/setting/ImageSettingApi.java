@@ -1,5 +1,6 @@
 package org.smartbit4all.api.setting;
 
+import java.net.URI;
 import java.util.Locale;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
@@ -50,6 +51,15 @@ public interface ImageSettingApi {
   ImageResource get(Enum<?> enumValue);
 
   /**
+   * Create an ImageResource from the given BinaryDataObject URI, then put it into the view as a
+   * downloadable item.
+   * 
+   * @param dataUri
+   * @return
+   */
+  ImageResource create(UUID viewUuid, URI dataUri);
+
+  /**
    * Create an ImageResource from the given BinaryContentData, then put it into the view as a
    * downloadable item.
    * 
@@ -57,5 +67,4 @@ public interface ImageSettingApi {
    * @return
    */
   ImageResource create(UUID viewUuid, BinaryContentData image);
-
 }
