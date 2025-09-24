@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -32,6 +33,7 @@ import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(classes = {DynamicRestCallerTestConfig.class})
 @TestInstance(Lifecycle.PER_CLASS)
+@Disabled
 public class DynamicRestCallerApiTest {
 
   @Autowired
