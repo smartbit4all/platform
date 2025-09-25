@@ -1,6 +1,5 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +9,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.collection.bean.SearchIndexDefinitionData;
+import org.smartbit4all.api.collection.bean.SearchIndexMapping;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor.CollectionTypeEnum;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.object.BranchApi;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -21,11 +23,15 @@ import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import org.smartbit4all.domain.service.CrudApi;
+import org.smartbit4all.domain.service.dataset.TableDataApi;
+import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The {@link StorageApi} based implementation of the {@link CollectionApi} is currently the only
@@ -337,6 +343,26 @@ public class CollectionApiStorageImpl implements CollectionApi {
     return (SearchIndex<T>) searchIndexByName.computeIfAbsent(
         getQualifiedName(logicalSchema, name),
         s -> (SearchIndex<T>) searchIndexSupplier.get());
+  }
+
+  @Override
+  public SearchIndex<?> constructSearchIndex(SearchIndexDefinitionData searchIndexDefinition) {
+    SearchIndexImpl<?> result = new SearchIndexImpl<>(STOREDREF, STOREDMAP, STOREDLIST, null);
+    for (SearchIndexMapping mapping : searchIndexDefinition.getMappings()) {
+      try {
+        result.map(mapping.getPropertyName(), Class.forName(mapping.getDataType()),
+            mapping.getLength(), StringConstant.toArray(mapping.getPathes()));
+      } catch (ClassNotFoundException e) {
+        throw new IllegalArgumentException(
+            "Unbale to identify the " + mapping.getPropertyName() + " - " + mapping.getDataType()
+                + " class by name.",
+            e);
+      }
+    }
+    return result.setup(objectApi, storageApi, ctx.getBean(CrudApi.class),
+        ctx.getBean(TableDataApi.class), ctx, ctx.getBean(EntityManager.class),
+        ctx.getBean(LocaleSettingApi.class), ctx.getBean(FilterExpressionApi.class),
+        ctx.getBean(DefaultComparatorProvider.class));
   }
 
   private final String getQualifiedName(String logicalSchema, String name) {

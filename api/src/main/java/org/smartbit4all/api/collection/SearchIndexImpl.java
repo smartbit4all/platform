@@ -1,9 +1,7 @@
 package org.smartbit4all.api.collection;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
-import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +53,9 @@ import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.EventListener;
 import org.springframework.util.ObjectUtils;
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Peter Boros
@@ -121,7 +122,13 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private boolean isComparatorSetExplicitly = false;
 
-  public void setup(ObjectApi objectApi, StorageApi storageApi, CrudApi crudApi,
+  /**
+   * The created at show the exact time of the Search index creation time.
+   */
+  private final OffsetDateTime createdAt = OffsetDateTime.now();
+
+
+  public SearchIndexImpl<O> setup(ObjectApi objectApi, StorageApi storageApi, CrudApi crudApi,
       TableDataApi tableDataApi, ApplicationContext ctx, EntityManager entityManager,
       LocaleSettingApi localeSettingApi, FilterExpressionApi filterExpressionApi,
       DefaultComparatorProvider comparatorProvider) {
@@ -134,6 +141,7 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     this.localeSettingApi = localeSettingApi;
     this.filterExpressionApi = filterExpressionApi;
     this.comparatorProvider = comparatorProvider;
+    return this;
   }
 
 
@@ -611,6 +619,23 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
     return entityResult.result;
   }
 
+  @Override
+  public TableData<?> tableDataOfObjectNodes(Stream<ObjectNode> objects) {
+    PropertySet allProperties = getDefinition().definition.allProperties();
+
+    List<SearchIndexFieldCalculator> calculatedFields = new ArrayList<>();
+    separateCalculatedFieldsInPropertyList(allProperties, calculatedFields);
+
+    SearchEntityTableDataResult entityResult = constructResult(allProperties);
+    objectMapping.readObjects(
+        objects.map(o -> new SearchIndexObject().objectNode(o)),
+        entityResult,
+        Collections.emptyMap(), false);
+
+    processCalculators(entityResult.result, calculatedFields);
+    return entityResult.result;
+  }
+
   private void initObjectMapping() {
     objectMapping.init(ctx, entityManager, objectApi, extensionStrategy, comparatorsByClass);
   }
@@ -1004,6 +1029,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
    */
   public void setUseDatabase(boolean useDatabase) {
     this.useDatabase = useDatabase;
+  }
+
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
   }
 
 }

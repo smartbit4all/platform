@@ -547,3 +547,64 @@ components:
         to:
           type: integer
           format: int64
+    DataSeries:
+      type: object
+      description: |
+        A series of data where the items could be many kind of data like an URI, a loaded object or
+        whateer adatsource item we manage. The data series is always enclosed by an interval where the
+        boundaries are also depends on the data source characteristic.
+      properties:
+        interval:
+          description: The interval of this data series.
+          $ref: '#/components/schemas/DataSeriesInterval'
+        qualifiedName:
+          description: |
+            The qualified name of the type class of the items. All item must be the same.
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataSeriesItem'
+    DataSeriesItem:
+      type: object
+      description: |
+        The data series item can be an URI or even a loaded object as map. And can be anything else later on.
+      properties:
+        uri:
+          description: The uri of the object that can be loaded on demand.
+          type: string
+          format: uri
+        objectAsMap:
+          description: The object as map. It is used when the DataSeries is persisted during the processing.
+          type: object
+          additionalProperties: true
+    DataSeriesInterval:
+      type: object
+      description: |
+        The data series is always enclosed by an interval where the boundaries are also depends on 
+        the data source characteristic. This object represents the interval with the lower an upper 
+        boundary values.
+      properties:
+        lower:
+          description: The lower boundary of the interval inclusively.
+          $ref: '#/components/schemas/DataSeriesBoundary'
+        upper:
+          description: The upper boundary of the interval exclusively.
+          $ref: '#/components/schemas/DataSeriesBoundary'
+    DataSeriesBoundary:
+      type: object
+      description: |
+        The boundary of the data series intervals that can be represented by several type like
+        dataTime, int, long.
+      properties:
+        type:
+          enum: [dataTime, int, long]
+        dataTimeValue:
+          type: string
+          format: date-time
+        intValue:
+          type: integer
+          format: int32
+        longValue:
+          type: integer
+          format: int64

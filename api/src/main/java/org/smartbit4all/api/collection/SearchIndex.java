@@ -181,6 +181,15 @@ public interface SearchIndex<O> {
   TableData<?> tableDataOfObjects(Stream<O> objects);
 
   /**
+   * Read all the objects specified by the object node stream and load the table data with the
+   * values.
+   *
+   * @param objects The {@link ObjectNode} stream to process.
+   * @return The result table data.
+   */
+  TableData<?> tableDataOfObjectNodes(Stream<ObjectNode> objects);
+
+  /**
    * Returns all the available filter fields for the given search index.
    *
    * @return

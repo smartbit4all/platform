@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -74,6 +75,8 @@ import jakarta.validation.Valid;
  * @author Peter Boros
  */
 public class InvocationApiImpl implements InvocationApi {
+
+  public static final String ALL_PARAMS = "allParams";
 
   public static final String INVOKE_API = "/invokeApi";
 
@@ -185,6 +188,10 @@ public class InvocationApiImpl implements InvocationApi {
       InvocationParameter parameter : request.getParameters()) {
         contextObject.set(parameter.getName(), parameter.getValue());
       }
+      Map<String, Object> allParams =
+          request.getParameters().stream().filter(param -> param.getName() != null).collect(
+              Collectors.toMap(InvocationParameter::getName, InvocationParameter::getValue));
+      contextObject.set(ALL_PARAMS, allParams);
       return resolve(requestDefinition, contextObject);
     }
     InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
@@ -794,9 +801,11 @@ public class InvocationApiImpl implements InvocationApi {
           run(ctx.getSubContext(), item.getDoWhileLoop().getRun());
         } while (evaluate(ctx, item.getDoWhileLoop().getPredicate()));
       } else if (!item.getParallels().isEmpty()) {
-        URI sessionUri = sessionApi.getSessionUri();
+        URI sessionUri = sessionApi == null ? null : sessionApi.getSessionUri();
         item.getParallels().parallelStream().forEach(p -> {
-          sessionManagementApi.setSession(sessionUri);
+          if (sessionUri != null) {
+            sessionManagementApi.setSession(sessionUri);
+          }
           run(ctx.getSubContext(), p);
         });
       }

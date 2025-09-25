@@ -28,8 +28,8 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   @Override
   public ResponseEntity<Object> callDynamicRest(String serviceConnectionName,
       String path,
-      HttpMethod httpMethod,
-      MediaType contentType,
+      String httpMethodString,
+      String contentTypeName,
       ObjectMappingDefinition header,
       ObjectMappingDefinition body,
       Map<String, Object> params) {
@@ -40,6 +40,8 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
       throw new IllegalArgumentException(
           "Could not find service connection with name: " + serviceConnectionName);
     }
+    HttpMethod httpMethod = HttpMethod.valueOf(httpMethodString);
+    MediaType contentType = MediaType.valueOf(contentTypeName);
     Map<String, Object> serviceConnectionParameters = serviceConnection.getParameters();
     ContextObject contextObject = objectApi.contextObject().set(params);
     contextObject.set("serviceConnection", serviceConnection);

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Supplier;
+import org.smartbit4all.api.collection.bean.SearchIndexDefinitionData;
 import org.smartbit4all.api.collection.bean.StoredCollectionDescriptor;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.core.object.ObjectNodeReference;
@@ -202,6 +203,8 @@ public interface CollectionApi {
    */
   <O, F> SearchIndexWithFilterBean<O, F> searchIndex(String logicalSchema, String name,
       Class<O> indexedObject, Class<F> filterObject);
+
+  SearchIndex<?> constructSearchIndex(SearchIndexDefinitionData searchIndexDefinition);
 
   /**
    * This object provides an atomic sequence that provides globally unique incrementing value. Can
