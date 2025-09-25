@@ -185,6 +185,20 @@ public class ObjectMapHelper {
     return result;
   }
 
+  public <T> Map<String, T> getAsMap(String key, Class<T> clazz) {
+    Object param = map.get(key);
+    if (param == null) {
+      return null;
+    }
+    if (!(param instanceof Map)) {
+      throw new IllegalArgumentException(key + " value is not Map<> in " + name);
+    }
+    @SuppressWarnings("unchecked")
+    Map<String, T> result = objectApi.asMap(clazz, (Map<String, ?>) param);
+    map.put(key, result);
+    return result;
+  }
+
   public void put(String key, Object value) {
     map.put(key, value);
   }
