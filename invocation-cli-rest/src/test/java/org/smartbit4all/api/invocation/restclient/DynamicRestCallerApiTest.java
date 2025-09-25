@@ -17,6 +17,7 @@ import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
@@ -28,6 +29,7 @@ import org.smartbit4all.core.object.ObjectMappingDefinitionBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
@@ -88,6 +90,7 @@ public class DynamicRestCallerApiTest {
             serviceConnection3));
 
     prepareMethodTemplate();
+    prepareMethodTemplateRun();
   }
 
   void prepareMethodTemplate() {
@@ -96,62 +99,7 @@ public class DynamicRestCallerApiTest {
             InvocationApiMdmConfig.MDM_ENTRY_METHOD_TEMPLATE);
 
     MethodTemplate template = new MethodTemplate().fullyQualifiedName("kiscica.teszt")
-        .requestDefinition(new InvocationRequestDefinition()
-            .request(invocationApi.builder(DynamicRestCallerApi.class)
-                .build(api -> api.callDynamicRest(null, null, null, null, null, null,
-                    Invocations.mapOf(new HashMap<>(), Object.class))))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(0)
-                .name("serviceConnectionName")
-                .definition(ObjectMappingDefinitionBuilder.create()
-                    .constant(RESTFUL_CONNECTION_NAME).build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(1)
-                .name("path")
-                .definition(ObjectMappingDefinitionBuilder.create()
-                    .constant(TEST3_PATH).build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(2)
-                .name("httpMethod")
-                .definition(ObjectMappingDefinitionBuilder.create()
-                    .constant(TEST3_METHOD.toString()).build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(3)
-                .name("contentType")
-                .definition(ObjectMappingDefinitionBuilder.create()
-                    .constant(MediaType.APPLICATION_JSON_VALUE).build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(4)
-                .name("header")
-                .definition(ObjectMappingDefinitionBuilder.create()
-                    .constant(null).build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(5)
-                .name("body")
-                .definition(ObjectMappingDefinitionBuilder
-                    .create().constant(ObjectMappingDefinitionBuilder.create()
-                        .addMapping(m -> m
-                            .fromPath(List.of("name"))
-                            .toPath(List.of("name")))
-                        .addMapping(m -> m
-                            .fromPath(List.of("year"))
-                            .toPath(List.of("data", "year")))
-                        .addMapping(m -> m
-                            .fromPath(List.of("price"))
-                            .toPath(List.of("data", "price")))
-                        .addMapping(m -> m
-                            .fromPath(List.of("model"))
-                            .toPath(List.of("data", "CPU model")))
-                        .addMapping(m -> m
-                            .fromPath(List.of("diskSize"))
-                            .toPath(List.of("data", "Hard disk size")))
-                        .build())
-                    .build()))
-            .addResolversItem(new InvocationParameterResolver()
-                .position(6)
-                .name("params")
-                .definition(ObjectMappingDefinitionBuilder.create().addMapping(m -> m
-                    .expression("#allParams")).build())));
+        .requestDefinition(createRequestDefinition());
 
     methodTemplateEntry
         .save(objectApi.create("test",
@@ -161,6 +109,124 @@ public class DynamicRestCallerApiTest {
     // model\": \"Intel Core i9\", \"Hard disk size\": \"1 TB\"}}"
 
 
+  }
+
+  void prepareMethodTemplateRun() {
+    MDMEntryApi methodTemplateEntry =
+        masterDataManagementApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
+            InvocationApiMdmConfig.MDM_ENTRY_METHOD_TEMPLATE);
+
+    MethodTemplate template =
+        new MethodTemplate().fullyQualifiedName("kiscica.run").invocationRun(createRun());
+
+    methodTemplateEntry
+        .save(objectApi.create("test",
+            template));
+
+    // "{\"name\": \"Apple MacBook Pro 16\", \"data\": {\"year\": 2019, \"price\": 1849.99, \"CPU
+    // model\": \"Intel Core i9\", \"Hard disk size\": \"1 TB\"}}"
+
+
+  }
+
+  private InvocationRun createRun() {
+    InvocationRun run =
+        invocationApi.runBuilder().addItem(ib -> ib.request(createInvocationRequest())
+            .addResolver(0, b -> b
+                .constant(RESTFUL_CONNECTION_NAME))
+            .addResolver(1, b -> b
+                .constant(TEST3_PATH))
+            .addResolver(2, b -> b
+                .constant(TEST3_METHOD.toString()))
+            .addResolver(3, b -> b
+                .constant(MediaType.APPLICATION_JSON_VALUE))
+            .addResolver(4, b -> b
+                .constant(null))
+            .addResolver(5, b -> b.constant(ObjectMappingDefinitionBuilder.create()
+                .addMapping(m -> m
+                    .fromPath(List.of("name"))
+                    .toPath(List.of("name")))
+                .addMapping(m -> m
+                    .fromPath(List.of("year"))
+                    .toPath(List.of("data", "year")))
+                .addMapping(m -> m
+                    .fromPath(List.of("price"))
+                    .toPath(List.of("data", "price")))
+                .addMapping(m -> m
+                    .fromPath(List.of("model"))
+                    .toPath(List.of("data", "CPU model")))
+                .addMapping(m -> m
+                    .fromPath(List.of("diskSize"))
+                    .toPath(List.of("data", "Hard disk size")))
+                .build()))
+            .addResolver(6, b -> b.addMapping(m -> m
+                .expression("#allParams"))))
+            .build();
+
+    return run;
+  }
+
+  private InvocationRequestDefinition createRequestDefinition() {
+    return new InvocationRequestDefinition()
+        .request(createInvocationRequest())
+        .addResolversItem(new InvocationParameterResolver()
+            .position(0)
+            .name("serviceConnectionName")
+            .definition(ObjectMappingDefinitionBuilder.create()
+                .constant(RESTFUL_CONNECTION_NAME).build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(1)
+            .name("path")
+            .definition(ObjectMappingDefinitionBuilder.create()
+                .constant(TEST3_PATH).build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(2)
+            .name("httpMethod")
+            .definition(ObjectMappingDefinitionBuilder.create()
+                .constant(TEST3_METHOD.toString()).build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(3)
+            .name("contentType")
+            .definition(ObjectMappingDefinitionBuilder.create()
+                .constant(MediaType.APPLICATION_JSON_VALUE).build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(4)
+            .name("header")
+            .definition(ObjectMappingDefinitionBuilder.create()
+                .constant(null).build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(5)
+            .name("body")
+            .definition(ObjectMappingDefinitionBuilder
+                .create().constant(ObjectMappingDefinitionBuilder.create()
+                    .addMapping(m -> m
+                        .fromPath(List.of("name"))
+                        .toPath(List.of("name")))
+                    .addMapping(m -> m
+                        .fromPath(List.of("year"))
+                        .toPath(List.of("data", "year")))
+                    .addMapping(m -> m
+                        .fromPath(List.of("price"))
+                        .toPath(List.of("data", "price")))
+                    .addMapping(m -> m
+                        .fromPath(List.of("model"))
+                        .toPath(List.of("data", "CPU model")))
+                    .addMapping(m -> m
+                        .fromPath(List.of("diskSize"))
+                        .toPath(List.of("data", "Hard disk size")))
+                    .build())
+                .build()))
+        .addResolversItem(new InvocationParameterResolver()
+            .position(6)
+            .name("params")
+            .definition(ObjectMappingDefinitionBuilder.create().addMapping(m -> m
+                .expression("#allParams")).build()));
+  }
+
+  private InvocationRequest createInvocationRequest() {
+    return invocationApi.builder(DynamicRestCallerApi.class)
+        .build(api -> api.callDynamicRest(null, null, null, null, null, null,
+            Invocations.mapOf(new HashMap<>(), Object.class)));
   }
 
   @Test
@@ -214,5 +280,25 @@ public class DynamicRestCallerApiTest {
     ResponseEntity<Object> responseEntity = (ResponseEntity) result.getValue();
     assertNotNull(responseEntity);
     assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+  }
+
+  @Test
+  void testMethodTemplateRun() throws ApiNotFoundException {
+    InvocationRequest request = new InvocationRequest().interfaceClass("kiscica").name("kiscica")
+        .methodName("run")
+        .addParametersItem(new InvocationParameter().name("name").value("Pc Over 9000"))
+        .addParametersItem(new InvocationParameter().name("year").value("3000"))
+        .addParametersItem(new InvocationParameter().name("price").value("60 krajcár"))
+        .addParametersItem(new InvocationParameter().name("model").value("MO31"))
+        .addParametersItem(new InvocationParameter().name("diskSize").value("Végtelen+1 TB"));
+
+    InvocationParameter result = invocationApi.invoke(request);
+    Integer statusCode = objectApi.getValueFromObject(Integer.class, result,
+        InvocationParameter.VALUE, "statusCodeValue");
+    HttpStatus status = HttpStatus.valueOf(statusCode);
+    Object body = objectApi.getValueFromObject(Object.class, result,
+        InvocationParameter.VALUE, "body");
+    assertNotNull(body);
+    assertTrue(status.is2xxSuccessful());
   }
 }

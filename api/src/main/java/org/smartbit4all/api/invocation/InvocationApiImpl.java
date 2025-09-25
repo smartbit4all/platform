@@ -154,6 +154,13 @@ public class InvocationApiImpl implements InvocationApi {
     MethodTemplate methodTemplate =
         invocationRegisterApi.getMethodTemplate(Invocations.createFQN(request));
     if (methodTemplate != null) {
+      if (methodTemplate.getInvocationRun() != null) {
+        ContextObject ctx = createInvocationContextObject(request);
+        run(ctx, methodTemplate.getInvocationRun());
+        Object result = ctx.getItemAsObject(ContextObject.INVOCATION_RESULT, Object.class);
+        return new InvocationParameter().value(result)
+            .typeClass(result != null ? result.getClass().getName() : null);
+      }
       InvocationRequest methodTemplateRequest =
           copyMethodTemplateParameters(request, methodTemplate);
       request = methodTemplateRequest;
@@ -183,15 +190,7 @@ public class InvocationApiImpl implements InvocationApi {
       MethodTemplate methodTemplate) {
     InvocationRequestDefinition requestDefinition = methodTemplate.getRequestDefinition();
     if (requestDefinition != null) {
-      ContextObject contextObject = objectApi.contextObject();
-      for (@Valid
-      InvocationParameter parameter : request.getParameters()) {
-        contextObject.set(parameter.getName(), parameter.getValue());
-      }
-      Map<String, Object> allParams =
-          request.getParameters().stream().filter(param -> param.getName() != null).collect(
-              Collectors.toMap(InvocationParameter::getName, InvocationParameter::getValue));
-      contextObject.set(ALL_PARAMS, allParams);
+      ContextObject contextObject = createInvocationContextObject(request);
       return resolve(requestDefinition, contextObject);
     }
     InvocationRequest methodTemplateRequest = methodTemplate.getRequest();
@@ -204,6 +203,19 @@ public class InvocationApiImpl implements InvocationApi {
 
     });
     return methodTemplateRequest;
+  }
+
+  private ContextObject createInvocationContextObject(InvocationRequest request) {
+    ContextObject contextObject = objectApi.contextObject();
+    for (@Valid
+    InvocationParameter parameter : request.getParameters()) {
+      contextObject.set(parameter.getName(), parameter.getValue());
+    }
+    Map<String, Object> allParams =
+        request.getParameters().stream().filter(param -> param.getName() != null).collect(
+            Collectors.toMap(InvocationParameter::getName, InvocationParameter::getValue));
+    contextObject.set(ALL_PARAMS, allParams);
+    return contextObject;
   }
 
   @Override
