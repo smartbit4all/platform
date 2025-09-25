@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.smartbit4all.api.view.bean.BadgeDescriptor;
 import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiActionTooltip;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -37,7 +38,8 @@ import jakarta.validation.Valid;
   ImageResource.IDENTIFIER,
   ImageResource.COLOR,
   ImageResource.STYLE,
-  ImageResource.TOOLTIP
+  ImageResource.TOOLTIP,
+  ImageResource.BADGE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ImageResource {
@@ -95,6 +97,9 @@ public class ImageResource {
 
   public static final String TOOLTIP = "tooltip";
   private UiActionTooltip tooltip;
+
+  public static final String BADGE = "badge";
+  private BadgeDescriptor badge;
 
   public ImageResource() {
   }
@@ -263,6 +268,34 @@ public class ImageResource {
     this.tooltip = tooltip;
   }
 
+  public ImageResource badge(BadgeDescriptor badge) {
+    
+    this.badge = badge;
+    return this;
+  }
+
+  /**
+   * Get badge
+   * @return badge
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(BADGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public BadgeDescriptor getBadge() {
+    return badge;
+  }
+
+
+  @JsonProperty(BADGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setBadge(BadgeDescriptor badge) {
+    this.badge = badge;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -277,12 +310,13 @@ public class ImageResource {
         Objects.equals(this.identifier, imageResource.identifier) &&
         Objects.equals(this.color, imageResource.color) &&
         Objects.equals(this.style, imageResource.style) &&
-        Objects.equals(this.tooltip, imageResource.tooltip);
+        Objects.equals(this.tooltip, imageResource.tooltip) &&
+        Objects.equals(this.badge, imageResource.badge);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, source, identifier, color, style, tooltip);
+    return Objects.hash(kind, source, identifier, color, style, tooltip, badge);
   }
 
   @Override
@@ -295,6 +329,7 @@ public class ImageResource {
     sb.append("    color: ").append(toIndentedString(color)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
+    sb.append("    badge: ").append(toIndentedString(badge)).append("\n");
     sb.append("}");
     return sb.toString();
   }

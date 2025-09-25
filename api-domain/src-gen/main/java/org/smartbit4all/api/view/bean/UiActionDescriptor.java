@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.BadgeDescriptor;
 import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.ImageResource;
+import org.smartbit4all.api.view.bean.Style;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
 import org.smartbit4all.api.view.bean.UiActionFeedbackType;
@@ -54,7 +55,8 @@ import jakarta.validation.Valid;
   UiActionDescriptor.FEEDBACK_TEXT,
   UiActionDescriptor.BADGE,
   UiActionDescriptor.UPLOAD,
-  UiActionDescriptor.TOOLTIP
+  UiActionDescriptor.TOOLTIP,
+  UiActionDescriptor.STYLE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionDescriptor {
@@ -105,6 +107,9 @@ public class UiActionDescriptor {
 
   public static final String TOOLTIP = "tooltip";
   private UiActionTooltip tooltip;
+
+  public static final String STYLE = "style";
+  private Style style;
 
   public UiActionDescriptor() {
   }
@@ -555,6 +560,34 @@ public class UiActionDescriptor {
     this.tooltip = tooltip;
   }
 
+  public UiActionDescriptor style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+  /**
+   * Get style
+   * @return style
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -579,12 +612,13 @@ public class UiActionDescriptor {
         Objects.equals(this.feedbackText, uiActionDescriptor.feedbackText) &&
         Objects.equals(this.badge, uiActionDescriptor.badge) &&
         Objects.equals(this.upload, uiActionDescriptor.upload) &&
-        Objects.equals(this.tooltip, uiActionDescriptor.tooltip);
+        Objects.equals(this.tooltip, uiActionDescriptor.tooltip) &&
+        Objects.equals(this.style, uiActionDescriptor.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, type, color, iconResource, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, badge, upload, tooltip);
+    return Objects.hash(title, type, color, iconResource, icon, iconColor, iconPosition, dialog, confirmDialog, inputDialog, input2Dialog, feedbackType, feedbackText, badge, upload, tooltip, style);
   }
 
   @Override
@@ -607,6 +641,7 @@ public class UiActionDescriptor {
     sb.append("    badge: ").append(toIndentedString(badge)).append("\n");
     sb.append("    upload: ").append(toIndentedString(upload)).append("\n");
     sb.append("    tooltip: ").append(toIndentedString(tooltip)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }
