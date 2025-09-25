@@ -109,7 +109,8 @@ public class CrudApiImpl implements CrudApi {
             public <T> void visitIn(ExpressionIn<T> expression) {
               CrudExecutionApi crudExecutionApi =
                   getExecutionApiForEntityDefOrNull(query.getEntityDef());
-              if (expression.values() != null && expression.values().size() > 10
+              if (query.getTableDataUri() == null && expression.values() != null
+                  && expression.values().size() > 10
                   && (crudExecutionApi == null || crudExecutionApi.hasLargeInHandling())) {
                 if (expression.getOperand() instanceof OperandProperty<?>) {
                   queryNode.preCalls().call(new SaveInValues(dataSetApi, where, expression));
