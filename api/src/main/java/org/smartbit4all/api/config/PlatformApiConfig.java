@@ -108,6 +108,8 @@ import org.smartbit4all.api.org.UserSecurityCheckerSchedulingApiImpl;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.org.bean.UserLastAccess;
 import org.smartbit4all.api.org.bean.UserSecurityPolicy;
+import org.smartbit4all.api.pipeline.DataProcessPipelineApi;
+import org.smartbit4all.api.pipeline.DataProcessPipelineApiImpl;
 import org.smartbit4all.api.platformevent.PlatformEventApi;
 import org.smartbit4all.api.platformevent.PlatformEventApiImpl;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
@@ -1185,6 +1187,17 @@ public class PlatformApiConfig {
   @Bean
   public DataSourceContextTemplate dataSourceContextTemplate() {
     return new DataSourceContextTemplate();
+  }
+
+  @Bean
+  public DataProcessPipelineApi dataProcessPipelineApi() {
+    return new DataProcessPipelineApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<DataProcessPipelineApi> dataProcessPipelineApiProvider(
+      DataProcessPipelineApi api) {
+    return Invocations.asProvider(DataProcessPipelineApi.class, api);
   }
 
 }

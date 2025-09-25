@@ -96,14 +96,6 @@ components:
         singleVersion:
           type: boolean
           default: true
-    SearchIndexDescriptor:
-      type: object
-      properties:
-        schema:
-          type: string
-        name:
-          type: string
-      required: [schema, name]
     VectorCollectionDescriptor:
       type: object
       description: |
@@ -253,3 +245,59 @@ components:
         distinct:
           type: boolean
           default: true
+    SearchIndexDefinition:
+      description: |
+        The SearchIndex definition that can be used to setup a searchindex on the fly during the operation of the
+        application. In this way we can add more table data structure to the application.
+      type: object
+      properties:
+        uri:
+          type: string
+          format: uri
+        data:
+          $ref: '#/components/schemas/SearchIndexDefinitionData'
+    SearchIndexDefinitionData:
+      description: |
+        The SearchIndex definition that can be used to setup a searchindex on the fly during the operation of the
+        application. In this way we can add more table data structure to the application.
+      type: object
+      properties:
+        descriptor:
+          $ref: '#/components/schemas/SearchIndexDescriptor'
+        mappings:
+          description: |
+            The mapping rules between the object and the table data row.
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchIndexMapping'
+    SearchIndexMapping:
+      description: |
+        The SearchIndex definition that can be used to setup a searchindex on the fly during the operation of the
+        application. In this way we can add more table data structure to the application.
+      type: object
+      properties:
+        propertyName:
+          description: The name of the table data column.
+          type: string
+        dataType:
+          description: The fully qualified name of the data type java class.
+          type: string
+          default: "java.lang.String"
+        length:
+          description: The length of the data mainly if it is string.
+          type: integer
+          format: int32
+          default: -1
+        pathes:
+          description: The path of the value to copy into the column of the table data.
+          type: array
+          items:
+            type: string
+    SearchIndexDescriptor:
+      type: object
+      properties:
+        schema:
+          type: string
+        name:
+          type: string
+      required: [schema, name]

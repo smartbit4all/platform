@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.smartbit4all.api.collection.bean.SearchIndexDefinitionData;
+import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
+import org.smartbit4all.api.collection.bean.SearchIndexMapping;
 import org.smartbit4all.api.databasedefinition.bean.DatabaseKind;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBoolOperator;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionData;
@@ -24,10 +28,13 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOrderBy.OrderEnum;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
+import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.object.BranchApi;
 import org.smartbit4all.api.object.RetrievalRequest;
 import org.smartbit4all.api.object.bean.BranchEntry;
 import org.smartbit4all.api.object.bean.BranchedObjectEntry;
+import org.smartbit4all.api.pipeline.DataProcessPipelineApi;
 import org.smartbit4all.api.rdbms.DatabaseDefinitionApi;
 import org.smartbit4all.api.rdbms.DatabaseRendition;
 import org.smartbit4all.api.sample.bean.SampleCategory;
@@ -37,6 +44,10 @@ import org.smartbit4all.api.sample.bean.SampleDataSheet;
 import org.smartbit4all.api.sample.bean.SampleDepartment;
 import org.smartbit4all.api.sample.bean.SampleEmployee;
 import org.smartbit4all.api.sample.bean.SampleInlineObject;
+import org.smartbit4all.api.storage.bean.DataSeries;
+import org.smartbit4all.api.storage.bean.DataSeriesBoundary;
+import org.smartbit4all.api.storage.bean.DataSeriesInterval;
+import org.smartbit4all.api.storage.bean.DataSeriesItem;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
@@ -59,6 +70,7 @@ import static java.util.stream.Collectors.toList;
 
 public class CollectionApiTestBase {
 
+  private static final String PERCENT = "PERCENT";
   private static final String LATE = "late";
   public static final String SCHEMA = "sample";
   public static final String FIRST = "first";
@@ -91,6 +103,12 @@ public class CollectionApiTestBase {
 
   @Autowired
   private PlatformTransactionManager transactionManager;
+
+  @Autowired
+  private DataProcessPipelineApi pipelineApi;
+
+  @Autowired
+  private InvocationApi invocationApi;
 
   private ExecutorService executor =
       new ThreadPoolExecutor(5, 5, 10, TimeUnit.SECONDS, new LinkedBlockingQueue<>());
@@ -916,6 +934,66 @@ public class CollectionApiTestBase {
         employeeSearchIndex.executeSearch(filter, null, Arrays.asList(SampleEmployee.NAME));
   }
 
+  @Test
+  void testDynamicSearchIndex() throws ApiNotFoundException {
+    initEmployeeValues();
+
+    OffsetDateTime now = OffsetDateTime.now();
+    DataSeries fragment =
+        pipelineApi.retrieveObjectStorageFragment(SCHEMA, SampleCompany.class.getName(),
+            new DataSeriesInterval()
+                .lower(new DataSeriesBoundary().dataTimeValue(now.minusHours(1)))
+                .upper(new DataSeriesBoundary().dataTimeValue(now.plusHours(1))));
+
+    int percent = 0;
+    for (DataSeriesItem item : fragment.getItems()) {
+      ObjectNode objectNode = objectApi.loadLatest(item.getUri());
+      item.objectAsMap(objectNode.getObjectAsMap());
+
+      item.getObjectAsMap().put(PERCENT, percent++);
+
+      // @SuppressWarnings("unchecked")
+      // ObjectNode resultNode = (ObjectNode) invocationApi
+      // .invoke(new InvocationRequest().name("setPercent")
+      // .scriptKind(ScriptEngineMgmtApi.SCRIPT_KIND_GROOVY)
+      // .scriptBody("import java.util.Map;\r\n"
+      // + "import java.util.HashMap;\r\n"
+      // + "import java.util.List;\r\n"
+      // + "import java.util.Collection;\r\n"
+      // + "import java.util.stream.Collectors;\r\n"
+      // + "\r\n"
+      // + "log.info(\"The value of the objectNode is the following\" + objectNode.toString());\r\n"
+      // + "\r\n"
+      // + "objectNode.setValue(percent, \"PERCENT\");\r\n"
+      // + "return objectNode;\r\n")
+      // .addParametersItem(new InvocationParameter().name("objectNode")
+      // .typeClass(ObjectNode.class.getName()).value(objectNode))
+      // .addParametersItem(new InvocationParameter().name("percent")
+      // .typeClass(Integer.class.getName()).value(percent++)))
+      // .getValue();
+      // item.getObjectAsMap().putAll(resultNode.getObjectAsMap());
+    }
+
+    TableData<?> tableData = pipelineApi.tableDataOfDataSeries(List.of(fragment),
+        new SearchIndexDefinitionData()
+            .descriptor(new SearchIndexDescriptor().schema(SCHEMA).name("specificCompany"))
+            .addMappingsItem(new SearchIndexMapping().propertyName(SampleCompany.NAME)
+                .dataType(String.class.getName()).addPathesItem(SampleCompany.NAME))
+            .addMappingsItem(new SearchIndexMapping().propertyName(SampleCompany.URI)
+                .dataType(URI.class.getName()).addPathesItem(SampleCompany.URI))
+            .addMappingsItem(new SearchIndexMapping().propertyName(PERCENT)
+                .dataType(Integer.class.getName()).addPathesItem(PERCENT)));
+
+    System.out.println(TableDatas.toStringAdv(tableData));
+
+    int largestPercent = 0;
+    Property<Integer> percentProperty = (Property<Integer>) tableData.entity().getProperty(PERCENT);
+    for (DataRow row : tableData.rows()) {
+      largestPercent = Math.max(largestPercent, row.get(percentProperty));
+    }
+
+    org.assertj.core.api.Assertions.assertThat(largestPercent).isEqualTo(percent - 1);
+  }
 
   void initEmployeeValues() {
     // Company
