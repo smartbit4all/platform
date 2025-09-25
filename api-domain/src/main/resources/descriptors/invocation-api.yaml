@@ -774,6 +774,10 @@ components:
           description: |
             The method data to describe the callable operation with parameters and return value.
           $ref: '#/components/schemas/InvocationRequestDefinition'
+        invocationRun:
+          description: |
+            The run data to describe the callable operation.
+          $ref: '#/components/schemas/InvocationRun'
     ParameterData:
       type: object
       required: [name,typeName]

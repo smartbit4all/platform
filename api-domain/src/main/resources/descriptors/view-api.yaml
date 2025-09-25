@@ -1301,6 +1301,8 @@ components:
           $ref: '#/components/schemas/UiActionUploadDescriptor'
         tooltip:
           $ref: '#/components/schemas/UiActionTooltip'
+        style:
+          $ref: '#/components/schemas/Style'
     UiActionTooltip:
       type: object
       properties:
@@ -1540,6 +1542,8 @@ components:
           $ref: '#/components/schemas/Style'
         tooltip:
           $ref: '#/components/schemas/UiActionTooltip'
+        badge:
+          $ref: '#/components/schemas/BadgeDescriptor'
     Style:
       type: object
       description: Style data holder for client

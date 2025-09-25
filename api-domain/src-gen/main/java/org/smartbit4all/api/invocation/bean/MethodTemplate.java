@@ -24,6 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -37,7 +38,8 @@ import jakarta.validation.Valid;
   MethodTemplate.URI,
   MethodTemplate.FULLY_QUALIFIED_NAME,
   MethodTemplate.REQUEST,
-  MethodTemplate.REQUEST_DEFINITION
+  MethodTemplate.REQUEST_DEFINITION,
+  MethodTemplate.INVOCATION_RUN
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodTemplate {
@@ -52,6 +54,9 @@ public class MethodTemplate {
 
   public static final String REQUEST_DEFINITION = "requestDefinition";
   private InvocationRequestDefinition requestDefinition;
+
+  public static final String INVOCATION_RUN = "invocationRun";
+  private InvocationRun invocationRun;
 
   public MethodTemplate() {
   }
@@ -170,6 +175,34 @@ public class MethodTemplate {
     this.requestDefinition = requestDefinition;
   }
 
+  public MethodTemplate invocationRun(InvocationRun invocationRun) {
+    
+    this.invocationRun = invocationRun;
+    return this;
+  }
+
+  /**
+   * Get invocationRun
+   * @return invocationRun
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(INVOCATION_RUN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRun getInvocationRun() {
+    return invocationRun;
+  }
+
+
+  @JsonProperty(INVOCATION_RUN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInvocationRun(InvocationRun invocationRun) {
+    this.invocationRun = invocationRun;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -182,12 +215,13 @@ public class MethodTemplate {
     return Objects.equals(this.uri, methodTemplate.uri) &&
         Objects.equals(this.fullyQualifiedName, methodTemplate.fullyQualifiedName) &&
         Objects.equals(this.request, methodTemplate.request) &&
-        Objects.equals(this.requestDefinition, methodTemplate.requestDefinition);
+        Objects.equals(this.requestDefinition, methodTemplate.requestDefinition) &&
+        Objects.equals(this.invocationRun, methodTemplate.invocationRun);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, fullyQualifiedName, request, requestDefinition);
+    return Objects.hash(uri, fullyQualifiedName, request, requestDefinition, invocationRun);
   }
 
   @Override
@@ -198,6 +232,7 @@ public class MethodTemplate {
     sb.append("    fullyQualifiedName: ").append(toIndentedString(fullyQualifiedName)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("    requestDefinition: ").append(toIndentedString(requestDefinition)).append("\n");
+    sb.append("    invocationRun: ").append(toIndentedString(invocationRun)).append("\n");
     sb.append("}");
     return sb.toString();
   }
