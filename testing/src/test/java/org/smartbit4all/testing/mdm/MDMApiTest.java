@@ -1,6 +1,17 @@
 package org.smartbit4all.testing.mdm;
 
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summarizingDouble;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.with;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -50,6 +61,7 @@ import org.smartbit4all.api.invocation.bean.ApiData;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
+import org.smartbit4all.api.invocation.exception.BusinessLogicException;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MDMModificationApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
@@ -107,17 +119,6 @@ import org.smartbit4all.sec.localauth.LocalAuthenticationService;
 import org.smartbit4all.testing.UITestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summarizingDouble;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @SpringBootTest(classes = {MDMApiTestConfig.class}, properties = {
     "invocationregistry.refresh.fixeddelay=2000",
@@ -254,7 +255,7 @@ class MDMApiTest {
     ObjectNode sameNameCategoryNode =
         objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type four")
             .description("This is the four category type with the same code with type 3."));
-    assertThrows(IllegalArgumentException.class, () -> typeApi.save(sameNameCategoryNode),
+    assertThrows(BusinessLogicException.class, () -> typeApi.save(sameNameCategoryNode),
         "MDMEntryApi don't check unique properties properly");
 
 
@@ -419,7 +420,7 @@ class MDMApiTest {
     String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
     secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
     URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
-    assertThrows(IllegalArgumentException.class, () -> typeApi.restore(firstType.getOriginalUri()),
+    assertThrows(BusinessLogicException.class, () -> typeApi.restore(firstType.getOriginalUri()),
         "On restore the constraint check doesn't work properly.");
 
     // Test constraint check on cancel.
@@ -427,7 +428,7 @@ class MDMApiTest {
     ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
     thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
     typeApi.save(thridTypeNode);
-    assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
+    assertThrows(BusinessLogicException.class, () -> typeApi.cancel(secondTypeBranchUri),
         "On cancel the constraint check doesn't work properly.");
 
     // Drop the changes we made because constraint check.
@@ -1505,7 +1506,7 @@ class MDMApiTest {
     ObjectNode sameNameCategoryNode =
         objectApi.create(SCHEMA, new SampleCategoryType().code("TYPE3").name("Type four")
             .description("This is the four category type with the same code with type 3."));
-    assertThrows(IllegalArgumentException.class, () -> typeApi.save(sameNameCategoryNode),
+    assertThrows(BusinessLogicException.class, () -> typeApi.save(sameNameCategoryNode),
         "MDMEntryApi don't check unique properties properly");
 
 
@@ -1677,7 +1678,7 @@ class MDMApiTest {
       String secondTypeCode = secondTypeNode.getValueAsString(SampleCategoryType.CODE);
       secondTypeNode.setValue(firstTypeName, SampleCategoryType.CODE);
       URI secondTypeBranchUri = typeApi.save(secondTypeNode).get(0);
-      assertThrows(IllegalArgumentException.class,
+      assertThrows(BusinessLogicException.class,
           () -> typeApi.restore(firstTypeBranchedUri),
           "On restore the constraint check doesn't work properly.");
 
@@ -1686,7 +1687,7 @@ class MDMApiTest {
       ObjectNode thridTypeNode = objectApi.loadLatest(thirdType.getOriginalUri());
       thridTypeNode.setValue(secondTypeCode, SampleCategoryType.CODE);
       typeApi.save(thridTypeNode);
-      assertThrows(IllegalArgumentException.class, () -> typeApi.cancel(secondTypeBranchUri),
+      assertThrows(BusinessLogicException.class, () -> typeApi.cancel(secondTypeBranchUri),
           "On cancel the constraint check doesn't work properly.");
 
       // Drop the changes we made because constraint check.
