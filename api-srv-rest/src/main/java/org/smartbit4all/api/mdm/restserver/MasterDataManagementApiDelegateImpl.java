@@ -49,9 +49,10 @@ public class MasterDataManagementApiDelegateImpl implements MasterDataManagement
   public ResponseEntity<Void> importEntriesFromCsvFile(MDMImportEntryCsvDescriptor data,
       MultipartFile content) throws Exception {
     try {
-      String definition = null;
-      String entry = null;
-      String csvSeparator = null;
+      String definition = data.getDefinition();
+      String entry = data.getEntry();
+      String csvSeparator = data.getCsvSeparator();
+      // FIXME: fill branchUri
       URI branchUri = null;
       processFile(content, binaryData -> mdmSetupApi.importEntriesFromCsvFile(
           definition, entry, binaryData, csvSeparator, branchUri));
