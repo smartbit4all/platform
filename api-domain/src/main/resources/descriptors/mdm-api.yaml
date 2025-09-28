@@ -47,6 +47,78 @@ paths:
           description: "Resource cannot be found."
         "500":
           description: "There was an error during the data fetch."
+  /mdm/loadEntries:
+    post:
+      tags:
+        - MasterDataManagement
+      summary: |
+        Load MDM entries from given json file, as parameter 'content'. 
+      operationId: "loadEntries"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "MDM entries loaded"
+        "400":
+          description: "MDM entries json is wrong"
+        "500":
+          description: "Error during MDM entries loading."
+  /mdm/loadValueLists:
+    post:
+      tags:
+        - MasterDataManagement
+      summary: |
+        Load value lists from given json file, as parameter 'content'. 
+      operationId: "loadValueLists"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "MDM value lists loaded"
+        "400":
+          description: "MDM value lists json is wrong"
+        "500":
+          description: "Error during MDM entries loading."
+  /mdm/importEntriesFromCsvFile:
+    post:
+      tags:
+        - MasterDataManagement
+      summary: |
+        Load MDM entries from given CSV file, as parameter 'content'. 
+      operationId: "importEntriesFromCsvFile"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: "MDM entries loaded"
+        "400":
+          description: "MDM entries CSV is wrong"
+        "500":
+          description: "Error during MDM entries loading."
 components:
   schemas:
     MDMDefinition:
