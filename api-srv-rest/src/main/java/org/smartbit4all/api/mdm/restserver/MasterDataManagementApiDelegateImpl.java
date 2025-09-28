@@ -49,11 +49,11 @@ public class MasterDataManagementApiDelegateImpl implements MasterDataManagement
   public ResponseEntity<Void> importEntriesFromCsvFile(MDMImportEntryCsvDescriptor data,
       MultipartFile content) throws Exception {
     try {
-      String definition = data.getDefinition();
-      String entry = data.getEntry();
-      String csvSeparator = data.getCsvSeparator();
-      // FIXME: fill branchUri
-      URI branchUri = null;
+      // TODO: fill branchUri, if requires to support for other, than global
+      final URI branchUri = null;
+      final String definition = data.getDefinition();
+      final String entry = data.getEntry();
+      final String csvSeparator = data.getCsvSeparator();
       processFile(content, binaryData -> mdmSetupApi.importEntriesFromCsvFile(
           definition, entry, binaryData, csvSeparator, branchUri));
     } catch (IllegalArgumentException iae) {
