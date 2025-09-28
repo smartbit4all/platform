@@ -1,5 +1,6 @@
 package org.smartbit4all.api.mdm.restserver;
 
+import org.smartbit4all.api.mdm.bean.MDMImportEntryCsvDescriptor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,50 @@ public interface MasterDataManagementApiDelegate {
     default ResponseEntity<String> getAccessToken(String definition,
         String entry,
         String id) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /mdm/importEntriesFromCsvFile : Load MDM entries from given CSV file, as parameter &#39;content&#39;.  
+     *
+     * @param data  (optional)
+     * @param content  (optional)
+     * @return MDM entries loaded (status code 200)
+     *         or MDM entries CSV is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     * @see MasterDataManagementApi#importEntriesFromCsvFile
+     */
+    default ResponseEntity<Void> importEntriesFromCsvFile(MDMImportEntryCsvDescriptor data,
+        MultipartFile content) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /mdm/loadEntries : Load MDM entries from given json file, as parameter &#39;content&#39;.  
+     *
+     * @param content  (optional)
+     * @return MDM entries loaded (status code 200)
+     *         or MDM entries json is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     * @see MasterDataManagementApi#loadEntries
+     */
+    default ResponseEntity<Void> loadEntries(MultipartFile content) throws Exception {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+
+    }
+
+    /**
+     * POST /mdm/loadValueLists : Load value lists from given json file, as parameter &#39;content&#39;.  
+     *
+     * @param content  (optional)
+     * @return MDM value lists loaded (status code 200)
+     *         or MDM value lists json is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     * @see MasterDataManagementApi#loadValueLists
+     */
+    default ResponseEntity<Void> loadValueLists(MultipartFile content) throws Exception {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 
     }

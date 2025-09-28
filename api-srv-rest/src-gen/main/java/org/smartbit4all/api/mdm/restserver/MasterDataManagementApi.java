@@ -5,6 +5,7 @@
  */
 package org.smartbit4all.api.mdm.restserver;
 
+import org.smartbit4all.api.mdm.bean.MDMImportEntryCsvDescriptor;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,6 +71,101 @@ public interface MasterDataManagementApi {
         @Parameter(name = "id", description = "Unique identifier of the MDM entry.", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
     ) throws Exception {
         return getDelegate().getAccessToken(definition, entry, id);
+    }
+
+
+    /**
+     * POST /mdm/importEntriesFromCsvFile : Load MDM entries from given CSV file, as parameter &#39;content&#39;.  
+     *
+     * @param data  (optional)
+     * @param content  (optional)
+     * @return MDM entries loaded (status code 200)
+     *         or MDM entries CSV is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     */
+    @Operation(
+        operationId = "importEntriesFromCsvFile",
+        summary = "Load MDM entries from given CSV file, as parameter 'content'.  ",
+        tags = { "MasterDataManagement" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "MDM entries loaded"),
+            @ApiResponse(responseCode = "400", description = "MDM entries CSV is wrong"),
+            @ApiResponse(responseCode = "500", description = "Error during MDM entries loading.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/mdm/importEntriesFromCsvFile",
+        consumes = { "multipart/form-data" }
+    )
+    
+    default ResponseEntity<Void> importEntriesFromCsvFile(
+        @Parameter(name = "data", description = "") @Valid @RequestPart(value = "data", required = false) MDMImportEntryCsvDescriptor data,
+        @Parameter(name = "content", description = "") @RequestPart(value = "content", required = false) MultipartFile content
+    ) throws Exception {
+        return getDelegate().importEntriesFromCsvFile(data, content);
+    }
+
+
+    /**
+     * POST /mdm/loadEntries : Load MDM entries from given json file, as parameter &#39;content&#39;.  
+     *
+     * @param content  (optional)
+     * @return MDM entries loaded (status code 200)
+     *         or MDM entries json is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     */
+    @Operation(
+        operationId = "loadEntries",
+        summary = "Load MDM entries from given json file, as parameter 'content'.  ",
+        tags = { "MasterDataManagement" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "MDM entries loaded"),
+            @ApiResponse(responseCode = "400", description = "MDM entries json is wrong"),
+            @ApiResponse(responseCode = "500", description = "Error during MDM entries loading.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/mdm/loadEntries",
+        consumes = { "multipart/form-data" }
+    )
+    
+    default ResponseEntity<Void> loadEntries(
+        @Parameter(name = "content", description = "") @RequestPart(value = "content", required = false) MultipartFile content
+    ) throws Exception {
+        return getDelegate().loadEntries(content);
+    }
+
+
+    /**
+     * POST /mdm/loadValueLists : Load value lists from given json file, as parameter &#39;content&#39;.  
+     *
+     * @param content  (optional)
+     * @return MDM value lists loaded (status code 200)
+     *         or MDM value lists json is wrong (status code 400)
+     *         or Error during MDM entries loading. (status code 500)
+     */
+    @Operation(
+        operationId = "loadValueLists",
+        summary = "Load value lists from given json file, as parameter 'content'.  ",
+        tags = { "MasterDataManagement" },
+        responses = {
+            @ApiResponse(responseCode = "200", description = "MDM value lists loaded"),
+            @ApiResponse(responseCode = "400", description = "MDM value lists json is wrong"),
+            @ApiResponse(responseCode = "500", description = "Error during MDM entries loading.")
+        }
+    )
+    @RequestMapping(
+        method = RequestMethod.POST,
+        value = "/mdm/loadValueLists",
+        consumes = { "multipart/form-data" }
+    )
+    
+    default ResponseEntity<Void> loadValueLists(
+        @Parameter(name = "content", description = "") @RequestPart(value = "content", required = false) MultipartFile content
+    ) throws Exception {
+        return getDelegate().loadValueLists(content);
     }
 
 }

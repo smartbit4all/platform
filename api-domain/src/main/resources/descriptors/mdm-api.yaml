@@ -109,6 +109,9 @@ paths:
             schema:
               type: object
               properties:
+                data:
+                  descrition: Import CSV file descriptor.
+                  $ref: "#/components/schemas/MDMImportEntryCsvDescriptor"
                 content:
                   type: string
                   format: binary
@@ -743,4 +746,13 @@ components:
           items:
             type: string
         fullCsvPath:
+          type: string
+    MDMImportEntryCsvDescriptor:
+      type: object
+      properties:
+        definition:
+          type: string
+        entry:
+          type: string
+        csvSeparator:
           type: string
