@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
+import org.smartbit4all.api.invocation.bean.ResponseEntityObject;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MDMEntryApi;
@@ -26,7 +27,7 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   private MasterDataManagementApi masterDataManagementApi;
 
   @Override
-  public ResponseEntity<Object> callDynamicRest(String serviceConnectionName,
+  public ResponseEntityObject callDynamicRest(String serviceConnectionName,
       String path,
       String httpMethodString,
       String contentTypeName,
@@ -41,7 +42,7 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
           "Could not find service connection with name: " + serviceConnectionName);
     }
     HttpMethod httpMethod = HttpMethod.valueOf(httpMethodString);
-    MediaType contentType = MediaType.valueOf(contentTypeName);
+    MediaType contentType = contentTypeName != null ? MediaType.valueOf(contentTypeName) : null;
     Map<String, Object> serviceConnectionParameters = serviceConnection.getParameters();
     ContextObject contextObject = objectApi.contextObject().set(params);
     contextObject.set("serviceConnection", serviceConnection);
@@ -75,7 +76,14 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
         .retrieve()
         .toEntity(Object.class);
 
-    return response;
+    ResponseEntityObject responseEntityObject = new ResponseEntityObject();
+
+    if (response.getHeaders() != null) {
+      responseEntityObject.headers(objectApi.toMapObject(response.getHeaders()));
+    }
+    return responseEntityObject.body(response.getBody())
+        .statusCode(response.getStatusCode().toString())
+        .statusCodeValue(response.getStatusCode().value());
   }
 
   private ServiceConnection getServiceConnection(String serviceConnectionName) {

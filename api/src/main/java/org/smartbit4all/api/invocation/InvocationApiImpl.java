@@ -157,7 +157,11 @@ public class InvocationApiImpl implements InvocationApi {
       if (methodTemplate.getInvocationRun() != null) {
         ContextObject ctx = createInvocationContextObject(request);
         run(ctx, methodTemplate.getInvocationRun());
-        Object result = ctx.getItemAsObject(ContextObject.INVOCATION_RESULT, Object.class);
+        String resultPath = methodTemplate.getInvocationRunResultProperty() != null
+            ? methodTemplate.getInvocationRunResultProperty()
+            : ContextObject.INVOCATION_RESULT;
+        Object result =
+            ctx.getItemAsObjectByReference(resultPath, Object.class);
         return new InvocationParameter().value(result)
             .typeClass(result != null ? result.getClass().getName() : null);
       }

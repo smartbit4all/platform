@@ -19,6 +19,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.MethodTemplate;
+import org.smartbit4all.api.invocation.bean.ResponseEntityObject;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 import org.smartbit4all.api.invocation.config.InvocationApiMdmConfig;
 import org.smartbit4all.api.mdm.MDMEntryApi;
@@ -31,7 +32,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 @SpringBootTest(classes = {DynamicRestCallerTestConfig.class})
 @TestInstance(Lifecycle.PER_CLASS)
@@ -231,11 +231,11 @@ public class DynamicRestCallerApiTest {
 
   @Test
   void test1() {
-    ResponseEntity<Object> responseEntity =
+    ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(TEST1_CONNECTION_NAME, TEST1_PATH, TEST1_METHOD, null,
             null, null, null);
     assertNotNull(responseEntity);
-    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();
   }
 
@@ -243,11 +243,11 @@ public class DynamicRestCallerApiTest {
   void test_null_path_on_endpoint() {
     ObjectMappingDefinition headerDef = ObjectMappingDefinitionBuilder.create()
         .addMapping(b -> b.fromPath(List.of("Accept")).to("Accept")).build();
-    ResponseEntity<Object> responseEntity =
+    ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(TEST2_CONNECTION_NAME, null, TEST2_METHOD, null,
             headerDef, null, TEST2_PARAMS);
     assertNotNull(responseEntity);
-    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();
   }
 
@@ -257,12 +257,12 @@ public class DynamicRestCallerApiTest {
         .addMapping(b -> b.constant(
             "{\"name\": \"Apple MacBook Pro 16\", \"data\": {\"year\": 2019, \"price\": 1849.99, \"CPU model\": \"Intel Core i9\", \"Hard disk size\": \"1 TB\"}}"))
         .build();
-    ResponseEntity<Object> responseEntity =
+    ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(RESTFUL_CONNECTION_NAME, TEST3_PATH, TEST3_METHOD,
             MediaType.APPLICATION_JSON_VALUE,
             null, bodyDef, TEST3_PARAMS);
     assertNotNull(responseEntity);
-    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();
   }
 
@@ -277,9 +277,9 @@ public class DynamicRestCallerApiTest {
         .addParametersItem(new InvocationParameter().name("diskSize").value("Végtelen TB"));
 
     InvocationParameter result = invocationApi.invoke(request);
-    ResponseEntity<Object> responseEntity = (ResponseEntity) result.getValue();
+    ResponseEntityObject responseEntity = (ResponseEntityObject) result.getValue();
     assertNotNull(responseEntity);
-    assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
+    assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
   }
 
   @Test
@@ -293,11 +293,10 @@ public class DynamicRestCallerApiTest {
         .addParametersItem(new InvocationParameter().name("diskSize").value("Végtelen+1 TB"));
 
     InvocationParameter result = invocationApi.invoke(request);
-    Integer statusCode = objectApi.getValueFromObject(Integer.class, result,
-        InvocationParameter.VALUE, "statusCodeValue");
+    ResponseEntityObject response = (ResponseEntityObject) result.getValue();
+    Integer statusCode = response.getStatusCodeValue();
     HttpStatus status = HttpStatus.valueOf(statusCode);
-    Object body = objectApi.getValueFromObject(Object.class, result,
-        InvocationParameter.VALUE, "body");
+    Object body = response.getBody();
     assertNotNull(body);
     assertTrue(status.is2xxSuccessful());
   }

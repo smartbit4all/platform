@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm.invocation;
 
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
+import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -7,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
 import org.smartbit4all.api.invocation.bean.MethodTemplate;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
@@ -27,8 +30,6 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
-import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 
 public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements MethodTemplateEditorPageApi {
@@ -42,6 +43,8 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
 
   private static final String INVOCATION_REQUEST_DEFINITION_AS_STRING =
       "INVOCATION_REQUEST_DEFINITION_AS_STRING";
+  private static final String INVOCATION_RUN_AS_STRING =
+      "INVOCATION_RUN_AS_STRING";
 
   @Autowired
   private ObjectApi objectApi;
@@ -57,9 +60,12 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
     String requestAsString = convertJsonToString(model, MethodTemplate.REQUEST);
     String requestDefinitionAsString =
         convertJsonToString(model, MethodTemplate.REQUEST_DEFINITION);
+    String runAsString =
+        convertJsonToString(model, MethodTemplate.INVOCATION_RUN);
 
     model.put(INVOCATION_REQUEST_AS_STRING, requestAsString);
     model.put(INVOCATION_REQUEST_DEFINITION_AS_STRING, requestDefinitionAsString);
+    model.put(INVOCATION_RUN_AS_STRING, runAsString);
     initLayout(view);
     // initGrid(view, model.getItemDefinition());
     initConstraints(view);
@@ -127,7 +133,18 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
                     widgetKey(INVOCATION_REQUEST_AS_STRING),
                     localeSettingApi.get(
                         MethodTemplate.class.getName(),
-                        MethodTemplate.REQUEST))));
+                        MethodTemplate.REQUEST)),
+                ObjectLayoutBuilder.textbox(
+                    widgetKey(INVOCATION_RUN_AS_STRING),
+                    localeSettingApi.get(
+                        MethodTemplate.class.getName(),
+                        MethodTemplate.INVOCATION_RUN)),
+                ObjectLayoutBuilder.textfield(
+                    widgetKey(
+                        MethodTemplate.INVOCATION_RUN_RESULT_PROPERTY),
+                    localeSettingApi.get(
+                        MethodTemplate.class.getName(),
+                        MethodTemplate.INVOCATION_RUN_RESULT_PROPERTY))));
 
     view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout);
   }
@@ -163,6 +180,17 @@ public class MethodTemplateEditorPageApiImpl extends MDMEntryEditPageApiImpl
         m.put(MethodTemplate.REQUEST_DEFINITION, invocationRequestDefinition);
       } else {
         m.remove(MethodTemplate.REQUEST_DEFINITION);
+      }
+    }
+    {
+      final var runAsStr =
+          String.valueOf(m.remove(INVOCATION_RUN_AS_STRING));
+      if (StringUtils.hasText(runAsStr)) {
+        InvocationRun invocationRun =
+            objectApi.fromString(runAsStr, InvocationRun.class);
+        m.put(MethodTemplate.INVOCATION_RUN, invocationRun);
+      } else {
+        m.remove(MethodTemplate.INVOCATION_RUN);
       }
     }
 

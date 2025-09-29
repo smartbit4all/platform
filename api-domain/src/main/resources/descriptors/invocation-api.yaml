@@ -778,6 +778,10 @@ components:
           description: |
             The run data to describe the callable operation.
           $ref: '#/components/schemas/InvocationRun'
+        invocationRunResultProperty:
+          description: |
+            The property of the context that will be the return value of the invoke call. If left empty, ContextObject.INVOCATION_RESULT will be used.
+          type: string
     ParameterData:
       type: object
       required: [name,typeName]
@@ -1108,3 +1112,15 @@ components:
         value:
           type: object
           description: Default value of the parameter.
+    ResponseEntityObject:
+      type: object
+      properties:
+        headers:
+          type: object
+          additionalProperties: true
+        body:
+          type: object
+        statusCode:
+          type: string
+        statusCodeValue:
+          type: integer

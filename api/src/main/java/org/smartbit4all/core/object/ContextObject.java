@@ -409,6 +409,29 @@ public class ContextObject {
     }
   }
 
+  @SuppressWarnings("unchecked")
+  public final <T> T getItemAsObjectByReference(String itemName, Class<T> clazz) {
+    rwLock.readLock().lock();
+    try {
+      ContextObjectItem contextObjectItem = items.get(itemName);
+      if (contextObjectItem == null) {
+        return null;
+      }
+      contextObjectItem.getRwLock().readLock().lock();
+      try {
+        if (contextObjectItem.data != null && contextObjectItem.data.getObject() != null
+            && clazz.isAssignableFrom(contextObjectItem.data.getObject().getClass())) {
+          return (T) contextObjectItem.data.getObject();
+        }
+        return contextObjectItem.objectNode().getObject(clazz);
+      } finally {
+        contextObjectItem.getRwLock().readLock().unlock();
+      }
+    } finally {
+      rwLock.readLock().unlock();
+    }
+  }
+
   private final ContextObjectItem findItem(List<String> path, List<String> finalPath) {
     // Caller should hold at least the read lock; acquire read lock defensively.
     ContextObjectItem contextObject;

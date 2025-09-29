@@ -39,7 +39,8 @@ import jakarta.validation.Valid;
   MethodTemplate.FULLY_QUALIFIED_NAME,
   MethodTemplate.REQUEST,
   MethodTemplate.REQUEST_DEFINITION,
-  MethodTemplate.INVOCATION_RUN
+  MethodTemplate.INVOCATION_RUN,
+  MethodTemplate.INVOCATION_RUN_RESULT_PROPERTY
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MethodTemplate {
@@ -57,6 +58,9 @@ public class MethodTemplate {
 
   public static final String INVOCATION_RUN = "invocationRun";
   private InvocationRun invocationRun;
+
+  public static final String INVOCATION_RUN_RESULT_PROPERTY = "invocationRunResultProperty";
+  private String invocationRunResultProperty;
 
   public MethodTemplate() {
   }
@@ -203,6 +207,33 @@ public class MethodTemplate {
     this.invocationRun = invocationRun;
   }
 
+  public MethodTemplate invocationRunResultProperty(String invocationRunResultProperty) {
+    
+    this.invocationRunResultProperty = invocationRunResultProperty;
+    return this;
+  }
+
+  /**
+   * The property of the context that will be the return value of the invoke call. If left empty, ContextObject.INVOCATION_RESULT will be used. 
+   * @return invocationRunResultProperty
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The property of the context that will be the return value of the invoke call. If left empty, ContextObject.INVOCATION_RESULT will be used. ")
+  @JsonProperty(INVOCATION_RUN_RESULT_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getInvocationRunResultProperty() {
+    return invocationRunResultProperty;
+  }
+
+
+  @JsonProperty(INVOCATION_RUN_RESULT_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setInvocationRunResultProperty(String invocationRunResultProperty) {
+    this.invocationRunResultProperty = invocationRunResultProperty;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -216,12 +247,13 @@ public class MethodTemplate {
         Objects.equals(this.fullyQualifiedName, methodTemplate.fullyQualifiedName) &&
         Objects.equals(this.request, methodTemplate.request) &&
         Objects.equals(this.requestDefinition, methodTemplate.requestDefinition) &&
-        Objects.equals(this.invocationRun, methodTemplate.invocationRun);
+        Objects.equals(this.invocationRun, methodTemplate.invocationRun) &&
+        Objects.equals(this.invocationRunResultProperty, methodTemplate.invocationRunResultProperty);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, fullyQualifiedName, request, requestDefinition, invocationRun);
+    return Objects.hash(uri, fullyQualifiedName, request, requestDefinition, invocationRun, invocationRunResultProperty);
   }
 
   @Override
@@ -233,6 +265,7 @@ public class MethodTemplate {
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
     sb.append("    requestDefinition: ").append(toIndentedString(requestDefinition)).append("\n");
     sb.append("    invocationRun: ").append(toIndentedString(invocationRun)).append("\n");
+    sb.append("    invocationRunResultProperty: ").append(toIndentedString(invocationRunResultProperty)).append("\n");
     sb.append("}");
     return sb.toString();
   }
