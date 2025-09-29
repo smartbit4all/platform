@@ -195,7 +195,7 @@ public class DynamicRestCallerApiTest {
             .definition(ObjectMappingDefinitionBuilder.create()
                 .constant(null).build()))
         .addResolversItem(new InvocationParameterResolver()
-            .position(5)
+            .position(6)
             .name("body")
             .definition(ObjectMappingDefinitionBuilder
                 .create().constant(ObjectMappingDefinitionBuilder.create()
@@ -217,7 +217,7 @@ public class DynamicRestCallerApiTest {
                     .build())
                 .build()))
         .addResolversItem(new InvocationParameterResolver()
-            .position(6)
+            .position(7)
             .name("params")
             .definition(ObjectMappingDefinitionBuilder.create().addMapping(m -> m
                 .expression("#allParams")).build()));
@@ -225,7 +225,7 @@ public class DynamicRestCallerApiTest {
 
   private InvocationRequest createInvocationRequest() {
     return invocationApi.builder(DynamicRestCallerApi.class)
-        .build(api -> api.callDynamicRest(null, null, null, null, null, null,
+        .build(api -> api.callDynamicRest(null, null, null, null, null, null, null,
             Invocations.mapOf(new HashMap<>(), Object.class)));
   }
 
@@ -233,7 +233,7 @@ public class DynamicRestCallerApiTest {
   void test1() {
     ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(TEST1_CONNECTION_NAME, TEST1_PATH, TEST1_METHOD, null,
-            null, null, null);
+            null, null, null, null);
     assertNotNull(responseEntity);
     assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();
@@ -245,7 +245,7 @@ public class DynamicRestCallerApiTest {
         .addMapping(b -> b.fromPath(List.of("Accept")).to("Accept")).build();
     ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(TEST2_CONNECTION_NAME, null, TEST2_METHOD, null,
-            headerDef, null, TEST2_PARAMS);
+            headerDef, null, null, TEST2_PARAMS);
     assertNotNull(responseEntity);
     assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();
@@ -260,7 +260,7 @@ public class DynamicRestCallerApiTest {
     ResponseEntityObject responseEntity =
         dynamicRestCallerApi.callDynamicRest(RESTFUL_CONNECTION_NAME, TEST3_PATH, TEST3_METHOD,
             MediaType.APPLICATION_JSON_VALUE,
-            null, bodyDef, TEST3_PARAMS);
+            null, null, bodyDef, TEST3_PARAMS);
     assertNotNull(responseEntity);
     assertTrue(HttpStatus.valueOf(responseEntity.getStatusCodeValue()).is2xxSuccessful());
     Object body = responseEntity.getBody();

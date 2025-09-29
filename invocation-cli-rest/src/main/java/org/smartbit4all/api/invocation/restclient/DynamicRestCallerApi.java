@@ -11,6 +11,7 @@ public interface DynamicRestCallerApi {
       String httpMethodString,
       String contentType,
       ObjectMappingDefinition header,
+      ObjectMappingDefinition queryParams,
       ObjectMappingDefinition body,
       Map<String, Object> params);
 }
