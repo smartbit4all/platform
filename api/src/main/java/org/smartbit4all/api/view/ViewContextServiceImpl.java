@@ -36,7 +36,7 @@ import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.session.SessionManagementApi;
-import org.smartbit4all.api.session.exception.ExpiredSessionException;
+import org.smartbit4all.api.session.exception.InvalidRefreshTokenException;
 import org.smartbit4all.api.session.exception.ViewContextMissigException;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.BeforeClose;
@@ -636,7 +636,8 @@ public class ViewContextServiceImpl implements ViewContextService {
               sessionManagementApi.updateSession(sessionApi.getSessionUri(),
                   s -> s.expiration(null).refreshExpiration(null));
               authenticationService.logout();
-              throw new ExpiredSessionException();
+              // TODO use dedicated SessionExpteion
+              throw new InvalidRefreshTokenException();
             }
 
             if (userAction) {
