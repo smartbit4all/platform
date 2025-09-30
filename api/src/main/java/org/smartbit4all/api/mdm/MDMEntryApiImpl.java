@@ -765,7 +765,7 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
     }
 
     if (ObjectUtils.isEmpty(descriptor.getConstraints())
-        && !ObjectUtils.isEmpty(descriptor.getUniquePropertyPaths())) {
+        && !ObjectUtils.isEmpty(descriptor.getUniquePropertyPaths()) && log.isWarnEnabled()) {
       log.warn(
           "Constraints and uniquePropertyPaths defined in the [{}] entry descriptor. The uniqueness will be calculated by the constraints property only.",
           descriptor.getName());
