@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,14 +19,22 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.core.io.utility.IndexedMultipartStore;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileIOTest {
 
@@ -274,4 +286,211 @@ public class FileIOTest {
     return allFiles;
   }
 
+
+  // ---------- helpers ----------
+
+  private static BinaryData bd(byte[] bytes) {
+    return new BinaryData(bytes);
+  }
+
+  private static byte[] bytes(String s) {
+    return s.getBytes(StandardCharsets.UTF_8);
+  }
+
+  private static byte[] readAll(BinaryData bd) throws Exception {
+    try (InputStream in = bd.inputStream2()) {
+      return in.readAllBytes(); // Java 9+
+    }
+  }
+
+  // ---------- tests ----------
+
+  @Test
+  void createInitializesHeaderAndAppendOffset() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath()
+        .resolve("createInitializesHeaderAndAppendOffset.bin").toFile();
+    int slots = 8;
+
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, slots)) {
+      assertEquals(slots, store.slots());
+      long header = slots * 16L;
+      assertEquals(header, store.indexRegionSize());
+      assertEquals(header, store.nextAppendOffset());
+    }
+
+    assertTrue(f.exists());
+    assertTrue(f.length() >= slots * 16L);
+  }
+
+  @Test
+  void writeAndReadSingleSegment() throws Exception {
+    File f =
+        TestFileUtil.testFsRootFolder().toPath().resolve("writeAndReadSingleSegment.bin").toFile();
+
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 4)) {
+      byte[] payload = bytes("hello");
+      long start = store.writeAt(1, bd(payload));
+      assertTrue(start >= store.indexRegionSize());
+
+      BinaryData got = store.readAt(1);
+      assertNotNull(got);
+      assertArrayEquals(payload, readAll(got));
+    }
+  }
+
+  @Test
+  void unsetEntryReturnsNull() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath().resolve("unsetEntryReturnsNull.bin").toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 3)) {
+      assertNull(store.readAt(0));
+      assertNull(store.readAt(2));
+    }
+  }
+
+  @Test
+  void persistenceAcrossReopen() throws Exception {
+    File f =
+        TestFileUtil.testFsRootFolder().toPath().resolve("persistenceAcrossReopen.bin").toFile();
+    byte[] a = bytes("A");
+    byte[] b = bytes("BEE");
+
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 5)) {
+      store.writeAt(0, bd(a));
+      store.writeAt(4, bd(b));
+    }
+
+    try (IndexedMultipartStore store = IndexedMultipartStore.open(f, 5)) {
+      BinaryData r0 = store.readAt(0);
+      BinaryData r4 = store.readAt(4);
+
+      assertNotNull(r0);
+      assertNotNull(r4);
+      assertNull(store.readAt(1));
+
+      assertArrayEquals(a, readAll(r0));
+      assertArrayEquals(b, readAll(r4));
+      assertEquals(5 * 16L, store.indexRegionSize());
+    }
+  }
+
+  @Test
+  void presenceMapReflectsWrittenEntries() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath()
+        .resolve("presenceMapReflectsWrittenEntries.bin").toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 6)) {
+      store.writeAt(1, bd(new byte[] {1}));
+      store.writeAt(3, bd(new byte[] {3, 3, 3}));
+      store.writeAt(5, bd(new byte[] {5}));
+
+      BitSet bs = store.presenceMap();
+      assertFalse(bs.get(0));
+      assertTrue(bs.get(1));
+      assertFalse(bs.get(2));
+      assertTrue(bs.get(3));
+      assertFalse(bs.get(4));
+      assertTrue(bs.get(5));
+    }
+  }
+
+  @Test
+  void overwriteAppendsAndUpdatesIndex() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath().resolve("overwriteAppendsAndUpdatesIndex.bin")
+        .toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 2)) {
+      long afterHeader = store.nextAppendOffset();
+      long firstStart = store.writeAt(0, bd(new byte[] {1, 2, 3}));
+      long afterFirst = store.nextAppendOffset();
+
+      long secondStart = store.writeAt(0, bd(new byte[] {9, 9})); // overwrite same index -> append
+      long afterSecond = store.nextAppendOffset();
+
+      assertEquals(afterHeader, firstStart);
+      assertTrue(afterFirst > firstStart);
+      assertEquals(afterFirst, secondStart);
+
+      // Index should now point to the latest (2-byte) payload
+      BinaryData now = store.readAt(0);
+      assertArrayEquals(new byte[] {9, 9}, readAll(now));
+
+      // File contains both payloads back-to-back (header excluded)
+      byte[] raw = Files.asByteSource(f).read();
+      int header = (int) store.indexRegionSize();
+      byte[] concat = Arrays.copyOfRange(raw, header, raw.length);
+      assertArrayEquals(new byte[] {1, 2, 3, 9, 9}, concat);
+      assertTrue(afterSecond > afterFirst);
+    }
+  }
+
+  @Test
+  void writeMultipartAndReadMultipartSequentially() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath()
+        .resolve("writeMultipartAndReadMultipartSequentially.bin").toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 10)) {
+      int startIdx = 4;
+      byte[] d1 = bytes("foo");
+      byte[] d2 = bytes("barbaz");
+      byte[] d3 = bytes("Q");
+
+      store.writeMultipart(startIdx, bd(d1), bd(d2), bd(d3));
+
+      // Direct reads
+      assertArrayEquals(d1, readAll(store.readAt(4)));
+      assertArrayEquals(d2, readAll(store.readAt(5)));
+      assertArrayEquals(d3, readAll(store.readAt(6)));
+
+      // Batch read
+      List<BinaryData> parts = store.readMultipart(startIdx, 3);
+      assertEquals(3, parts.size());
+      assertArrayEquals(d1, readAll(parts.get(0)));
+      assertArrayEquals(d2, readAll(parts.get(1)));
+      assertArrayEquals(d3, readAll(parts.get(2)));
+    }
+  }
+
+  @Test
+  void readMultipartIncludesNullsForUnsetSlots() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath()
+        .resolve("readMultipartIncludesNullsForUnsetSlots.bin").toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 5)) {
+      store.writeAt(1, bd(new byte[] {1}));
+      store.writeAt(3, bd(new byte[] {3}));
+
+      List<BinaryData> parts = store.readMultipart(0, 5);
+      assertEquals(5, parts.size());
+      assertNull(parts.get(0));
+      assertNotNull(parts.get(1));
+      assertNull(parts.get(2));
+      assertNotNull(parts.get(3));
+      assertNull(parts.get(4));
+    }
+  }
+
+  @Test
+  void boundsChecks() throws Exception {
+    File f = TestFileUtil.testFsRootFolder().toPath().resolve("store.bin").toFile();
+    try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 2)) {
+      assertThrows(IndexOutOfBoundsException.class, () -> store.writeAt(-1, bd(new byte[1])));
+      assertThrows(IndexOutOfBoundsException.class, () -> store.writeAt(2, bd(new byte[1])));
+      assertThrows(IndexOutOfBoundsException.class, () -> store.readAt(2));
+    }
+  }
+
+  @Nested
+  class LargerPayloads {
+    @Test
+    void writeAndReadLargerPayload() throws Exception {
+      File f = TestFileUtil.testFsRootFolder().toPath().resolve("writeAndReadLargerPayload.bin")
+          .toFile();
+      byte[] big = new byte[128 * 1024]; // 128 KiB
+      for (int i = 0; i < big.length; i++)
+        big[i] = (byte) (i & 0xFF);
+
+      try (IndexedMultipartStore store = IndexedMultipartStore.create(f, 3)) {
+        store.writeAt(2, bd(big));
+        BinaryData got = store.readAt(2);
+        assertNotNull(got);
+        assertArrayEquals(big, readAll(got));
+      }
+    }
+  }
 }
