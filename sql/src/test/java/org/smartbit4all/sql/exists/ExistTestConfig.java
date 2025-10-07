@@ -16,6 +16,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 
 
@@ -28,6 +30,11 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
     TestFSConfig.class
 })
 public class ExistTestConfig {
+
+  @Bean
+  public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
+  }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)
   public SQLDBParameter h2Parameter() {
