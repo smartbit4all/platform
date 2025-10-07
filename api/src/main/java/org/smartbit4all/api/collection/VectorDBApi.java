@@ -25,9 +25,6 @@ public interface VectorDBApi extends PrimaryApi<VectorDBContributionApi> {
     }
   }
 
-  // static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
-  // static final String VECTOR_DB_TYPE_OPENSEARCH = "opensearch";
-
   String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value);
 
