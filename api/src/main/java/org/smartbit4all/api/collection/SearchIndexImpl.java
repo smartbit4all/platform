@@ -1,5 +1,8 @@
 package org.smartbit4all.api.collection;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static org.smartbit4all.core.utility.StringConstant.joinDot;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.PathProcessor;
+import org.smartbit4all.core.utility.LoggingUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.TriFunction;
 import org.smartbit4all.domain.data.DataColumn;
@@ -51,11 +55,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.event.ApplicationStartedEvent;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.ObjectUtils;
-import static org.smartbit4all.core.utility.StringConstant.joinDot;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 /**
  * @author Peter Boros
@@ -119,6 +124,10 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   @Autowired
   protected DefaultComparatorProvider comparatorProvider;
+
+  @Autowired
+  @Lazy
+  protected PlatformTransactionManager transactionManager;
 
   private boolean isComparatorSetExplicitly = false;
 
@@ -219,8 +228,22 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
 
   private TableData<?> executeSearch(QueryInput queryInput, boolean readFromStorage,
       Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
+    if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
+      // no transactionManager or already in transaction
+      return executeSearchInTransaction(queryInput, readFromStorage, objectUris, objectNodes);
+    }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> executeSearchInTransaction(queryInput, readFromStorage, objectUris,
+            objectNodes));
+  }
+
+  private TableData<?> executeSearchInTransaction(QueryInput queryInput, boolean readFromStorage,
+      Stream<URI> objectUris, Stream<ObjectNode> objectNodes) {
 
     objectApi.enableReadCache();
+    boolean removeNeeded = LoggingUtility.putIntoMDC("searchIndex", objectMapping.getName());
+
     long startTimestamp = System.currentTimeMillis();
     try {
       List<SearchIndexFieldCalculator> calculators = new ArrayList<>();
@@ -277,6 +300,9 @@ public class SearchIndexImpl<O> implements SearchIndex<O> {
       return result;
     } finally {
       objectApi.disableReadCache();
+      if (removeNeeded) {
+        LoggingUtility.removeFromMDC("searchIndex");
+      }
       log.debug("Search index {} took {} ms", objectMapping.getName(),
           System.currentTimeMillis() - startTimestamp);
     }

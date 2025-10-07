@@ -46,6 +46,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 
 
@@ -62,6 +64,12 @@ public class ApplyChangeTestConfig {
   @Autowired
   @Lazy
   SQLIdentifierService idService;
+
+
+  @Bean
+  public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
+  }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)
   public SQLDBParameter h2Parameter() {

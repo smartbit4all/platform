@@ -50,7 +50,11 @@ import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * The {@link CrudApi} implementation. It analyzes the incoming query requests to produce a
@@ -81,6 +85,10 @@ public class CrudApiImpl implements CrudApi {
     this.identifierService = identifierService;
     this.objectApi = objectApi;
   }
+
+  @Autowired
+  @Lazy
+  protected PlatformTransactionManager transactionManager;
 
   @Override
   public QueryExecutionPlan prepareQueries(QueryInput... queries) {
@@ -216,7 +224,17 @@ public class CrudApiImpl implements CrudApi {
   }
 
   @Override
-  public QueryOutput executeQuery(QueryInput queryInput) {
+  public final QueryOutput executeQuery(QueryInput queryInput) {
+    if (transactionManager == null || TransactionSynchronizationManager.isSynchronizationActive()) {
+      // no transactionManager or already in transaction
+      return executeQueryInTransaction(queryInput);
+    }
+    TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+    return transaction
+        .execute(status -> executeQueryInTransaction(queryInput));
+  }
+
+  protected QueryOutput executeQueryInTransaction(QueryInput queryInput) {
     QueryExecutionPlan executionPlan = prepareQueries(queryInput);
     QueryResult queryResult = executeQueryPlan(executionPlan);
     List<QueryOutput> results = queryResult.getResults();

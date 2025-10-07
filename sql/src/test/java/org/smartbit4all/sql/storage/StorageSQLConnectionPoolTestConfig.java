@@ -35,8 +35,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class StorageSQLConnectionPoolTestConfig {
 
   @Bean
-  public PlatformTransactionManager transactionManager(DataSource dataSource) {
-    return new JdbcTransactionManager(dataSource);
+  public PlatformTransactionManager transactionManager(DataSource dataSourceH2) {
+    return new JdbcTransactionManager(dataSourceH2);
   }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)

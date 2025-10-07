@@ -228,7 +228,7 @@ public interface CollectionApi {
   StoredSequence sequence(URI scopeObjectUri, String logicalSchema, String name);
 
   /**
-   * Provides a vector collection that refers to a {@link VectorDBContibutionApi} and an
+   * Provides a vector collection that refers to a {@link VectorDBContributionApi} and an
    * {@link EmbeddingContributionApi} named by the two {@link ServiceConnection}.
    * 
    * @param name The name of the collection in the Vector DB.

@@ -7,9 +7,26 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApi;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public interface VectorDBApi extends PrimaryApi<VectorDBContibutionApi> {
+public interface VectorDBApi extends PrimaryApi<VectorDBContributionApi> {
 
-  static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
+  public enum SupportedVectorDBType {
+    QDRANT("qdrant"),
+
+    OPENSEARCH("opensearch");
+
+    private String apiName;
+
+    SupportedVectorDBType(String apiName) {
+      this.apiName = apiName;
+    }
+
+    public String getApiName() {
+      return this.apiName;
+    }
+  }
+
+  // static final String VECTOR_DB_TYPE_QDRANT = "qdrant";
+  // static final String VECTOR_DB_TYPE_OPENSEARCH = "opensearch";
 
   String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value);

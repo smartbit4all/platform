@@ -30,6 +30,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
 @Import({PlatformApiConfig.class,
@@ -39,6 +41,12 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
     TestmodelEntityConfig.class,
     TestFSConfig.class})
 public class SearchIndexReferenceTestConfig {
+
+
+  @Bean
+  public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
+  }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)
   public SQLDBParameter h2Parameter() {
