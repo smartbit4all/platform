@@ -219,9 +219,13 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
                   savedUriByOriginal)
                       .collect(toList()));
         } else {
-          results.add(objectNode.getResultUri());
-          if (objectNode.getObjectUri() != null) {
-            savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+          boolean savedAndOriginalEquals =
+              Objects.equals(objectNode.getObjectUri(), objectNode.getResultUri());
+          if (!savedAndOriginalEquals) {
+            results.add(objectNode.getResultUri());
+            if (objectNode.getObjectUri() != null) {
+              savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+            }
           }
         }
       }
@@ -431,13 +435,22 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   private final Stream<URI> getResultsUrisBySelfContainedList(ObjectNode objectNode, String list,
       Map<URI, URI> originalByResultUri) {
-    if (objectNode.getObjectUri() != null) {
+    boolean savedAndOriginalEquals =
+        Objects.equals(objectNode.getObjectUri(), objectNode.getResultUri());
+
+    if (objectNode.getObjectUri() != null && !savedAndOriginalEquals) {
       originalByResultUri.put(objectNode.getObjectUri(), objectNode.getResultUri());
     }
-    return Stream.concat(Stream.of(objectNode.getResultUri()),
-        objectNode.list(list).stream().filter(ref -> ref.isLoaded())
-            .flatMap(
-                ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri)));
+    if (savedAndOriginalEquals) {
+      return objectNode.list(list).stream().filter(ref -> ref.isLoaded())
+          .flatMap(
+              ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri));
+    } else {
+      return Stream.concat(Stream.of(objectNode.getResultUri()),
+          objectNode.list(list).stream().filter(ref -> ref.isLoaded())
+              .flatMap(
+                  ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri)));
+    }
   }
 
   @Override
