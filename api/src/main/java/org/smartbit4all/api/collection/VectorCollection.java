@@ -7,7 +7,7 @@ import org.smartbit4all.api.collection.bean.VectorSearchResultItem;
 
 /**
  * This collection is a vector db collection that provides an api based on the
- * {@link VectorDBContibutionApi} implementations. It requires also the {@link EmbeddingApi} to
+ * {@link VectorDBContributionApi} implementations. It requires also the {@link EmbeddingApi} to
  * create vector from the object that are stored in.
  * 
  * @author Peter Boros
