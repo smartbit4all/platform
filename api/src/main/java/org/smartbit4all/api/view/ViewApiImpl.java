@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 public class ViewApiImpl implements ViewApi {
 
@@ -130,7 +130,8 @@ public class ViewApiImpl implements ViewApi {
           view.module(parentView.getModule());
         }
 
-        if (context.getCurrentRequest() != null && view.getModule() == null) {
+        if (context.getCurrentRequest() != null && view.getModule() == null
+            && context.getCurrentRequest().getViewUuid() != null) {
           View requestView = getView(context.getCurrentRequest().getViewUuid());
 
           view.module(requestView.getModule());
