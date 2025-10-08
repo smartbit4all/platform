@@ -232,6 +232,13 @@ components:
           type: string
         value:
           type: object
+    Tuple:
+      type: object
+      properties:
+        left:
+          type: object
+        right:
+          type: object
     ListEntry:
       type: object
       properties:
