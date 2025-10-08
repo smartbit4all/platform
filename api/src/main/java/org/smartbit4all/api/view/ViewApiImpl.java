@@ -129,6 +129,12 @@ public class ViewApiImpl implements ViewApi {
         if (parentView.getModule() != null && view.getModule() == null) {
           view.module(parentView.getModule());
         }
+
+        if (context.getCurrentRequest() != null && view.getModule() == null) {
+          View requestView = getView(context.getCurrentRequest().getViewUuid());
+
+          view.module(requestView.getModule());
+        }
       }
       List<View> children = getChildrenOfParentView(context, parentView);
       if (children.isEmpty()) {

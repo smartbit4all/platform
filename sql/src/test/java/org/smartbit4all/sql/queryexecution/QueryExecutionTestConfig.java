@@ -23,6 +23,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
  * Here we set up two H2 databases. Both databases use the exists_schema.sql and exists_data_01.sql
@@ -42,6 +44,11 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
     TestFSConfig.class
 })
 public class QueryExecutionTestConfig {
+
+  @Bean
+  public PlatformTransactionManager transactionManager(DataSource dataSource) {
+    return new JdbcTransactionManager(dataSource);
+  }
 
   @Bean(name = SQLDBParameterBase.DEFAULT)
   public SQLDBParameter h2Parameter() {

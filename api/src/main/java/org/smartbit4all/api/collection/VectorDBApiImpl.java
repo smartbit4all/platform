@@ -10,11 +10,11 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi>
+public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContributionApi>
     implements VectorDBApi {
 
   public VectorDBApiImpl() {
-    super(VectorDBContibutionApi.class);
+    super(VectorDBContributionApi.class);
   }
 
   private static final Logger log = LoggerFactory.getLogger(VectorDBApiImpl.class);
@@ -23,7 +23,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   public String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     return contributionApi.addPoint(dbConnection, collectionName,
         value);
@@ -33,7 +33,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   public List<String> addPoints(ServiceConnection dbConnection, String collectionName,
       List<VectorValue> values) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     return contributionApi.addPoints(dbConnection, collectionName,
         values);
@@ -42,7 +42,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   @Override
   public void deletePoint(ServiceConnection dbConnection, String collectionName, String id) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     contributionApi.deletePoint(dbConnection, collectionName, id);
   }
@@ -51,7 +51,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   public void deletePoints(ServiceConnection dbConnection, String collectionName,
       List<String> ids) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     contributionApi.deletePoints(dbConnection, collectionName, ids);
   }
@@ -59,7 +59,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   @Override
   public void createCollection(ServiceConnection dbConnection, String name) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     contributionApi.createCollection(dbConnection, name);
   }
@@ -67,7 +67,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   @Override
   public void deleteCollection(ServiceConnection dbConnection, String name) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     contributionApi.deleteCollection(dbConnection, name);
   }
@@ -75,7 +75,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   @Override
   public boolean collectionExists(ServiceConnection dbConnection, String name) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     return contributionApi.collectionExists(dbConnection, name);
   }
@@ -84,7 +84,7 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContibutionApi
   public List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
       VectorValue searchVector, int limit, Map<String, Object> parameters) {
     Objects.requireNonNull(dbConnection);
-    VectorDBContibutionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
     Objects.requireNonNull(contributionApi);
     return contributionApi.search(dbConnection, collectionName,
         searchVector, limit, parameters);

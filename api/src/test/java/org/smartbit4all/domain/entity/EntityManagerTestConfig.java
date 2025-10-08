@@ -22,10 +22,12 @@ import org.smartbit4all.domain.security.SecurityEntityConfiguration;
 import org.smartbit4all.domain.service.entity.ConfigEntitySource;
 import org.smartbit4all.domain.service.entity.EntitySource;
 import org.smartbit4all.storage.fs.StorageFS;
+import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.TransactionManager;
 
 @Configuration
 
@@ -42,6 +44,11 @@ public class EntityManagerTestConfig {
   @Bean
   public ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
     return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
+  }
+
+  @Bean
+  public TransactionManager transactionManager() {
+    return new StorageTransactionManagerFS();
   }
 
 }

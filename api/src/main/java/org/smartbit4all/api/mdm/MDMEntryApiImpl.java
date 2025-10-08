@@ -66,6 +66,7 @@ import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
+import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -218,9 +219,13 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
                   savedUriByOriginal)
                       .collect(toList()));
         } else {
-          results.add(objectNode.getResultUri());
-          if (objectNode.getObjectUri() != null) {
-            savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+          boolean savedAndOriginalEquals =
+              Objects.equals(objectNode.getObjectUri(), objectNode.getResultUri());
+          if (!savedAndOriginalEquals) {
+            results.add(objectNode.getResultUri());
+            if (objectNode.getObjectUri() != null) {
+              savedUriByOriginal.put(objectNode.getObjectUri(), objectNode.getResultUri());
+            }
           }
         }
       }
@@ -231,7 +236,19 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
       }
 
       Map<URI, URI> savedUrisByLatest =
-          results.stream().collect(toMap(u -> objectApi.getLatestUri(u), u -> u));
+          results.stream().collect(toMap(u -> objectApi.getLatestUri(u), u -> u, (u1, u2) -> {
+            Long uv1 = ObjectStorageImpl.getUriVersion(u1);
+            Long uv2 = ObjectStorageImpl.getUriVersion(u2);
+            if (uv1 == null) {
+              return u2;
+            } else if (uv2 == null) {
+              return u1;
+            } else if (uv1 > uv2) {
+              return u1;
+            } else {
+              return u2;
+            }
+          }));
 
       // Merge the existing ones
       List<URI> merged = l.stream().map(u -> {
@@ -418,13 +435,22 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
 
   private final Stream<URI> getResultsUrisBySelfContainedList(ObjectNode objectNode, String list,
       Map<URI, URI> originalByResultUri) {
-    if (objectNode.getObjectUri() != null) {
+    boolean savedAndOriginalEquals =
+        Objects.equals(objectNode.getObjectUri(), objectNode.getResultUri());
+
+    if (objectNode.getObjectUri() != null && !savedAndOriginalEquals) {
       originalByResultUri.put(objectNode.getObjectUri(), objectNode.getResultUri());
     }
-    return Stream.concat(Stream.of(objectNode.getResultUri()),
-        objectNode.list(list).stream().filter(ref -> ref.isLoaded())
-            .flatMap(
-                ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri)));
+    if (savedAndOriginalEquals) {
+      return objectNode.list(list).stream().filter(ref -> ref.isLoaded())
+          .flatMap(
+              ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri));
+    } else {
+      return Stream.concat(Stream.of(objectNode.getResultUri()),
+          objectNode.list(list).stream().filter(ref -> ref.isLoaded())
+              .flatMap(
+                  ref -> getResultsUrisBySelfContainedList(ref.get(), list, originalByResultUri)));
+    }
   }
 
   @Override

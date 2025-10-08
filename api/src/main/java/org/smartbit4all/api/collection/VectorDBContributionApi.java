@@ -7,7 +7,7 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.contribution.ContributionApi;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
 
-public interface VectorDBContibutionApi extends ContributionApi {
+public interface VectorDBContributionApi extends ContributionApi {
 
   String addPoint(ServiceConnection dbConnection, String collectionName,
       VectorValue value);

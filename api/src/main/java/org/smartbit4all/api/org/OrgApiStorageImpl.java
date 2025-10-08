@@ -397,7 +397,7 @@ public class OrgApiStorageImpl implements OrgApi {
   private <T> T readSettingsReference(String referenceName, Class<T> clazz) {
 
     URI uri = getOrCreateObjectReferenceURI(referenceName, clazz);
-    return storage.get().read(uri, clazz);
+    return objectApi.load(uri).getObject(clazz);
   }
 
   private <T> URI getOrCreateObjectReferenceURI(String referenceName, Class<T> clazz) {
@@ -424,9 +424,19 @@ public class OrgApiStorageImpl implements OrgApi {
     if (allGroups == null) {
       ObjectMap groupObjectMap = loadObjectMap(GROUP_OBJECTMAP_REFERENCE);
       Collection<URI> values = groupObjectMap.getUris().values();
-      allGroups = storage.get().read(new ArrayList<>(values), Group.class);
+      allGroups = loadNonNulls(values, Group.class);
     }
     return allGroups;
+  }
+
+  /**
+   * Storeage.read(uris,clazz) filtered out null objects.
+   */
+  private <T> List<T> loadNonNulls(Collection<URI> values, Class<T> clazz) {
+    return objectApi.loadBatch(new ArrayList<>(values)).stream()
+        .map(n -> n.getObject(clazz))
+        .filter(Objects::nonNull)
+        .collect(toList());
   }
 
   @Override
@@ -451,7 +461,7 @@ public class OrgApiStorageImpl implements OrgApi {
 
   private List<User> getUsersFromObjectMap(String objectMapName) {
     Collection<URI> values = getUserUrisFromObjectMap(objectMapName);
-    return storage.get().read(new ArrayList<>(values), User.class);
+    return loadNonNulls(values, User.class);
   }
 
   private Collection<URI> getUserUrisFromObjectMap(String objectMapName) {
@@ -522,7 +532,7 @@ public class OrgApiStorageImpl implements OrgApi {
         users.addAll(usersOfGroup.getUsers());
       }
     }
-    return storage.get().read(new ArrayList<>(users), User.class);
+    return loadNonNulls(users, User.class);
   }
 
   @Override
@@ -670,12 +680,13 @@ public class OrgApiStorageImpl implements OrgApi {
 
                 if (objectApi.equalsIgnoreVersion(groupsOfUser.getUserUri(), userUri)) {
                   List<Group> directGroups =
-                      storage.get().read(groupsOfUser.getGroups(), Group.class);
+                      loadNonNulls(groupsOfUser.getGroups(), Group.class);
                   for (Group group : directGroups) {
                     groups.add(group);
                     if (!directGroupsOnly) {
                       groups
-                          .addAll(storage.get().read(getAllSubgroups(group.getUri()), Group.class));
+                          .addAll(
+                              loadNonNulls(getAllSubgroups(group.getUri()), Group.class));
                     }
                   }
                 }
@@ -692,38 +703,38 @@ public class OrgApiStorageImpl implements OrgApi {
 
   @Override
   public User getUser(URI userUri) {
-    return storage.get().read(userUri, User.class);
+    return objectApi.load(userUri).getObject(User.class);
   }
 
   @Override
   public List<User> getUsers(List<URI> userUris) {
-    return storage.get().read(new ArrayList<>(userUris), User.class);
+    return loadNonNulls(userUris, User.class);
   }
 
   public List<Group> getGroups(List<URI> groupUris) {
-    return storage.get().read(new ArrayList<>(groupUris), Group.class);
+    return loadNonNulls(groupUris, Group.class);
   }
 
   @Override
   public Group getGroup(URI groupUri) {
-    return storage.get().read(groupUri, Group.class);
+    return objectApi.load(groupUri).getObject(Group.class);
   }
 
   @Override
   public List<Group> getSubGroups(URI groupUri) {
-    return storage.get().read(getAllSubgroups(groupUri), Group.class);
+    return getGroups(getAllSubgroups(groupUri));
   }
 
   @Override
   public List<Group> getParentGroups(URI groupUri) {
-    return storage.get().read(getAllParentGroups(groupUri), Group.class);
+    return getGroups(getAllParentGroups(groupUri));
   }
 
   @Override
   public List<Group> getConnectingSubGroups(URI groupUri) {
-    Group group = storage.get().read(groupUri, Group.class);
+    Group group = getGroup(groupUri);
     List<URI> children = group.getChildren();
-    return storage.get().read(children, Group.class);
+    return getGroups(children);
   }
 
   /**
@@ -734,7 +745,7 @@ public class OrgApiStorageImpl implements OrgApi {
    */
   private List<URI> getAllSubgroups(URI groupUri) {
     Set<URI> subgroups = new HashSet<>();
-    Group group = storage.get().read(groupUri, Group.class);
+    Group group = getGroup(groupUri);
     List<URI> children = group.getChildren();
     subgroups.addAll(children);
     for (URI uri : children) {
@@ -1098,7 +1109,7 @@ public class OrgApiStorageImpl implements OrgApi {
     if (userUri == null) {
       return null;
     }
-    return storage.get().exists(userUri) ? storage.get().read(userUri, User.class) : null;
+    return objectApi.exists(userUri) ? objectApi.read(userUri, User.class) : null;
   }
 
   @Override
@@ -1112,7 +1123,7 @@ public class OrgApiStorageImpl implements OrgApi {
       if (userUri == null) {
         return null;
       }
-      return storage.get().exists(userUri) ? storage.get().read(userUri, User.class) : null;
+      return objectApi.exists(userUri) ? objectApi.read(userUri, User.class) : null;
     } catch (Exception e) {
       log.warn("The same username present with different cases.", e);
       return getUserByUsername(username);
@@ -1131,7 +1142,7 @@ public class OrgApiStorageImpl implements OrgApi {
           if (groupUri == null) {
             return GROUP_NOT_FOUND;
           }
-          return storage.get().exists(groupUri) ? storage.get().read(groupUri, Group.class)
+          return objectApi.exists(groupUri) ? objectApi.read(groupUri, Group.class)
               : GROUP_NOT_FOUND;
         }
 
