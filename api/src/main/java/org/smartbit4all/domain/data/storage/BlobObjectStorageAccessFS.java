@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.binarydata.BinaryData;
-import org.smartbit4all.core.io.utility.FileIO;
+import org.smartbit4all.storage.fs.StorageContentHandler;
 import org.springframework.beans.factory.annotation.Value;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -84,9 +84,9 @@ public class BlobObjectStorageAccessFS implements BlobObjectStorageAccessApi {
   }
 
   @Override
-  public void writeVersion(File newFile, URI versionUri,
+  public void writeVersion(StorageContentHandler handler, URI versionUri,
       BinaryData... contents) {
-    FileIO.writeMultipart(newFile, contents);
+    handler.writeMultipart(contents);
     if (versionContentCache != null) {
       versionContentCache.put(versionUri, Arrays.asList(contents));
       URI uriWithoutVersion = ObjectStorageImpl.getUriWithoutVersion(versionUri);
@@ -101,11 +101,11 @@ public class BlobObjectStorageAccessFS implements BlobObjectStorageAccessApi {
   }
 
   @Override
-  public List<BinaryData> readVersion(File file, URI versionUri) {
+  public List<BinaryData> readVersion(StorageContentHandler handler, URI versionUri) {
     if (versionContentCache != null) {
       try {
         List<BinaryData> list =
-            versionContentCache.get(versionUri, () -> FileIO.readMultipart(file)).stream()
+            versionContentCache.get(versionUri, () -> handler.readMultipart()).stream()
                 .map(bd -> {
                   bd.loadIntoMemory(binaryDataInMemoryLimit);
                   return bd;
@@ -124,7 +124,7 @@ public class BlobObjectStorageAccessFS implements BlobObjectStorageAccessApi {
         log.debug("Unable to load to cache", e);
       }
     }
-    return FileIO.readMultipart(file);
+    return handler.readMultipart();
   }
 
   @Override

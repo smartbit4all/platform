@@ -439,7 +439,7 @@ public class FileIOTest {
       assertArrayEquals(d3, readAll(store.readAt(6)));
 
       // Batch read
-      List<BinaryData> parts = store.readMultipart(startIdx, 3);
+      List<BinaryData> parts = store.readBatch(startIdx, 3);
       assertEquals(3, parts.size());
       assertArrayEquals(d1, readAll(parts.get(0)));
       assertArrayEquals(d2, readAll(parts.get(1)));
@@ -455,7 +455,7 @@ public class FileIOTest {
       store.writeAt(1, bd(new byte[] {1}));
       store.writeAt(3, bd(new byte[] {3}));
 
-      List<BinaryData> parts = store.readMultipart(0, 5);
+      List<BinaryData> parts = store.readBatch(0, 5);
       assertEquals(5, parts.size());
       assertNull(parts.get(0));
       assertNotNull(parts.get(1));

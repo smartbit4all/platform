@@ -529,6 +529,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     storageObject.setObjectAsMapInner(object);
     storageObject.setVersion(objectVersion);
     storageObject.setPhysicalObjectId(physicalId);
+    storageObject
+        .setStrategy(objectDefinition.getPreferredStrategy() == null ? storage.getStrategy()
+            : objectDefinition.getPreferredStrategy());
     return storageObject;
   }
 
@@ -556,6 +559,8 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     }
     storageObject.setVersion(data.getCurrentVersion());
     storageObject.setPhysicalObjectId(physicalId);
+    storageObject.setStrategy(data.getStrategy());
+    storageObject.setIndexSize(data.getIndexSize());
     return storageObject;
   }
 

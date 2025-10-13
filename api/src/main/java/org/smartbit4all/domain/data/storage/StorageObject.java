@@ -16,6 +16,7 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
@@ -201,6 +202,17 @@ public final class StorageObject<T> {
   private OffsetDateTime createdAt = null;
 
   /**
+   * The strategy can define the different strategies for the storage implementations. It can be
+   * different for SQL or FS implementation.
+   */
+  private StorageStrategy strategy = StorageStrategy.CLASSIC;
+
+  /**
+   * Index size for the {@link StorageStrategy#INDEXED} operation mode.
+   */
+  private Integer indexSize;
+
+  /**
    * The Storage cann't be created directly! Use the Storage that would manage this object to have a
    * new one by {@link Storage#instanceOf(Class)} or load one by
    * {@link Storage#load(URI, Class, StorageLoadOption...)}
@@ -339,6 +351,8 @@ public final class StorageObject<T> {
     result.setVersion(version);
     result.setLastModified(lastModified);
     result.setPhysicalObjectId(physicalObjectId);
+    result.setStrategy(strategy);
+    result.setIndexSize(indexSize);
     // Deep copy of the relations
     result.collections =
         collections != null
@@ -690,6 +704,22 @@ public final class StorageObject<T> {
 
   public final void setCreatedAt(OffsetDateTime createdAt) {
     this.createdAt = createdAt;
+  }
+
+  public StorageStrategy getStrategy() {
+    return strategy;
+  }
+
+  public void setStrategy(StorageStrategy strategy) {
+    this.strategy = strategy;
+  }
+
+  public Integer getIndexSize() {
+    return indexSize;
+  }
+
+  public void setIndexSize(Integer indexSize) {
+    this.indexSize = indexSize;
   }
 
 }

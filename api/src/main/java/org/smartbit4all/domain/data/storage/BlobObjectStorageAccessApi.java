@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URI;
 import java.util.List;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.storage.fs.StorageContentHandler;
 
 /**
  * This interface encapsulate the blob based (binary save format) access api for the
@@ -19,9 +20,9 @@ import org.smartbit4all.api.binarydata.BinaryData;
  */
 public interface BlobObjectStorageAccessApi {
 
-  void writeVersion(File newFile, URI versionUri, BinaryData... contents);
+  void writeVersion(StorageContentHandler handler, URI versionUri, BinaryData... contents);
 
-  List<BinaryData> readVersion(File file, URI versionUri);
+  List<BinaryData> readVersion(StorageContentHandler handler, URI versionUri);
 
   boolean exists(File objectFile, URI latestUri);
 

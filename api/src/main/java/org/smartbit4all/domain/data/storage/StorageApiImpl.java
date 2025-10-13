@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApiStorageImpl;
 import org.smartbit4all.api.collection.StoredSequence;
 import org.smartbit4all.api.collection.bean.StoredMapData;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.api.value.ValueSetApiImpl;
 import org.smartbit4all.api.value.ValueUris;
 import org.smartbit4all.api.value.bean.ValueSetData;
@@ -69,6 +70,9 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
   @Value("${storage.useSecondInUri:false}")
   private boolean useSecondInUri = false;
 
+  @Value("${storage.strategy:CLASSIC}")
+  private StorageStrategy defaultStrategy = StorageStrategy.CLASSIC;
+
   @Override
   public void afterPropertiesSet() throws Exception {
     if (storages != null) {
@@ -77,6 +81,9 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
         storagesByScheme.put(storage.getScheme(), storage);
         if (storage.getUseSecondInUri() == null) {
           storage.setUseSecondInUri(useSecondInUri);
+        }
+        if (storage.getStrategy() == null) {
+          storage.setStrategy(defaultStrategy);
         }
       }
     }
@@ -130,6 +137,7 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
           storage = new Storage(scheme, objectDefinitionApi, defaultObjectStorage);
           schemaAlias(storage).ifPresent(storage::setSchemeForAlias);
           storage.setUseSecondInUri(useSecondInUri);
+          storage.setStrategy(defaultStrategy);
           storagesByScheme.put(scheme, storage);
         }
       } finally {

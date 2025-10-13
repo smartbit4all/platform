@@ -1,6 +1,5 @@
 package org.smartbit4all.storage.fs;
 
-import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +30,7 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
 import org.smartbit4all.api.storage.bean.StorageObjectRelationData;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.api.storage.bean.TransactionData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.io.utility.FileIO.FolderInfo;
@@ -59,9 +59,11 @@ import org.smartbit4all.domain.data.storage.StorageTransaction;
 import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionalStorage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.fasterxml.jackson.core.JsonParseException;
+import static java.util.stream.Collectors.toList;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -107,6 +109,11 @@ public class StorageFS extends ObjectStorageImpl {
   private static final String SO_TRANSACTIONFILEEXTENSION = ".t";
 
   /**
+   * The object versions are stored in this indexed file.
+   */
+  private static final String SO_INDEXEDVERSIONEXTENSION = ".iv";
+
+  /**
    * The transaction manager (there must be only one in one application) that is configured. Used to
    * identify if there is an active transaction initiated on the current {@link Thread}. The lock of
    * the objects are collected in the {@link #transactionManager} and at the end of the transaction
@@ -125,6 +132,9 @@ public class StorageFS extends ObjectStorageImpl {
   @Autowired
   @Lazy
   private StorageApi self;
+
+  @Value("${storage.fs.indexsize:256}")
+  private int indexSize = 256;
 
   /**
    * @param rootFolder The root folder, in which the storage place the files.
@@ -249,9 +259,19 @@ public class StorageFS extends ObjectStorageImpl {
    * @param serialNo
    * @return
    */
-  private File getObjectVersionFile(File objectHistoryBasePath, long serialNo) {
-    return new File(objectHistoryBasePath.getPath()
-        + FileIO.constructObjectPathByIndexWithHexaStructure(serialNo));
+  private StorageContentHandler getObjectVersionFile(File objectHistoryBasePath, long serialNo,
+      StorageStrategy strategy, Integer indexSize) {
+    if (strategy == StorageStrategy.INDEXED && indexSize != null) {
+      // The integer part of the division determines the version file path, while the remainder
+      // defines the index within the version file itself.
+      long versionFileNumber = serialNo / indexSize;
+      int indexNr = (int) (serialNo % indexSize);
+      return new StorageContentHandlerIndexed(new File(objectHistoryBasePath.getPath()
+          + FileIO.constructObjectPathByIndexWithHexaStructure(versionFileNumber)
+          + SO_INDEXEDVERSIONEXTENSION), indexNr, indexSize);
+    }
+    return new StorageContentHandlerClassic(new File(objectHistoryBasePath.getPath()
+        + FileIO.constructObjectPathByIndexWithHexaStructure(serialNo)));
   }
 
   /**
@@ -393,6 +413,10 @@ public class StorageFS extends ObjectStorageImpl {
       // data file.
       storageObjectData = new StorageObjectData().uri(object.getUri())
           .className(object.definition().getQualifiedName());
+      storageObjectData.setStrategy(object.getStrategy());
+      if (StorageStrategy.INDEXED.equals(object.getStrategy())) {
+        storageObjectData.setIndexSize(indexSize);
+      }
     }
 
     // The version is updated with the information attached if it's not a modification without
@@ -405,7 +429,7 @@ public class StorageFS extends ObjectStorageImpl {
     if (aspects != null) {
       newVersion.setAspects(aspects);
     }
-    File objectVersionFile = null;
+    StorageContentHandler objectVersionFile = null;
     if (object.getOperation() == StorageObjectOperation.MODIFY_WITHOUT_DATA) {
       // Set the new version data to the current version data there will be no new data version.
       if (currentVersion != null) {
@@ -418,7 +442,8 @@ public class StorageFS extends ObjectStorageImpl {
               (currentVersion == null || currentVersion.getSerialNoData() == null) ? 0
                   : (currentVersion.getSerialNoData() + 1));
       objectVersionFile =
-          getObjectVersionFile(objectVersionBasePath, newVersion.getSerialNoData());
+          getObjectVersionFile(objectVersionBasePath, newVersion.getSerialNoData(),
+              object.getStrategy(), indexSize);
     }
 
     // Manage the references, load the current references
@@ -500,7 +525,8 @@ public class StorageFS extends ObjectStorageImpl {
           if (oldVersion != null) {
             return object.definition()
                 .fromMap(loadObjectVersion(object.definition(), objectVersionBasePath,
-                    oldVersion.getSerialNoData(), oldVersionUri).getObjectAsMap());
+                    oldVersion.getSerialNoData(), oldVersionUri, object.getStrategy(), indexSize)
+                        .getObjectAsMap());
           }
           return null;
         },
@@ -618,7 +644,8 @@ public class StorageFS extends ObjectStorageImpl {
 
       StorageObjectHistoryEntry loadObjectVersion =
           loadObjectVersion(definition, storageObjectVersionBasePath,
-              versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo));
+              versionDataSerialNo, getUriWithVersion(uriWithoutVersion, versionDataSerialNo),
+              storageObjectData.getStrategy(), storageObjectData.getIndexSize());
 
       // if (loadObjectVersion != null) {
       objectVersion = loadObjectVersion.getVersion();
@@ -627,6 +654,8 @@ public class StorageFS extends ObjectStorageImpl {
       storageObject =
           instanceOf(storage, definition, loadObjectVersion.getObjectAsMap(),
               objectVersion, null);
+      storageObject.setIndexSize(storageObjectData.getIndexSize());
+      storageObject.setStrategy(storageObjectData.getStrategy());
       storageObject.setAspects(objectVersion.getAspects());
       // }
 
@@ -934,10 +963,11 @@ public class StorageFS extends ObjectStorageImpl {
   private <T> StorageObjectHistoryEntry loadObjectVersion(ObjectDefinition<T> definition,
       File historyBasePath,
       long version,
-      URI versionUri) {
-    File objectVersionFile = getObjectVersionFile(
+      URI versionUri, StorageStrategy strategy, Integer objectIndexSize) {
+    StorageContentHandler objectVersionFile = getObjectVersionFile(
         historyBasePath,
-        version);
+        version, strategy,
+        objectIndexSize);
 
     List<BinaryData> multipart = storageAccessApi.readVersion(objectVersionFile, versionUri);
 
@@ -995,7 +1025,7 @@ public class StorageFS extends ObjectStorageImpl {
           public StorageObjectHistoryEntry next() {
             i++;
             return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
-                getUriWithVersion(uri, i));
+                getUriWithVersion(uri, i), objectData.getStrategy(), objectData.getIndexSize());
           }
 
         };
@@ -1040,7 +1070,7 @@ public class StorageFS extends ObjectStorageImpl {
           public StorageObjectHistoryEntry next() {
             i--;
             return loadObjectVersion(definition, getObjectVersionBasePath(uri), i,
-                getUriWithVersion(uri, i));
+                getUriWithVersion(uri, i), objectData.getStrategy(), objectData.getIndexSize());
           }
 
         };

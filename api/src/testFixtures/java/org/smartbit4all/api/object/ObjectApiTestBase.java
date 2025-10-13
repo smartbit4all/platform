@@ -1,13 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
@@ -80,6 +72,14 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ObjectApiTestBase {
 
@@ -1250,5 +1250,19 @@ public class ObjectApiTestBase {
     assertThat(output).contains(
         "Poisoned cache entry: CacheKey[uri=test:/org_smartbit4all_api_sample_bean_SampleCategory");
   }
+
+  @Test
+  void testManyVersionsFromAnObject() {
+    URI objectUri = objectApi.saveAsNew("test",
+        new SampleCategory().name("Root").cost(Long.valueOf(0)));
+
+    for (int i = 0; i < 511; i++) {
+      ObjectNode node = objectApi.loadLatest(objectUri);
+      Long cost = node.getValue(Long.class, SampleCategory.COST);
+      node.setValue(cost++, SampleCategory.COST);
+      objectApi.save(node);
+    }
+  }
+
 
 }

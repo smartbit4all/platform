@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -37,7 +38,9 @@ import jakarta.validation.Valid;
   StorageObjectData.CURRENT_VERSION,
   StorageObjectData.CLASS_NAME,
   StorageObjectData.PENDING_VERSION,
-  StorageObjectData.DELETED
+  StorageObjectData.DELETED,
+  StorageObjectData.STRATEGY,
+  StorageObjectData.INDEX_SIZE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectData {
@@ -55,6 +58,12 @@ public class StorageObjectData {
 
   public static final String DELETED = "deleted";
   private Boolean deleted = false;
+
+  public static final String STRATEGY = "strategy";
+  private StorageStrategy strategy;
+
+  public static final String INDEX_SIZE = "indexSize";
+  private Integer indexSize;
 
   public StorageObjectData() {
   }
@@ -199,6 +208,61 @@ public class StorageObjectData {
     this.deleted = deleted;
   }
 
+  public StorageObjectData strategy(StorageStrategy strategy) {
+    
+    this.strategy = strategy;
+    return this;
+  }
+
+  /**
+   * Get strategy
+   * @return strategy
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public StorageStrategy getStrategy() {
+    return strategy;
+  }
+
+
+  @JsonProperty(STRATEGY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStrategy(StorageStrategy strategy) {
+    this.strategy = strategy;
+  }
+
+  public StorageObjectData indexSize(Integer indexSize) {
+    
+    this.indexSize = indexSize;
+    return this;
+  }
+
+  /**
+   * If the strategy use some indexing then this index size defines its capacity. The semantic of this property depends on the implementation of the strategy. 
+   * @return indexSize
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If the strategy use some indexing then this index size defines its capacity. The semantic of this property depends on the implementation of the strategy. ")
+  @JsonProperty(INDEX_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Integer getIndexSize() {
+    return indexSize;
+  }
+
+
+  @JsonProperty(INDEX_SIZE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIndexSize(Integer indexSize) {
+    this.indexSize = indexSize;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -212,12 +276,14 @@ public class StorageObjectData {
         Objects.equals(this.currentVersion, storageObjectData.currentVersion) &&
         Objects.equals(this.className, storageObjectData.className) &&
         Objects.equals(this.pendingVersion, storageObjectData.pendingVersion) &&
-        Objects.equals(this.deleted, storageObjectData.deleted);
+        Objects.equals(this.deleted, storageObjectData.deleted) &&
+        Objects.equals(this.strategy, storageObjectData.strategy) &&
+        Objects.equals(this.indexSize, storageObjectData.indexSize);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, currentVersion, className, pendingVersion, deleted);
+    return Objects.hash(uri, currentVersion, className, pendingVersion, deleted, strategy, indexSize);
   }
 
   @Override
@@ -229,6 +295,8 @@ public class StorageObjectData {
     sb.append("    className: ").append(toIndentedString(className)).append("\n");
     sb.append("    pendingVersion: ").append(toIndentedString(pendingVersion)).append("\n");
     sb.append("    deleted: ").append(toIndentedString(deleted)).append("\n");
+    sb.append("    strategy: ").append(toIndentedString(strategy)).append("\n");
+    sb.append("    indexSize: ").append(toIndentedString(indexSize)).append("\n");
     sb.append("}");
     return sb.toString();
   }

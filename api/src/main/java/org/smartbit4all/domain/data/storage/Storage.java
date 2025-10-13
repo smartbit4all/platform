@@ -1,6 +1,5 @@
 package org.smartbit4all.domain.data.storage;
 
-import static java.util.stream.Collectors.joining;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -28,11 +27,13 @@ import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectReference;
 import org.smartbit4all.api.storage.bean.StorageSettings;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.StorageObject.VersionPolicy;
+import static java.util.stream.Collectors.joining;
 
 /**
  *
@@ -116,6 +117,14 @@ public final class Storage {
    * {@link #constructUri(ObjectDefinition, UUID, String, LocalDateTime)} function.
    */
   private Boolean useSecondInUri = false;
+
+
+  /**
+   * The strategy can define the different strategies for the storage implementations. It can be
+   * different for SQL or FS implementation. If it is set in the level of storage then it is not
+   * null, so the default values from the {@link StorageApi} is not overriding this value.
+   */
+  private StorageStrategy strategy = null;
 
   /**
    * Construct a new storage that is a logical schema for the storage system.
@@ -224,6 +233,8 @@ public final class Storage {
     if (!objectDefinition.isExplicitUri()) {
       storageObject.setUri(constructUri(objectDefinition, uuid, setName, LocalDateTime.now()));
     }
+    storageObject.setStrategy(objectDefinition.getPreferredStrategy() == null ? strategy
+        : objectDefinition.getPreferredStrategy());
     return storageObject;
   }
 
@@ -238,6 +249,8 @@ public final class Storage {
   public StorageObject create(String className) {
     ObjectDefinition objectDefinition = objectDefinitionApi.definition(className);
     StorageObject storageObject = new StorageObject<>(objectDefinition, this);
+    storageObject.setStrategy(objectDefinition.getPreferredStrategy() == null ? strategy
+        : objectDefinition.getPreferredStrategy());
     // At this point we already know the unique URI that can be used to refer from other objects
     // also.
     return storageObject;
@@ -980,6 +993,14 @@ public final class Storage {
 
   public final void setUseSecondInUri(Boolean useSecondInUri) {
     this.useSecondInUri = useSecondInUri;
+  }
+
+  public void setStrategy(StorageStrategy strategy) {
+    this.strategy = strategy;
+  }
+
+  public StorageStrategy getStrategy() {
+    return strategy;
   }
 
 }

@@ -107,6 +107,20 @@ components:
           description: |
             The deleted flag is set when the given object is deleted. The deletion is always logical so we know that the object
             exists but we also know that it is already inactivated.
+        strategy:
+          description: |
+            The strategy can define the different strategies for the storage implementations. It can be different for SQL or FS implementation.
+          $ref: '#/components/schemas/StorageStrategy'
+        indexSize:
+          description: |
+            If the strategy use some indexing then this index size defines its capacity. The semantic of this property depends on the implementation of the
+            strategy.
+          type: integer
+          format: int32 
+    StorageStrategy:
+      description: |
+        The strategy can define the different strategies for the storage implementations. It can be different for SQL or FS implementation.
+      enum: [CLASSIC, INDEXED]
     StorageObjectRelationData:
       type: object
       description: |

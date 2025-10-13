@@ -14,8 +14,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import static java.util.stream.Collectors.toList;
@@ -155,6 +157,14 @@ public final class ObjectDefinition<T> {
    * The lock for reconstructing the properties map.
    */
   private final Lock lockProperties = new ReentrantLock();
+
+  /**
+   * The strategy can define the different strategies for the storage implementations. It can be
+   * different for SQL or FS implementation. We can define the preferred startegy for a given
+   * object. The {@link BinaryDataObject} is a normal file sor it should be saved in a classic (all
+   * version in separate file) strategy.
+   */
+  private StorageStrategy preferredStrategy = null;
 
   public ObjectDefinition(Class<T> clazz) {
     super();
@@ -548,6 +558,14 @@ public final class ObjectDefinition<T> {
   public ObjectDefinition<T> timeClazz(Class<?> timeClazz) {
     this.timeClazz = timeClazz;
     return this;
+  }
+
+  public StorageStrategy getPreferredStrategy() {
+    return preferredStrategy;
+  }
+
+  public void setPreferredStrategy(StorageStrategy preferredStrategy) {
+    this.preferredStrategy = preferredStrategy;
   }
 
 }

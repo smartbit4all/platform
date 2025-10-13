@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
+import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectApiImpl;
 import org.smartbit4all.core.object.ObjectDefinition;
@@ -75,6 +76,7 @@ public class CoreServiceConfig {
     ObjectDefinition<BinaryDataObject> result =
         ObjectDefinitionApiImpl.constructDefinitionBase(BinaryDataObject.class);
     result.setPreferredSerializerName(BinaryDataObject.class.getName());
+    result.setPreferredStrategy(StorageStrategy.CLASSIC);
     return result;
   }
 

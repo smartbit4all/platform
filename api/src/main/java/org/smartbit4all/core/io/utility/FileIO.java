@@ -157,29 +157,6 @@ public class FileIO {
     return waitTime * (rnd.nextInt(3) + 1);
   }
 
-  private static class BinaryDataCRCRecord {
-
-    BinaryData binaryData;
-
-    HashingInputStream hashingInputStream;
-
-    public BinaryDataCRCRecord(BinaryData binaryData, HashingInputStream hashingInputStream) {
-      super();
-      this.binaryData = binaryData;
-      this.hashingInputStream = hashingInputStream;
-    }
-
-    void check() {
-      if (binaryData.getCrcCheckSum() != null && hashingInputStream != null) {
-        if (hashingInputStream.hash().asInt() != binaryData.getCrcCheckSum()) {
-          throw new IllegalStateException("CRC checksum error (" + binaryData.getCrcCheckSum()
-              + " != " + hashingInputStream.hash().asInt() + ") in " + binaryData.toString());
-        }
-      }
-    }
-
-  }
-
   /**
    * Special write that concatenates multiple {@link BinaryData}s into one single file. To be able
    * to read the contents again the length appears in front of every content.
