@@ -594,6 +594,29 @@ public class ObjectNode {
     throw new ClassCastException("Value is not a List on path");
   }
 
+  public List<Map<String, Object>> getValueAsListOfMap(String paths) {
+    Object value = getValue(paths);
+    if (value instanceof List) {
+      List<?> list = (List<?>) value;
+      return list.stream()
+          .map(e -> objectApi.create(this.getStorageScheme(), e).getObjectAsMap())
+          .collect(Collectors.toList());
+    }
+    if (value instanceof ObjectNodeList) {
+      return ((ObjectNodeList) value).nodeStream()
+          .map(n -> n.getObjectAsMap())
+          .collect(toList());
+    }
+    if (value == null) {
+      return Collections.emptyList();
+    }
+    if ("".equals(value)) {
+      return Collections.emptyList();
+    }
+    throw new ClassCastException("Value is not a List on path");
+
+  }
+
   @SuppressWarnings("unchecked")
   public <V> Map<String, V> getValueAsMap(Class<V> clazz, String... paths) {
     Object value = getValue(paths);
