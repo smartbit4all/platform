@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
@@ -19,6 +20,9 @@ public final class Values {
       Comparator.comparing(Values::getDisplayValue);
 
   public static final Comparator<Value> CASE_INSENSITIVE_ORDER =
+      (v1, v2) -> String.CASE_INSENSITIVE_ORDER.compare(getDisplayValue(v1), getDisplayValue(v2));
+
+  public static final Comparator<GenericValue> GENERIC_VALUE_CASE_INSENSITIVE_ORDER =
       (v1, v2) -> String.CASE_INSENSITIVE_ORDER.compare(getDisplayValue(v1), getDisplayValue(v2));
 
   private Values() {}
@@ -37,6 +41,22 @@ public final class Values {
       return "";
     }
     return value.getDisplayValue();
+  }
+
+  /**
+   * Returns a non-null displayValue from GenericValue (comparator needs a non-null value)
+   *
+   * @param value
+   * @return
+   */
+  public static String getDisplayValue(GenericValue value) {
+    if (value == null) {
+      return "";
+    }
+    if (value.getName() == null) {
+      return "";
+    }
+    return value.getName();
   }
 
   /**
