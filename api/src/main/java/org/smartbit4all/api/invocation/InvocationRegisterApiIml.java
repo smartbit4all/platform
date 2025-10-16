@@ -1,5 +1,8 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -69,9 +72,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 
 public class InvocationRegisterApiIml implements InvocationRegisterApi, DisposableBean {
 
@@ -911,13 +911,13 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   private void saveRequestsIntoLocalChannels(Map<String, ChannelInfo> channelInfos) {
     List<URI> channelUris = channelInfos.values().stream()
-        .filter(ch -> ch.localChannel != null)
+        .filter(ch -> ch.localChannel != null && !ObjectUtils.isEmpty(ch.requestsToAdd))
         .map(ch -> ch.uri)
         .collect(toList());
     List<Lock> channelLocks = objectApi.lockAll(channelUris);
     try {
       for (ChannelInfo channel : channelInfos.values()) {
-        if (channel.localChannel != null) {
+        if (channel.localChannel != null && !ObjectUtils.isEmpty(channel.requestsToAdd)) {
           Storage storageAsyncReg = storageApi.get(Invocations.ASYNC_CHANNEL_REGISTRY);
           log.debug("saveRequestsToChannel {} - {}", channel.name, channel.uri);
           storageAsyncReg.update(channel.uri, RuntimeAsyncChannel.class, rac -> {
@@ -1348,6 +1348,23 @@ public class InvocationRegisterApiIml implements InvocationRegisterApi, Disposab
 
   private final String scheduledInvocationReferenceName(String channelName) {
     return channelName + StringConstant.MINUS_SIGN + "scheduled";
+  }
+
+  @Override
+  public void removeScheduledInvocationRequest(String channelName, URI uriToRemove) {
+    if (ObjectUtils.isEmpty(uriToRemove)) {
+      return;
+    }
+    StoredReference<AsyncChannelScheduledInvocationList> refScheduled =
+        getScheduledInvocationsRef(channelName);
+    refScheduled.update(scheduledList -> {
+      if (scheduledList == null || ObjectUtils.isEmpty(scheduledList.getInvocationRequests())) {
+        return scheduledList;
+      }
+      scheduledList.getInvocationRequests().removeIf(
+          req -> objectApi.equalsIgnoreVersion(uriToRemove, req.getRequestUri()));
+      return scheduledList;
+    });
   }
 
 }

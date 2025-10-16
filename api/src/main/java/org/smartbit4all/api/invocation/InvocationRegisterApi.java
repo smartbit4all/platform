@@ -98,5 +98,6 @@ public interface InvocationRegisterApi {
    */
   boolean asyncChannelExists(String channel);
 
+  void removeScheduledInvocationRequest(String channelName, URI uriToRemove);
 
 }
