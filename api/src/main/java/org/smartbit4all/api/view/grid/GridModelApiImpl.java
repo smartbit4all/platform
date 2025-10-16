@@ -970,8 +970,8 @@ public class GridModelApiImpl implements GridModelApi {
   }
 
   @Override
-  public void clearCallbacks(UUID viewUuid) {
-    widgetCallbackApi.clearCallbacks(viewUuid);
+  public void clearCallbacks(UUID viewUuid, String requestId) {
+    widgetCallbackApi.clearCallbacks(viewUuid, requestId);
   }
 
   @Override

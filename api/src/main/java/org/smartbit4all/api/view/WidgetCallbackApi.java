@@ -16,7 +16,7 @@ public interface WidgetCallbackApi {
 
   List<InvocationRequest> getCallbacks(UUID viewUuid, String widgetId, String postfix);
 
-  void clearCallbacks(UUID viewUuid);
+  void clearCallbacks(UUID viewUuid, String requestId);
 
   Object executeObjectCallback(InvocationRequest request, Object parameter, Object... parameters);
 

@@ -616,8 +616,8 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
-  public void clearCallbacks(UUID viewUuid) {
-    getView(viewUuid).getCallbacks().clear();
+  public void clearCallbacks(UUID viewUuid, String requestId) {
+    getViewCallbackList(getView(viewUuid), requestId).clear();
   }
 
   @Override

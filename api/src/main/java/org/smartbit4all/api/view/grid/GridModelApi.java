@@ -290,6 +290,6 @@ public interface GridModelApi {
   List<GridRow> getSelectedRows(UUID viewUuid, String gridId);
 
   // this should be called after initGridInView automatically
-  void clearCallbacks(UUID viewUuid);
+  void clearCallbacks(UUID viewUuid, String requestId);
 
 }

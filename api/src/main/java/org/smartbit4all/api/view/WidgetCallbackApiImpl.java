@@ -46,8 +46,8 @@ public class WidgetCallbackApiImpl implements WidgetCallbackApi {
   }
 
   @Override
-  public void clearCallbacks(UUID viewUuid) {
-    viewApi.clearCallbacks(viewUuid);
+  public void clearCallbacks(UUID viewUuid, String requestId) {
+    viewApi.clearCallbacks(viewUuid, requestId);
   }
 
   @Override

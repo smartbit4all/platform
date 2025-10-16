@@ -176,7 +176,7 @@ public interface ViewApi {
    *
    * @param viewUuid
    */
-  void clearCallbacks(UUID viewUuid);
+  void clearCallbacks(UUID viewUuid, String requestId);
 
   /**
    * Retrieve a {@link ViewEventApi} instance for the given view. It can be used for one action
