@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
@@ -44,6 +45,7 @@ import org.smartbit4all.bff.api.generic.GenericPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
 import org.smartbit4all.bff.api.utils.BffUtilsApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
+import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApiImpl
@@ -59,6 +61,8 @@ public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApi
   protected InvocationApi invocationApi;
   @Autowired
   protected BffUtilsApi bffUtilsApi;
+  @Autowired
+  protected SearchIndex<ValueTransformationMappingItem> valueTransformationSearchIndex;
 
   private static final List<String> ORDERED_COLUMNS =
       Arrays.asList(ValueTransformationMappingItem.SOURCE_VALUE,
@@ -139,10 +143,11 @@ public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApi
 
   private void createGridModel(UUID viewUuid, String gridId) {
     GridModel gridModel = gridModelApi.createGridModel(
-        ValueTransformationMappingItem.class,
+        valueTransformationSearchIndex.getDefinition().getDefinition(),
         ORDERED_COLUMNS, gridId);
     gridModel.getView().getDescriptor().showEditColumns(false);
     gridModel.paginator(true);
+    gridModel.pageSize(25);
     gridModelApi.initGridInView(viewUuid, gridId, gridModel);
     gridModelApi.addGridPageCallback(viewUuid, gridId,
         invocationApi
@@ -151,14 +156,16 @@ public class MDMValueTransformationEditorPageApiImpl extends MDMEntryEditPageApi
   }
 
   private void setGridData(UUID viewUuid, String gridId, ValueTransformationConfig model) {
-    List<ValueTransformationMappingItem> entrySet;
+    List<ObjectNode> entrySet = new ArrayList<>();
     if (GRID_TRANSFORMATION_MAPPING.equals(gridId)) {
-      entrySet = model.getData().getMappings();
+      entrySet = model.getData().getMappings().stream().map(entry -> objectApi.create(null, entry))
+          .toList();
+      gridModelApi.setData(viewUuid, gridId,
+          valueTransformationSearchIndex.executeSearchOnNodes(entrySet.stream(), null));
     } else {
-      entrySet = Collections.emptyList();
+      gridModelApi.setData(viewUuid, gridId,
+          valueTransformationSearchIndex.createEmptyTableData());
     }
-    List<ValueTransformationMappingItem> gridData = entrySet;
-    gridModelApi.setData(viewUuid, gridId, ValueTransformationMappingItem.class, gridData);
   }
 
   @Override

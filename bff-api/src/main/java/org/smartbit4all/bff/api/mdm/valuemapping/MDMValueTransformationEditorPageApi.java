@@ -11,7 +11,7 @@ import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 
 @ViewApi(PlatformViewNames.VALUE_TRANSFORMATION_EDITOR)
 public interface MDMValueTransformationEditorPageApi extends MDMEntryEditPageApi {
-
+  String SCHEMA = "bffValueTransformation";
   static final String GRID_TRANSFORMATION_MAPPING = "GRID_TRANSFORMATION_MAPPING";
 
   static final String ACTION_ADD_VALUE_TRANSFORMATION_MAPPING =

@@ -9,6 +9,7 @@ import org.smartbit4all.api.org.OrgApiStorageImpl;
 import org.smartbit4all.api.org.bean.Group;
 import org.smartbit4all.api.org.bean.User;
 import org.smartbit4all.api.session.bean.UserActivityLog;
+import org.smartbit4all.api.value.bean.ValueTransformationMappingItem;
 import org.smartbit4all.bff.api.acl.AclEditingPageApi;
 import org.smartbit4all.bff.api.acl.AclEditingPageApiImpl;
 import org.smartbit4all.bff.api.acl.NoPermissionPageApi;
@@ -98,6 +99,17 @@ public class PlatformBffApiConfig {
             .map(Group.KIND_CODE, Group.KIND_CODE)
             .map(Group.BUILT_IN, Group.BUILT_IN)
             .map(Group.CHILDREN, Group.CHILDREN);
+  }
+
+  @Bean
+  public SearchIndex<ValueTransformationMappingItem> valueTransformationSearchIndex() {
+    return new SearchIndexImpl<>(MDMValueTransformationEditorPageApi.SCHEMA,
+        ValueTransformationMappingItem.class.getSimpleName(),
+        MDMValueTransformationEditorPageApi.SCHEMA, ValueTransformationMappingItem.class)
+            .map(ValueTransformationMappingItem.SOURCE_VALUE, String.class,
+                ValueTransformationMappingItem.SOURCE_VALUE)
+            .map(ValueTransformationMappingItem.TARGET_VALUE, String.class,
+                ValueTransformationMappingItem.TARGET_VALUE);
   }
 
   @Bean
