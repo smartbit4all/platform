@@ -98,6 +98,13 @@ public interface InvocationRegisterApi {
    */
   boolean asyncChannelExists(String channel);
 
+  /**
+   * Removes the given URI from the scheduled invocation requests of the given channel. If the
+   * request is currently being executed, it will not be interrupted.
+   * 
+   * @param channelName
+   * @param uriToRemove
+   */
   void removeScheduledInvocationRequest(String channelName, URI uriToRemove);
 
 }
