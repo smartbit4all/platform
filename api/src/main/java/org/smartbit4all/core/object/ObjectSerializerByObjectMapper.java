@@ -105,6 +105,19 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
     }
   }
 
+  public static final <T> T deepCopy(T object, TypeReference<T> type) {
+    if (object == null) {
+      return null;
+    }
+    ObjectMapper localObjectMapper = getObjectMapper();
+    try {
+      byte[] value = localObjectMapper.writeValueAsBytes(object);
+      return localObjectMapper.readValue(value, type);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
   @Override
   public String getName() {
     return ObjectMapper.class.getName();
