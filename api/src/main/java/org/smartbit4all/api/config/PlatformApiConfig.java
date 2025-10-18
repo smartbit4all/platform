@@ -3,6 +3,8 @@ package org.smartbit4all.api.config;
 import static java.util.Collections.singletonList;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Collections;
+import org.smartbit4all.api.attachment.bean.DataExtractionDescriptor;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
@@ -216,6 +218,8 @@ public class PlatformApiConfig {
   public static final String SCHEDULED_JOB_DEFINTIONS = "scheduledJobDefinitions";
 
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
+
+  public static final String DATA_EXTRACTION_DESCRIPTORS = "dataExtractionDescriptors";
 
   public static final String VALUE_TRANSFORMATIONS = "valueTransformations";
 
@@ -830,6 +834,33 @@ public class PlatformApiConfig {
               .name(localeSettingApi.get(ScriptSetting.class.getName(),
                   ScriptSetting.NAME))
               .addPathItem(ScriptSetting.NAME));
+      result.addDescriptor(entry);
+    }
+
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(DATA_EXTRACTION_DESCRIPTORS)
+          .name(DATA_EXTRACTION_DESCRIPTORS)
+          .adminGroupName(PlatformSecurityOption.objectValidationEditor.getName())
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(DataExtractionDescriptor.IDENTIFIER))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .uniquePropertyPaths(Collections
+              .singletonList(Collections.singletonList(DataExtractionDescriptor.IDENTIFIER)))
+          .displayNameList(new LangString().defaultValue("Data Extraction Descriptors")
+              .putValueByLocaleItem("hu", "Adatkinyerési műveletleírók")
+              .putValueByLocaleItem("en", "ata Extraction Descriptors"))
+          .displayNameForm(new LangString().defaultValue("ata Extraction Descriptor")
+              .putValueByLocaleItem("hu", "Adatkinyerési műveletleíró")
+              .putValueByLocaleItem("en", "ata Extraction Descriptor"))
+          .order(200L)
+          .typeQualifiedName(DataExtractionDescriptor.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Code")
+                  .addPathItem(DataExtractionDescriptor.IDENTIFIER));
       result.addDescriptor(entry);
     }
 
