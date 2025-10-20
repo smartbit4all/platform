@@ -9,6 +9,8 @@ import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApiImpl;
+import org.smartbit4all.api.binarydata.extraction.DataExtractionApi;
+import org.smartbit4all.api.binarydata.extraction.DataExtractionApiImpl;
 import org.smartbit4all.api.cache.CacheService;
 import org.smartbit4all.api.cache.CacheServiceImpl;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -1229,6 +1231,11 @@ public class PlatformApiConfig {
   public ProviderApiInvocationHandler<DataProcessPipelineApi> dataProcessPipelineApiProvider(
       DataProcessPipelineApi api) {
     return Invocations.asProvider(DataProcessPipelineApi.class, api);
+  }
+
+  @Bean
+  public DataExtractionApi dataExtractionApi() {
+    return new DataExtractionApiImpl();
   }
 
 }
