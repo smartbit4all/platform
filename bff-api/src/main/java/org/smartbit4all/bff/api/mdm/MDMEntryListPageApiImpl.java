@@ -625,7 +625,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                   if (component.getType() == SmartFormWidgetType.CONTAINER) {
                     newContainersToCheck.add(component);
                   }
-                  component.label(localeSettingApi.get(component.getLabel()));
+                  component.label(
+                      localeSettingApi.get(ctx.getEntryApi().getName(),
+                          objectDefinition.getClazz().getSimpleName(), component.getLabel()));
                 }
               }
               containersToCheck.clear();
@@ -633,7 +635,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
             }
           }
 
-          return w.label(localeSettingApi.get(w.getLabel()));
+          return w.label(localeSettingApi.get(ctx.getEntryApi().getName(),
+              objectDefinition.getClazz().getSimpleName(), w.getLabel()));
         })
         .collect(collectingAndThen(toList(), new SmartLayoutDefinition()::widgets));
 
