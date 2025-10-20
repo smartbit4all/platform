@@ -1,6 +1,6 @@
 /*
- * Attachment api
- * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system. 
+ * Object api
+ * The object api responsible for the domain object meta information including the object definitions and the relations among them. These objects are stored because the modules can contribute. The modules have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data. The algorithms are running on the ObjectApi cache refreshed periodically. 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.attachment.bean;
+package org.smartbit4all.api.object.bean;
 
 import java.util.Objects;
 import java.util.Arrays;

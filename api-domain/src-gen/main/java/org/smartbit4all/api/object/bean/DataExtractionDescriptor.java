@@ -1,6 +1,6 @@
 /*
- * Attachment api
- * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system. 
+ * Object api
+ * The object api responsible for the domain object meta information including the object definitions and the relations among them. These objects are stored because the modules can contribute. The modules have their own ObjectApi that manages the storage and ensure the up-to-date view of the current data. The algorithms are running on the ObjectApi cache refreshed periodically. 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -11,7 +11,7 @@
  */
 
 
-package org.smartbit4all.api.attachment.bean;
+package org.smartbit4all.api.object.bean;
 
 import java.util.Objects;
 import java.util.Arrays;
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.invocation.bean.InvocationRun;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -39,6 +40,7 @@ import jakarta.validation.Valid;
   DataExtractionDescriptor.URI,
   DataExtractionDescriptor.IDENTIFIER,
   DataExtractionDescriptor.EXTRACTOR_FN,
+  DataExtractionDescriptor.EXTRACTION_RUN,
   DataExtractionDescriptor.TARGET_PATH
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -51,6 +53,9 @@ public class DataExtractionDescriptor {
 
   public static final String EXTRACTOR_FN = "extractorFn";
   private InvocationRequest extractorFn = null;
+
+  public static final String EXTRACTION_RUN = "extractionRun";
+  private InvocationRun extractionRun = null;
 
   public static final String TARGET_PATH = "targetPath";
   private List<String> targetPath = new ArrayList<>();
@@ -141,6 +146,34 @@ public class DataExtractionDescriptor {
     this.extractorFn = extractorFn;
   }
 
+  public DataExtractionDescriptor extractionRun(InvocationRun extractionRun) {
+    
+    this.extractionRun = extractionRun;
+    return this;
+  }
+
+  /**
+   * 
+   * @return extractionRun
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(EXTRACTION_RUN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public InvocationRun getExtractionRun() {
+    return extractionRun;
+  }
+
+
+  @JsonProperty(EXTRACTION_RUN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setExtractionRun(InvocationRun extractionRun) {
+    this.extractionRun = extractionRun;
+  }
+
   public DataExtractionDescriptor targetPath(List<String> targetPath) {
     
     this.targetPath = targetPath;
@@ -188,12 +221,13 @@ public class DataExtractionDescriptor {
     return Objects.equals(this.uri, dataExtractionDescriptor.uri) &&
         Objects.equals(this.identifier, dataExtractionDescriptor.identifier) &&
         Objects.equals(this.extractorFn, dataExtractionDescriptor.extractorFn) &&
+        Objects.equals(this.extractionRun, dataExtractionDescriptor.extractionRun) &&
         Objects.equals(this.targetPath, dataExtractionDescriptor.targetPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, identifier, extractorFn, targetPath);
+    return Objects.hash(uri, identifier, extractorFn, extractionRun, targetPath);
   }
 
   @Override
@@ -203,6 +237,7 @@ public class DataExtractionDescriptor {
     sb.append("    uri: ").append(toIndentedString(uri)).append("\n");
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    extractorFn: ").append(toIndentedString(extractorFn)).append("\n");
+    sb.append("    extractionRun: ").append(toIndentedString(extractionRun)).append("\n");
     sb.append("    targetPath: ").append(toIndentedString(targetPath)).append("\n");
     sb.append("}");
     return sb.toString();
