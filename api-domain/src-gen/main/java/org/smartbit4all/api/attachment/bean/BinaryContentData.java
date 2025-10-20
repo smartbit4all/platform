@@ -1,6 +1,6 @@
 /*
  * Attachment api
- * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system.  
+ * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system. 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu

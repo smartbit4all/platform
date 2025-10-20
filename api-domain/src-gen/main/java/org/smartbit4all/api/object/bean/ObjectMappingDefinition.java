@@ -32,9 +32,9 @@ import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
 
 /**
- * This is a mapping definition that describes the mapping between two domain object. The input can be a context that contains the application  
+ * This is a mapping definition that describes the mapping between two domain object. The input can be a context that contains the application 
  */
-@Schema(description = "This is a mapping definition that describes the mapping between two domain object. The input can be a context that contains the application  ")
+@Schema(description = "This is a mapping definition that describes the mapping between two domain object. The input can be a context that contains the application ")
 @JsonPropertyOrder({
   ObjectMappingDefinition.FROM_TYPE_QUALIFIED_NAME,
   ObjectMappingDefinition.TO_TYPE_QUALIFIED_NAME,

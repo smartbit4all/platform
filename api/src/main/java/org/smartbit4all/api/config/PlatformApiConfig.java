@@ -3,6 +3,7 @@ package org.smartbit4all.api.config;
 import static java.util.Collections.singletonList;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import org.smartbit4all.api.binarydata.BinaryContentDataApi;
 import org.smartbit4all.api.binarydata.BinaryContentDataApiImpl;
 import org.smartbit4all.api.binarydata.BinaryDataSorageApi;
@@ -89,12 +90,15 @@ import org.smartbit4all.api.object.RetrievalApiImpl;
 import org.smartbit4all.api.object.SubscriptionConfigApi;
 import org.smartbit4all.api.object.SubscriptionConfigApiImpl;
 import org.smartbit4all.api.object.bean.AggregationKind;
+import org.smartbit4all.api.object.bean.DataExtractionDescriptor;
 import org.smartbit4all.api.object.bean.LangString;
 import org.smartbit4all.api.object.bean.ObjectContainerById;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.object.bean.ObjectReferenceById;
 import org.smartbit4all.api.object.bean.ObjectValidationOperation;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
+import org.smartbit4all.api.object.extraction.DataExtractionApi;
+import org.smartbit4all.api.object.extraction.DataExtractionApiImpl;
 import org.smartbit4all.api.org.SecurityOption;
 import org.smartbit4all.api.org.SubjectContributionApi;
 import org.smartbit4all.api.org.SubjectContributionByGroup;
@@ -216,6 +220,8 @@ public class PlatformApiConfig {
   public static final String SCHEDULED_JOB_DEFINTIONS = "scheduledJobDefinitions";
 
   public static final String OBJECT_VALIDATION_OPERATIONS = "objectValidationOperations";
+
+  public static final String DATA_EXTRACTION_DESCRIPTORS = "dataExtractionDescriptors";
 
   public static final String VALUE_TRANSFORMATIONS = "valueTransformations";
 
@@ -833,6 +839,33 @@ public class PlatformApiConfig {
       result.addDescriptor(entry);
     }
 
+    {
+      MDMEntryDescriptor entry = new MDMEntryDescriptor()
+          .schema(MasterDataManagementApi.SCHEMA)
+          .publishedListName(DATA_EXTRACTION_DESCRIPTORS)
+          .name(DATA_EXTRACTION_DESCRIPTORS)
+          .adminGroupName(PlatformSecurityOption.objectValidationEditor.getName())
+          .addConstraintsItem(new MDMEntryConstraint()
+              .kind(KindEnum.UNIQUECASEINSENSITIVE)
+              .addPathItem(DataExtractionDescriptor.IDENTIFIER))
+          .editorViewName(MDMConstants.MDM_EDIT)
+          .uniquePropertyPaths(Collections
+              .singletonList(Collections.singletonList(DataExtractionDescriptor.IDENTIFIER)))
+          .displayNameList(new LangString().defaultValue("Data Extraction Descriptors")
+              .putValueByLocaleItem("hu", "Adatkinyerési műveletleírók")
+              .putValueByLocaleItem("en", "ata Extraction Descriptors"))
+          .displayNameForm(new LangString().defaultValue("ata Extraction Descriptor")
+              .putValueByLocaleItem("hu", "Adatkinyerési műveletleíró")
+              .putValueByLocaleItem("en", "ata Extraction Descriptor"))
+          .order(200L)
+          .typeQualifiedName(DataExtractionDescriptor.class.getName())
+          .addTableColumnsItem(
+              new MDMTableColumnDescriptor()
+                  .name("Code")
+                  .addPathItem(DataExtractionDescriptor.IDENTIFIER));
+      result.addDescriptor(entry);
+    }
+
     return result;
   }
 
@@ -1198,6 +1231,11 @@ public class PlatformApiConfig {
   public ProviderApiInvocationHandler<DataProcessPipelineApi> dataProcessPipelineApiProvider(
       DataProcessPipelineApi api) {
     return Invocations.asProvider(DataProcessPipelineApi.class, api);
+  }
+
+  @Bean
+  public DataExtractionApi dataExtractionApi() {
+    return new DataExtractionApiImpl();
   }
 
 }

@@ -943,7 +943,7 @@ components:
             Defines if the result of the value should be merged into the result object if it exists. If false then
             the result will overwrite the existing value instead of merge.
           type: boolean
-          default: true 
+          default: true
         valueMapping:
           $ref: '#/components/schemas/ObjectMappingDefinition'
           description: |
@@ -951,7 +951,7 @@ components:
     ObjectMappingDefinition:
       description: |
         This is a mapping definition that describes the mapping between two domain object. The input can be a
-        context that contains the application 
+        context that contains the application
       type: object
       required: [mappings, listMappings]
       properties:
@@ -987,7 +987,7 @@ components:
           description: |
             The iteration mapping definition is used to iterate over the list identified by the fromPath. The iteration
             result is always a list with the same number of items then the from list has. The items are the built result of the
-            mapping. 
+            mapping.
           $ref: '#/components/schemas/ObjectMappingDefinition'
         expression:
           description: |
@@ -1129,3 +1129,53 @@ components:
         refObjectUri:
           type: string
           format: uri
+
+    DataExtractionDescriptor:
+      type: object
+      description: |
+        A descriptor of a configurable subroutine which can extract structured data from a domain
+        object, most likely an object holding a reference to a blob.
+      properties:
+        uri:
+          type: string
+          format: uri
+          description: The unique persistent identifier of this descriptor
+        identifier:
+          type: string
+          description: The unqiue logical identifier of this descriptor
+        extractorFn:
+          type: InvocationRequest
+          description: |
+            The invocation request performing the extraction. It should take an URI as its first and
+            only argument, which identifies the domain object undergoing the data extraction. It
+            should return with any type which is persistable in the object storage. Failed
+            extractions should throw.
+        extractionRun:
+          type: InvocationRun
+          description: |
+
+        targetPath:
+          type: array
+          items:
+            type: string
+          description: |
+            The target path within the domain object where the extracted data should be persisted.
+            Must be a valid, configured object reference path.
+    DataExtraction:
+      type: object
+      description: |
+        Describes the assigned data extraction operation to a given domain object, saved under a
+        reserved key and scoped to the domain object itself.
+      properties:
+        created:
+          type: UserActivityLog
+          description: |
+            The log when the extraction of the given logical identifier has been set for the host.
+        updated:
+          type: UserActivityLog
+          description: |
+            The log of the most recent data extraction operation.
+        extractorId:
+          type: string
+          description: |
+            The unique logical identifier of the extraction descriptor to be run on the host object.
