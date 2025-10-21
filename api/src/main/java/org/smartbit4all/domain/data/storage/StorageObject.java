@@ -16,6 +16,7 @@ import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.api.storage.bean.ObjectReference;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
 import org.smartbit4all.api.storage.bean.StorageObjectData;
+import org.smartbit4all.api.storage.bean.StorageObjectStreamDescriptor;
 import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.utility.StringConstant;
@@ -101,6 +102,8 @@ public final class StorageObject<T> {
    * The aspects are named objects attached to the given object version.
    */
   private Map<String, ObjectAspect> aspects;
+
+  private List<StorageObjectStreamDescriptor> objectStreams;
 
   /**
    * The reference for the storage that is the logical schema for this object. All the related
@@ -720,6 +723,17 @@ public final class StorageObject<T> {
 
   public void setIndexSize(Integer indexSize) {
     this.indexSize = indexSize;
+  }
+
+  public void setObjectStreams(List<StorageObjectStreamDescriptor> objectStreamDescriptors) {
+    this.objectStreams = objectStreamDescriptors;
+  }
+
+  public List<StorageObjectStreamDescriptor> getObjectStreams() {
+    if (objectStreams == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(objectStreams);
   }
 
 }

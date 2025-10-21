@@ -295,4 +295,11 @@ public final class StorageApiImpl implements StorageApi, InitializingBean {
     return storage.getSequence(scopeObjectUri, schema, name);
   }
 
+  @Override
+  public ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition) {
+    Storage storage = get(schema);
+    return storage.getObjectStream(scopeObjectUri, schema, name, headPosition);
+  }
+
 }

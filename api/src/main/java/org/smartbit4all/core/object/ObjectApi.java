@@ -14,6 +14,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.object.bean.SnapshotData;
+import org.smartbit4all.domain.data.storage.ObjectStream;
 import org.smartbit4all.domain.data.storage.StorageApi;
 
 /**
@@ -310,6 +311,17 @@ public interface ObjectApi {
   default Iterator<ObjectNode> objectHistoryReverse(URI objectUri) {
     return objectHistoryReverse(objectUri, null);
   }
+
+  /**
+   * The object stream of the given node.
+   * 
+   * @param node The object node.
+   * @param name The name of the object stream.
+   * @param headPosition The head position of the object stream to append the next object.
+   * @return The {@link ObjectStream} access the underlying stream.
+   */
+  ObjectStream getObjectStream(ObjectNode node, String name,
+      long headPosition);
 
   default URI saveAsNew(String storageScheme, Object object, URI branchUri) {
     ObjectNode node = create(storageScheme, object);

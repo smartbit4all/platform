@@ -100,11 +100,6 @@ public final class IndexedMultipartStore implements Closeable {
   }
 
   /** Opens an existing store (or creates header if file is smaller than header). */
-  public static IndexedMultipartStore open(File file, int slots) throws IOException {
-    return new IndexedMultipartStore(file, slots, false);
-  }
-
-  /** Opens an existing store (or creates header if file is smaller than header). */
   public static IndexedMultipartStore openOrCreate(File file, int slots) throws IOException {
     return new IndexedMultipartStore(file, slots, false);
   }
@@ -157,80 +152,99 @@ public final class IndexedMultipartStore implements Closeable {
   }
 
 
-  /**
-   * Append-write a payload and update index entry {@code index}. If that index already had a
-   * segment, it is "moved" (space is not reclaimed).
-   *
-   * @return the absolute start offset where data was written.
-   */
-  // public long writeAtMultipart(int index, BinaryData... contents) throws IOException {
-  // if (ObjectUtils.isEmpty(contents)) {
-  // throw new IllegalArgumentException("The contents to write is empty.");
-  // }
-  // checkIndex(index);
-  //
-  // List<BinaryData> contentList = Arrays.asList(contents);
-  // long start = nextAppendOffset;
-  // long nextStart = start;
-  //
-  // List<BinaryDataCRCRecord> crcRecords = new ArrayList<>(contents.length);
-  //
-  // long len = 0;
-  //
-  // for (BinaryData binaryData : contents) {
-  // // Write the length first and the content next.
-  // ByteSource byteSource = new ByteSource() {
-  //
-  // @Override
-  // public InputStream openStream() throws IOException {
-  // InputStream inputStream = binaryData.inputStream2();
-  // if (inputStream instanceof HashingInputStream) {
-  // crcRecords.add(new BinaryDataCRCRecord(binaryData, (HashingInputStream) inputStream));
-  // }
-  // return new DeflateCompressingInputStream(inputStream, Deflater.BEST_COMPRESSION, true);
-  // }
-  // };
-  // // Append the payload bytes
-  // try (InputStream in = byteSource.openStream();
-  // FileOutputStream out = new FileOutputStream(file, true)) {
-  // // Ensure file pointer is at append offset (out appends; align raf too)
-  // raf.seek(nextStart + Longs.BYTES);
-  //
-  // byte[] buf = new byte[8192];
-  // int r;
-  // @SuppressWarnings("resource")
-  // CountingOutputStream cntOut = new CountingOutputStream(out);
-  // while ((r = in.read(buf)) >= 0) {
-  // cntOut.write(buf, 0, r);
-  // }
-  // long count = cntOut.getCount();
-  //
-  // out.flush();
-  // out.getFD().sync();
-  // out.getChannel().position(nextStart);
-  // out.write(Longs.toByteArray(count));
-  // out.getFD().sync();
-  // len += count + Longs.BYTES;
-  // nextStart += count + Longs.BYTES;
-  // }
-  // }
-  //
-  //
-  // for (BinaryDataCRCRecord binaryDataCRCRecord : crcRecords) {
-  // binaryDataCRCRecord.check();
-  // }
-  //
-  // // Write index entry: [start, len]
-  // writeIndexEntry(index, start, len);
-  //
-  // // Advance append pointer
-  // nextAppendOffset = start + len;
-  // if (nextAppendOffset < indexRegionSize) {
-  // nextAppendOffset = indexRegionSize; // never go before data region
-  // }
-  // return start;
-  // }
 
+  /**
+   * Writes one or more {@link BinaryData} objects into the underlying file as a single multipart
+   * segment at the specified logical index.
+   * <p>
+   * Each part is stored in the file as a contiguous block consisting of:
+   * <ul>
+   * <li>An 8-byte header containing the payload length in bytes ({@code long}), followed by</li>
+   * <li>The compressed payload data itself, using DEFLATE compression at
+   * {@link Deflater#BEST_COMPRESSION} level.</li>
+   * </ul>
+   * <p>
+   * The method supports random-access writes using a {@link RandomAccessFile} in read-write mode
+   * and maintains a consistent index table via the {@link #writeIndexEntry(int, long, long)}
+   * method. Each written multipart block becomes addressable by its index and can be used for later
+   * retrieval or validation.
+   *
+   * <h3>Processing steps</h3>
+   * <ol>
+   * <li>Validates that the {@code contents} array is non-empty and the {@code index} is valid.</li>
+   * <li>Initializes the write position using {@code nextAppendOffset}.</li>
+   * <li>Iterates over all provided {@link BinaryData} items:
+   * <ul>
+   * <li>Wraps each input stream with {@link DeflateCompressingInputStream} for on-the-fly
+   * compression while reading.</li>
+   * <li>If the input stream implements {@link HashingInputStream}, records its CRC information in a
+   * {@link BinaryDataCRCRecord} for later verification.</li>
+   * <li>Writes a placeholder for the length header, then writes the compressed payload bytes
+   * directly to the file.</li>
+   * <li>After writing, seeks back to the block start to fill in the correct payload length (8
+   * bytes, big-endian).</li>
+   * <li>Advances the file pointer to the next available offset.</li>
+   * </ul>
+   * </li>
+   * <li>Flushes and synchronizes the file descriptor to ensure durability (equivalent to
+   * {@code fsync()}).</li>
+   * <li>Performs CRC checks on all payloads that provided hashing streams.</li>
+   * <li>Registers the multipart block in the index table and updates {@code nextAppendOffset} to
+   * the end of the newly written data region.</li>
+   * </ol>
+   *
+   * <h3>Concurrency and persistence notes</h3>
+   * <ul>
+   * <li>This operation is designed for append-style access patterns, where new multipart data is
+   * written sequentially without rewriting existing payloads.</li>
+   * <li>Synchronization of {@code nextAppendOffset} ensures subsequent writes will not overwrite
+   * prior content.</li>
+   * <li>The file descriptor is explicitly synced via {@link java.io.FileDescriptor#sync()} to
+   * reduce data loss risk in case of a system crash.</li>
+   * </ul>
+   *
+   * <h3>Parameters</h3>
+   * <dl>
+   * <dt><b>index</b></dt>
+   * <dd>The logical index of this multipart block. Must refer to a valid entry in the index region
+   * of the file (validated via {@code checkIndex(index)}).</dd>
+   *
+   * <dt><b>contents</b></dt>
+   * <dd>One or more {@link BinaryData} objects to be written as multipart content. Each item
+   * becomes a separate compressed section within the multipart block.</dd>
+   * </dl>
+   *
+   * <h3>Returns</h3> The starting byte offset in the file ({@code start}) where this multipart
+   * block was written. This offset can be used for subsequent read or diagnostic operations.
+   *
+   * <h3>Throws</h3>
+   * <ul>
+   * <li>{@link IllegalArgumentException} – if {@code contents} is null or empty.</li>
+   * <li>{@link IOException} – if any I/O or compression error occurs during writing.</li>
+   * </ul>
+   *
+   * <h3>Example</h3>
+   * 
+   * <pre>{@code
+   * long offset = store.writeAtMultipart(3,
+   *     BinaryData.ofBytes(data1),
+   *     BinaryData.ofBytes(data2));
+   *
+   * // later reading via index lookup
+   * BinaryData readBack = store.readAtIndex(3);
+   * }</pre>
+   *
+   * @param index the logical index entry under which this multipart block is stored
+   * @param contents one or more {@link BinaryData} objects to write as compressed multipart
+   *        payloads
+   * @return the file offset ({@code long}) where the multipart block begins
+   * @throws IOException if any I/O operation fails while writing or syncing
+   * @throws IllegalArgumentException if the {@code contents} array is empty
+   * @see BinaryData
+   * @see BinaryDataCRCRecord
+   * @see DeflateCompressingInputStream
+   * @see RandomAccessFile
+   */
   public long writeAtMultipart(int index, BinaryData... contents) throws IOException {
     if (ObjectUtils.isEmpty(contents)) {
       throw new IllegalArgumentException("The contents to write is empty.");
@@ -321,7 +335,107 @@ public final class IndexedMultipartStore implements Closeable {
     return new BinaryData(slice);
   }
 
-  /** Reads the segment at index into a BinaryData (zero-copy view via ByteSource slice). */
+  /**
+   * Reads a multipart data segment from the underlying file corresponding to the specified logical
+   * index and reconstructs its component {@link BinaryData} objects.
+   * <p>
+   * Each multipart block is expected to follow the binary structure written by
+   * {@link #writeAtMultipart(int, BinaryData...)}, i.e. a contiguous sequence of:
+   * <ul>
+   * <li>An 8-byte header ({@code long}) representing the length of the subsequent payload (in
+   * bytes), followed by</li>
+   * <li>A DEFLATE-compressed payload section.</li>
+   * </ul>
+   * The method uses the index entry previously written via {@code writeIndexEntry} to locate the
+   * start offset and total length of the multipart segment. It then sequentially reads and inflates
+   * each compressed payload, reconstructing them as independent {@link BinaryData} instances.
+   *
+   * <h3>Processing steps</h3>
+   * <ol>
+   * <li>Verifies that the given {@code index} is valid using {@link #checkIndex(int)}.</li>
+   * <li>Reads the index entry using {@code readIndexEntry(index)} to determine the segment’s start
+   * offset and length.</li>
+   * <li>Ensures that the segment boundaries do not exceed the physical file length, throwing an
+   * {@link IOException} if inconsistent.</li>
+   * <li>Creates a Guava {@link com.google.common.io.ByteSource} slice over the file region covering
+   * the multipart data.</li>
+   * <li>Iteratively reads each [length + payload] block:
+   * <ul>
+   * <li>Reads the next 8-byte length header.</li>
+   * <li>Extracts the corresponding compressed data slice.</li>
+   * <li>Wraps it in an {@link InflaterInputStream} with {@code nowrap=true} for DEFLATE
+   * decompression.</li>
+   * <li>Constructs a {@link BinaryData} instance backed by the decompressed byte stream.</li>
+   * <li>Appends it to the result list.</li>
+   * </ul>
+   * </li>
+   * <li>Returns the reconstructed list of {@link BinaryData} objects.</li>
+   * </ol>
+   *
+   * <h3>Return behavior</h3>
+   * <ul>
+   * <li>If the index entry does not exist (e.g., never written), the method returns
+   * {@code null}.</li>
+   * <li>If the multipart segment is valid but empty, an immutable empty list is returned.</li>
+   * <li>Any malformed segment or decompression error triggers an
+   * {@link IllegalStateException}.</li>
+   * </ul>
+   *
+   * <h3>Data format expectations</h3> This method assumes that the segment was created using the
+   * companion {@code writeAtMultipart(...)} method, which writes the payloads with a header+body
+   * layout. Any mismatch in compression or structure may result in decompression failure.
+   *
+   * <h3>Thread-safety and performance notes</h3>
+   * <ul>
+   * <li>This operation opens the file for random-access read through Guava’s {@link ByteSource}
+   * abstraction. It does not modify the file.</li>
+   * <li>Each {@link BinaryData} object provides a deferred stream for reading the decompressed
+   * data, avoiding full in-memory loading unless explicitly requested.</li>
+   * <li>Inflation is performed using a 4 KB internal buffer per stream.</li>
+   * </ul>
+   *
+   * <h3>Parameters</h3>
+   * <dl>
+   * <dt><b>index</b></dt>
+   * <dd>The logical index of the multipart segment to read.</dd>
+   * </dl>
+   *
+   * <h3>Returns</h3>
+   * <ul>
+   * <li>A list of {@link BinaryData} instances representing each decompressed part of the multipart
+   * segment, in the order they were written.</li>
+   * <li>{@code null} if no index entry is present for the specified index.</li>
+   * </ul>
+   *
+   * <h3>Throws</h3>
+   * <ul>
+   * <li>{@link IOException} – if an I/O error occurs while reading from the file or if the segment
+   * exceeds file boundaries.</li>
+   * <li>{@link IllegalStateException} – if decompression or stream reconstruction fails (e.g.
+   * corrupted multipart content).</li>
+   * </ul>
+   *
+   * <h3>Example</h3>
+   * 
+   * <pre>{@code
+   * List<BinaryData> parts = store.readMultipart(3);
+   * if (parts != null) {
+   *   for (BinaryData bd : parts) {
+   *     try (InputStream in = bd.inputStream2()) {
+   *       // Process decompressed content
+   *     }
+   *   }
+   * }
+   * }</pre>
+   *
+   * @param index the logical index entry identifying the multipart data segment to read
+   * @return list of reconstructed {@link BinaryData} objects, or {@code null} if no entry exists
+   * @throws IOException if file I/O fails or the segment exceeds file boundaries
+   * @throws IllegalStateException if decompression or content reconstruction fails
+   * @see #writeAtMultipart(int, BinaryData...)
+   * @see com.google.common.io.ByteSource
+   * @see java.util.zip.InflaterInputStream
+   */
   public List<BinaryData> readMultipart(int index) throws IOException {
     checkIndex(index);
     Entry e = readIndexEntry(index);

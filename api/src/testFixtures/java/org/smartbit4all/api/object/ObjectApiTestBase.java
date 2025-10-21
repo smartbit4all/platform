@@ -64,8 +64,11 @@ import org.smartbit4all.core.object.ObjectPropertyResolver;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.TableData;
 import org.smartbit4all.domain.data.TableDatas;
+import org.smartbit4all.domain.data.storage.ObjectStream;
+import org.smartbit4all.domain.data.storage.ObjectStreamWriter;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
+import org.smartbit4all.storage.fs.StorageFS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
@@ -1264,5 +1267,42 @@ public class ObjectApiTestBase {
     }
   }
 
+  @Test
+  void testObjectStream() throws IOException {
+    // The ObjectStream is available only in case of StorageFS.
+    if (!(storageApi.getDefaultObjectStorage() instanceof StorageFS)) {
+      return;
+    }
+    URI objectUri = objectApi.saveAsNew("test",
+        new SampleCategory().name("Root").cost(Long.valueOf(0)));
+
+    ObjectDefinition<SampleProperties> definition =
+        objectDefinitionApi.definition(SampleProperties.class);
+    {
+      ObjectNode node = objectApi.loadLatest(objectUri);
+      ObjectStream objectStream = node.getObjectStream("items");
+      try (ObjectStreamWriter writer = objectStream.getWriter()) {
+        for (int i = 0; i < 512; i++) {
+          writer.writeObject(new SampleProperties().primary("Name " + i).secondary("secondary")
+              .putEtcItem("other", OffsetDateTime.now().toString()), definition);
+        }
+      }
+      node.setValue(512, SampleCategory.COST);
+      objectApi.save(node);
+    }
+
+    // And now load all the items from a stream.
+    {
+      ObjectNode node = objectApi.loadLatest(objectUri);
+      ObjectStream objectStream = node.getObjectStream("items");
+      int i = 0;
+      Iterable<SampleProperties> iterableObject = objectStream.iterableObject(0, definition);
+      for (SampleProperties item : iterableObject) {
+        assertThat(item.getPrimary()).isEqualTo("Name " + i++);
+      }
+      assertThat(i).isEqualTo(512);
+    }
+
+  }
 
 }

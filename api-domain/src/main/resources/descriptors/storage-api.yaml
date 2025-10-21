@@ -75,7 +75,7 @@ components:
       description: |
         The basic data object of the storages. This holds the version history and refers the current version. Also has named references 
         and collections.
-      required: [uri, currentVersion, versions]
+      required: [uri, currentVersion, versions, objectStreams]
       properties:
         uri:
           type: string
@@ -116,7 +116,30 @@ components:
             If the strategy use some indexing then this index size defines its capacity. The semantic of this property depends on the implementation of the
             strategy.
           type: integer
-          format: int32 
+          format: int32
+        objectStreams:
+          description: |
+            The objects streams are attached stream of the storage objects.
+          type: array
+          items:
+            $ref: '#/components/schemas/StorageObjectStreamDescriptor'
+    StorageObjectStreamDescriptor:
+      type: object
+      description: |
+        This object contains the references and the collections of the given object. This does not have identity it is bound to 
+        the StoaregObject by the ObjectStorage implementation.
+      required: [name, headPosition]
+      properties:
+        name:
+          description: |
+            The name fo the object stream.
+          type: string
+        headPosition:
+          description: |
+            The absolute position of the stream.
+          type: integer
+          format: int64
+          default: 0
     StorageStrategy:
       description: |
         The strategy can define the different strategies for the storage implementations. It can be different for SQL or FS implementation.

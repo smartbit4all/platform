@@ -23,10 +23,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
+import org.smartbit4all.api.object.bean.ObjectStreamDescriptor;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -51,7 +54,8 @@ import jakarta.validation.Valid;
   ObjectNodeData.REFERENCES,
   ObjectNodeData.REFERENCE_LISTS,
   ObjectNodeData.REFERENCE_MAPS,
-  ObjectNodeData.RESULT_URI
+  ObjectNodeData.RESULT_URI,
+  ObjectNodeData.OBJECTS_STREAMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ObjectNodeData {
@@ -96,6 +100,9 @@ public class ObjectNodeData {
 
   public static final String RESULT_URI = "resultUri";
   private URI resultUri;
+
+  public static final String OBJECTS_STREAMS = "objectsStreams";
+  private List<@Valid ObjectStreamDescriptor> objectsStreams = new ArrayList<>();
 
   public ObjectNodeData() {
   }
@@ -521,6 +528,43 @@ public class ObjectNodeData {
     this.resultUri = resultUri;
   }
 
+  public ObjectNodeData objectsStreams(List<@Valid ObjectStreamDescriptor> objectsStreams) {
+    
+    this.objectsStreams = objectsStreams;
+    return this;
+  }
+
+  public ObjectNodeData addObjectsStreamsItem(ObjectStreamDescriptor objectsStreamsItem) {
+    if (this.objectsStreams == null) {
+      this.objectsStreams = new ArrayList<>();
+    }
+    this.objectsStreams.add(objectsStreamsItem);
+    return this;
+  }
+
+  /**
+   * Get objectsStreams
+   * @return objectsStreams
+   */
+  @jakarta.annotation.Nonnull
+  @NotNull
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @JsonProperty(OBJECTS_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public List<@Valid ObjectStreamDescriptor> getObjectsStreams() {
+    return objectsStreams;
+  }
+
+
+  @JsonProperty(OBJECTS_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setObjectsStreams(List<@Valid ObjectStreamDescriptor> objectsStreams) {
+    this.objectsStreams = objectsStreams;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -543,12 +587,13 @@ public class ObjectNodeData {
         Objects.equals(this.references, objectNodeData.references) &&
         Objects.equals(this.referenceLists, objectNodeData.referenceLists) &&
         Objects.equals(this.referenceMaps, objectNodeData.referenceMaps) &&
-        Objects.equals(this.resultUri, objectNodeData.resultUri);
+        Objects.equals(this.resultUri, objectNodeData.resultUri) &&
+        Objects.equals(this.objectsStreams, objectNodeData.objectsStreams);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, createdAt, lastModified, physicalObjectId, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri);
+    return Objects.hash(objectUri, qualifiedName, storageSchema, versionNr, createdAt, lastModified, physicalObjectId, state, objectAsMap, aspects, references, referenceLists, referenceMaps, resultUri, objectsStreams);
   }
 
   @Override
@@ -569,6 +614,7 @@ public class ObjectNodeData {
     sb.append("    referenceLists: ").append(toIndentedString(referenceLists)).append("\n");
     sb.append("    referenceMaps: ").append(toIndentedString(referenceMaps)).append("\n");
     sb.append("    resultUri: ").append(toIndentedString(resultUri)).append("\n");
+    sb.append("    objectsStreams: ").append(toIndentedString(objectsStreams)).append("\n");
     sb.append("}");
     return sb.toString();
   }

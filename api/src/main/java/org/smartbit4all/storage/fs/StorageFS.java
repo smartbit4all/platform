@@ -45,6 +45,7 @@ import org.smartbit4all.domain.data.storage.ObjectModificationException;
 import org.smartbit4all.domain.data.storage.ObjectNotFoundException;
 import org.smartbit4all.domain.data.storage.ObjectStorage;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import org.smartbit4all.domain.data.storage.ObjectStream;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageLoadOption;
@@ -112,6 +113,11 @@ public class StorageFS extends ObjectStorageImpl {
    * The object versions are stored in this indexed file.
    */
   private static final String SO_INDEXEDVERSIONEXTENSION = ".iv";
+
+  /**
+   * The file extension (*.extension) of the object stream files.
+   */
+  private static final String SO_OBJECTSTREAM = ".os";
 
   /**
    * The transaction manager (there must be only one in one application) that is configured. Used to
@@ -356,7 +362,8 @@ public class StorageFS extends ObjectStorageImpl {
   protected final void saveSingleVersionObject(StorageObject<?> object) throws IOException {
     File objectDataFile = getObjectDataFile(object.getUri());
     StorageObjectData storageObjectData = new StorageObjectData().uri(object.getUri())
-        .className(object.definition().getClazz().getName());
+        .className(object.definition().getClazz().getName())
+        .objectStreams(object.getObjectStreams());
     saveObjectDataInline(object, objectDataFile, storageObjectData);
   }
 
@@ -412,8 +419,7 @@ public class StorageFS extends ObjectStorageImpl {
       // This will be a new data file, first we create the StorageObjectData save it into a new
       // data file.
       storageObjectData = new StorageObjectData().uri(object.getUri())
-          .className(object.definition().getQualifiedName());
-      storageObjectData.setStrategy(object.getStrategy());
+          .className(object.definition().getQualifiedName()).strategy(object.getStrategy());
       if (StorageStrategy.INDEXED.equals(object.getStrategy())) {
         storageObjectData.setIndexSize(indexSize);
       }
@@ -488,6 +494,7 @@ public class StorageFS extends ObjectStorageImpl {
 
     // Set the current version, change it at the last point to be able to use earlier.
     storageObjectData.currentVersion(newVersion);
+    storageObjectData.setObjectStreams(object.getObjectStreams());
 
     saveObjectData(object, objectDataFile, storageObjectData);
 
@@ -657,6 +664,7 @@ public class StorageFS extends ObjectStorageImpl {
       storageObject.setIndexSize(storageObjectData.getIndexSize());
       storageObject.setStrategy(storageObjectData.getStrategy());
       storageObject.setAspects(objectVersion.getAspects());
+      storageObject.setObjectStreams(storageObjectData.getObjectStreams());
       // }
 
     } else {
@@ -843,9 +851,7 @@ public class StorageFS extends ObjectStorageImpl {
     toDelete.add(getObjectDataFile(uri));
     toDelete.add(getObjectTransactionFile(uri));
     toDelete.add(getObjectLockFile(uri));
-    if (!isSingleVersion(uri)) {
-      toDelete.add(getObjectVersionBasePath(uri));
-    }
+    toDelete.add(getObjectVersionBasePath(uri));
     return FileIO.deleteAll(toDelete);
   }
 
@@ -888,8 +894,10 @@ public class StorageFS extends ObjectStorageImpl {
             obj.put("uri", uri);
           }
         }
-        return instanceOf(storage, definition, obj,
+        StorageObject<T> storageObject = instanceOf(storage, definition, obj,
             dataObject == null ? null : dataObject.getCurrentVersion(), null);
+        storageObject.setObjectStreams(dataObject.getObjectStreams());
+        return storageObject;
       } catch (IOException e) {
         // We must try again.
         log.debug("Unable to read {}", storageObjectDataFile);
@@ -1081,6 +1089,14 @@ public class StorageFS extends ObjectStorageImpl {
 
   public final File getRootFolder() {
     return rootFolder;
+  }
+
+  @Override
+  public ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition) {
+    File objectVersionBasePath = getObjectVersionBasePath(getUriWithoutVersion(scopeObjectUri));
+    File objectStreamFile = new File(objectVersionBasePath, name + SO_OBJECTSTREAM);
+    return new ObjectStreamFS(objectStreamFile, headPosition);
   }
 
 }
