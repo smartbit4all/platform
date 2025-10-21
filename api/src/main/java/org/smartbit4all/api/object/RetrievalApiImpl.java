@@ -1,7 +1,5 @@
 package org.smartbit4all.api.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +18,7 @@ import org.smartbit4all.api.object.bean.BranchOperation;
 import org.smartbit4all.api.object.bean.BranchOperation.OperationTypeEnum;
 import org.smartbit4all.api.object.bean.BranchedObject;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
+import org.smartbit4all.api.object.bean.ObjectStreamDescriptor;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.object.bean.RetrievalMode;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
@@ -33,6 +32,8 @@ import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The abstract implementation of the retrieval. It will use contribution apis to access objects.
@@ -253,6 +254,10 @@ public final class RetrievalApiImpl implements RetrievalApi {
         .versionNr(version == null ? null : version.getSerialNoData())
         .lastModified(storageObject.getLastModified())
         .physicalObjectId(storageObject.getPhysicalObjectId())
+        .objectsStreams(new ArrayList<>(storageObject.getObjectStreams().stream()
+            .map(sd -> new ObjectStreamDescriptor().name(sd.getName())
+                .headPosition(sd.getHeadPosition()))
+            .toList()))
         .createdAt(version == null ? null : version.getCreatedAt());
   }
 

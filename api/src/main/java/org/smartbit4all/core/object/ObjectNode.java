@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -20,6 +18,7 @@ import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
+import org.smartbit4all.api.object.bean.ObjectStreamDescriptor;
 import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.object.bean.ReferencePropertyKind;
 import org.smartbit4all.api.object.bean.SnapshotData;
@@ -28,8 +27,11 @@ import org.smartbit4all.api.sample.bean.SampleInlineObject;
 import org.smartbit4all.api.storage.bean.ObjectAspect;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.core.utility.UriUtils;
+import org.smartbit4all.domain.data.storage.ObjectStream;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -64,6 +66,11 @@ public class ObjectNode {
   private final Map<String, ObjectNodeReference> references;
   private final Map<String, ObjectNodeList> referenceLists;
   private final Map<String, ObjectNodeMap> referenceMaps;
+
+  /**
+   * The object streams loaded and managed by the current node.
+   */
+  private final Map<String, ObjectStream> objectStreams = new HashMap<>();
 
   ObjectNode(ObjectApi objectApi, ObjectNodeData data) {
     this(objectApi, objectApi.definition(data.getQualifiedName()), data);
@@ -369,18 +376,6 @@ public class ObjectNode {
       return Optional.empty();
     }
   }
-
-  // /**
-  // * Set the value directly into the data.
-  // *
-  // * @param key The key of the value, the name of the property.
-  // * @param value The value object.
-  // */
-  // public ObjectNode setValue(String key, Object value) {
-  // data.getObjectAsMap().put(key, value);
-  // setModified();
-  // return this;
-  // }
 
   /**
    * Sets the value in the data map, specified by path. Path cannot contain references!
@@ -1115,6 +1110,39 @@ public class ObjectNode {
    */
   public String getPhysicalObjectId() {
     return data.getPhysicalObjectId();
+  }
+
+  /**
+   * The object stream attached of to the {@link ObjectNode}. The node must be saved before because
+   * the URI is the scope of the stream.
+   * 
+   * @param name The name of the object stream.
+   * @return The {@link ObjectStream} is the access of the underlying stream.
+   */
+  public ObjectStream getObjectStream(String name) {
+    ObjectStream objectStream = objectStreams.get(name);
+    if (objectStream != null) {
+      return objectStream;
+    }
+    ObjectStreamDescriptor streamDescriptor =
+        data.getObjectsStreams().stream().filter(s -> Objects.equals(name, s.getName())).findFirst()
+            .orElse(null);
+    if (streamDescriptor == null) {
+      streamDescriptor = new ObjectStreamDescriptor().name(name).headPosition(0L);
+      data.addObjectsStreamsItem(streamDescriptor);
+    }
+    objectStream = objectApi.getObjectStream(this, name, streamDescriptor.getHeadPosition());
+    objectStreams.put(name, objectStream);
+    return objectStream;
+  }
+
+  public List<ObjectStreamDescriptor> getObjectStreamDescriptors() {
+    return data.getObjectsStreams().stream().map(sd -> {
+      ObjectStream objectStream = objectStreams.get(sd.getName());
+      long headPOsition =
+          objectStream != null ? objectStream.getHeadPosition() : sd.getHeadPosition();
+      return new ObjectStreamDescriptor().name(sd.getName()).headPosition(headPOsition);
+    }).toList();
   }
 
 }

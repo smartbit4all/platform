@@ -283,6 +283,19 @@ public interface ObjectStorage {
    */
   StoredSequence getSequence(URI scopeObjectUri, String schema, String name);
 
+  /**
+   * Return the {@link ObjectStream} by the scoped uri with the given name. The schema will be the
+   * storage of the stream.
+   * 
+   * @param scopeObjectUri
+   * @param schema
+   * @param name
+   * @param headPosition
+   * @return
+   */
+  ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition);
+
   StorageObjectPhysicalLock lockPhysicalObject(URI objectUri, long waitUntil);
 
   void unlockPhysicalObject(StorageObjectPhysicalLock lock);
