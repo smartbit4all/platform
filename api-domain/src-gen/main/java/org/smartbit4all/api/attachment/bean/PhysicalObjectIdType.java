@@ -1,6 +1,6 @@
 /*
  * Attachment api
- * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system.  
+ * The attachment api domain is strictly manages the BinaryContentData objects. They are responsible for a simple file with file name, location (represented by a dataUri) and a locationKind. The location defines the api that responsible for accessing the given content. It can be the storage inline but also any other document management system. 
  *
  * The version of the OpenAPI document: 1.0.0
  * Contact: info@it4all.hu
@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values  
+ * The physical object can be identified by several techniques lik barcode, QR code, NFC. This identifier can be used to search for the items by tha values 
  */
 public enum PhysicalObjectIdType {
   

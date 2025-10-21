@@ -4,6 +4,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import org.smartbit4all.api.contribution.ContributionApiImpl;
+import org.smartbit4all.api.storage.bean.StorageObjectStreamDescriptor;
 import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
@@ -55,6 +56,11 @@ public class ModifyContributionApiStorageImpl extends ContributionApiImpl
     StorageObject<?> storageObject = storageApi.load(versionUri);
     storageObject.asMap().setObjectAsMap(objectNode.getObjectAsMap());
     storageObject.setAspects(objectNode.aspects().get());
+    // Construct the consolidated list of object streams.
+    storageObject.setObjectStreams(objectNode.getObjectStreamDescriptors().stream()
+        .map(sd -> new StorageObjectStreamDescriptor().name(sd.getName())
+            .headPosition(sd.getHeadPosition()))
+        .toList());
     return storageObject.getStorage().saveVersion(storageObject);
   }
 

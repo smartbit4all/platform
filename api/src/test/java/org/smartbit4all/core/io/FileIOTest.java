@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.io.utility.IndexedMultipartStore;
+import org.smartbit4all.core.io.utility.ObjectStreamStore;
 import org.smartbit4all.core.utility.PathUtility;
 import org.smartbit4all.core.utility.StringConstant;
 import com.google.common.io.ByteStreams;
@@ -359,7 +360,7 @@ public class FileIOTest {
       store.writeAt(4, bd(b));
     }
 
-    try (IndexedMultipartStore store = IndexedMultipartStore.open(f, 5)) {
+    try (IndexedMultipartStore store = IndexedMultipartStore.openOrCreate(f, 5)) {
       BinaryData r0 = store.readAt(0);
       BinaryData r4 = store.readAt(4);
 
@@ -493,4 +494,106 @@ public class FileIOTest {
       }
     }
   }
+
+  @Test
+  void persistenceAcrossReopen_objectStreamStore() throws Exception {
+    File f = TestFileUtil.testFsRootFolder()
+        .toPath()
+        .resolve("persistenceAcrossReopen_objectStreamStore.bin")
+        .toFile();
+
+    byte[] a = bytes("A");
+    byte[] b = bytes("BEE");
+
+    long offA;
+    long offB;
+    long next;
+
+    // NOTE: ObjectStreamStore requires a positive nextAppendOffset; start with 1.
+    try (ObjectStreamStore store = ObjectStreamStore.openOrCreate(f, 1L)) {
+      offA = store.getCurrentOffset();
+      store.write(bd(a));
+      offB = store.getCurrentOffset();
+      store.write(bd(b));
+      next = store.nextAppendOffset();
+    }
+
+    // Reopen and verify content + offsets are persisted
+    try (ObjectStreamStore store = ObjectStreamStore.openOrCreate(f, next)) {
+      BinaryData readA = store.read(true);
+      BinaryData readB = store.read(true);
+
+      assertNotNull(readA);
+      assertNotNull(readB);
+
+      assertArrayEquals(a, readAll(readA));
+      assertArrayEquals(b, readAll(readB));
+
+      // After reopen, reported next append position should match what we stored
+      assertEquals(next, store.length());
+    }
+  }
+
+  @Test
+  void bidirectionalRead_forwardAndBackward() throws Exception {
+    File file = TestFileUtil.testFsRootFolder()
+        .toPath()
+        .resolve("bidirectionalRead_forwardAndBackward.bin")
+        .toFile();
+
+    byte[] a = bytes("A"); // small payload
+    byte[] b = bytes("BEE"); // slightly larger payload
+
+    long offA, offB, next;
+
+    // Write two segments and capture their starting offsets.
+    try (ObjectStreamStore store = ObjectStreamStore.openOrCreate(file, 1L)) {
+      offA = store.getCurrentOffset();
+      store.write(bd(a));
+      offB = store.getCurrentOffset();
+      store.write(bd(b));
+      next = store.nextAppendOffset();
+    }
+
+    // Reopen for reading tests.
+    try (ObjectStreamStore store = ObjectStreamStore.openOrCreate(file, next)) {
+
+      // --- Forward read from start of segment A ---
+      // Place cursor at the header of A.
+      store.setCurrentOffset(offA);
+      BinaryData fwdA = store.read(true);
+      assertNotNull(fwdA, "Forward read at A header should return segment A");
+      assertArrayEquals(a, readAll(fwdA));
+
+      // --- Forward read from start of segment B ---
+      store.setCurrentOffset(offB);
+      BinaryData fwdB = store.read(true);
+      assertNotNull(fwdB, "Forward read at B header should return segment B");
+      assertArrayEquals(b, readAll(fwdB));
+
+      // --- Backward read from end boundary of segment B ---
+      // For backward read, the cursor must be positioned at the beginning of the footer of the
+      // segment we want to read (i.e., right after the payload).
+      BinaryData backB = store.read(false);
+      assertNotNull(backB, "Backward read at B footer should return segment B");
+      assertArrayEquals(b, readAll(backB));
+
+      // --- Backward read from end boundary of segment A ---
+      BinaryData backA = store.read(false);
+      assertNotNull(backA, "Backward read at A footer should return segment A");
+      assertArrayEquals(a, readAll(backA));
+
+      // --- Boundary checks ---
+      // Forward at/after EOF => null
+      store.setCurrentOffset(file.length());
+
+      assertNull(store.read(true), "Forward read at EOF should return null");
+
+      // Backward at BOF (0) => null
+      store.setCurrentOffset(0L);
+
+      assertNull(store.read(false), "Backward read at BOF should return null");
+    }
+  }
+
 }

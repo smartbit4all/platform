@@ -114,4 +114,7 @@ public interface StorageApi {
    */
   StoredSequence getSequence(URI scopeObjectUri, String schema, String name);
 
+  ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition);
+
 }

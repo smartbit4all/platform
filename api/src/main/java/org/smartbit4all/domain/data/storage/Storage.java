@@ -987,6 +987,11 @@ public final class Storage {
     return objectStorage.getSequence(scopeObjectUri, schema, name);
   }
 
+  public ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition) {
+    return objectStorage.getObjectStream(scopeObjectUri, schema, name, headPosition);
+  }
+
   public final Boolean getUseSecondInUri() {
     return useSecondInUri;
   }

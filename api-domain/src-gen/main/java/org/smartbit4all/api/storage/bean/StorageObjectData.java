@@ -22,7 +22,11 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.smartbit4all.api.storage.bean.ObjectVersion;
+import org.smartbit4all.api.storage.bean.StorageObjectStreamDescriptor;
 import org.smartbit4all.api.storage.bean.StorageStrategy;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,7 +44,8 @@ import jakarta.validation.Valid;
   StorageObjectData.PENDING_VERSION,
   StorageObjectData.DELETED,
   StorageObjectData.STRATEGY,
-  StorageObjectData.INDEX_SIZE
+  StorageObjectData.INDEX_SIZE,
+  StorageObjectData.OBJECT_STREAMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class StorageObjectData {
@@ -64,6 +69,9 @@ public class StorageObjectData {
 
   public static final String INDEX_SIZE = "indexSize";
   private Integer indexSize;
+
+  public static final String OBJECT_STREAMS = "objectStreams";
+  private List<@Valid StorageObjectStreamDescriptor> objectStreams = new ArrayList<>();
 
   public StorageObjectData() {
   }
@@ -263,6 +271,42 @@ public class StorageObjectData {
     this.indexSize = indexSize;
   }
 
+  public StorageObjectData objectStreams(List<@Valid StorageObjectStreamDescriptor> objectStreams) {
+    
+    this.objectStreams = objectStreams;
+    return this;
+  }
+
+  public StorageObjectData addObjectStreamsItem(StorageObjectStreamDescriptor objectStreamsItem) {
+    if (this.objectStreams == null) {
+      this.objectStreams = new ArrayList<>();
+    }
+    this.objectStreams.add(objectStreamsItem);
+    return this;
+  }
+
+  /**
+   * The objects streams are attached stream of the storage objects. 
+   * @return objectStreams
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The objects streams are attached stream of the storage objects. ")
+  @JsonProperty(OBJECT_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public List<@Valid StorageObjectStreamDescriptor> getObjectStreams() {
+    return objectStreams;
+  }
+
+
+  @JsonProperty(OBJECT_STREAMS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setObjectStreams(List<@Valid StorageObjectStreamDescriptor> objectStreams) {
+    this.objectStreams = objectStreams;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -278,12 +322,13 @@ public class StorageObjectData {
         Objects.equals(this.pendingVersion, storageObjectData.pendingVersion) &&
         Objects.equals(this.deleted, storageObjectData.deleted) &&
         Objects.equals(this.strategy, storageObjectData.strategy) &&
-        Objects.equals(this.indexSize, storageObjectData.indexSize);
+        Objects.equals(this.indexSize, storageObjectData.indexSize) &&
+        Objects.equals(this.objectStreams, storageObjectData.objectStreams);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, currentVersion, className, pendingVersion, deleted, strategy, indexSize);
+    return Objects.hash(uri, currentVersion, className, pendingVersion, deleted, strategy, indexSize, objectStreams);
   }
 
   @Override
@@ -297,6 +342,7 @@ public class StorageObjectData {
     sb.append("    deleted: ").append(toIndentedString(deleted)).append("\n");
     sb.append("    strategy: ").append(toIndentedString(strategy)).append("\n");
     sb.append("    indexSize: ").append(toIndentedString(indexSize)).append("\n");
+    sb.append("    objectStreams: ").append(toIndentedString(objectStreams)).append("\n");
     sb.append("}");
     return sb.toString();
   }

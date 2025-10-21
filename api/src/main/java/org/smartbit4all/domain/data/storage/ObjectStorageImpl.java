@@ -561,6 +561,7 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     storageObject.setPhysicalObjectId(physicalId);
     storageObject.setStrategy(data.getStrategy());
     storageObject.setIndexSize(data.getIndexSize());
+    storageObject.setObjectStreams(data.getObjectStreams());
     return storageObject;
   }
 
@@ -1032,6 +1033,13 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
         CollectionApiStorageImpl.constructScopedUri(schema, name,
             ObjectStorageImpl.getUriWithoutVersion(scopeObjectUri), CollectionApi.STOREDSEQ),
         name);
+  }
+
+  @Override
+  public ObjectStream getObjectStream(URI scopeObjectUri, String schema, String name,
+      long headPosition) {
+    throw new UnsupportedOperationException(
+        "The object stream is not supported by the ObjectStorage implementation.");
   }
 
 }

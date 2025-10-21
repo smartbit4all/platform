@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +35,7 @@ import org.smartbit4all.api.object.bean.SnapshotData;
 import org.smartbit4all.core.utility.ObjectDefinitionUtils;
 import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.data.storage.ObjectStorageImpl;
+import org.smartbit4all.domain.data.storage.ObjectStream;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObjectLock;
@@ -46,6 +46,7 @@ import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -639,6 +640,13 @@ public class ObjectApiImpl implements ObjectApi {
         return i > 0;
       }
     };
+  }
+
+  @Override
+  public ObjectStream getObjectStream(ObjectNode node, String name,
+      long headPosition) {
+    return storageApi.getObjectStream(node.getObjectUri(), node.getStorageScheme(), name,
+        headPosition);
   }
 
   @Override
