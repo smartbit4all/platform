@@ -271,9 +271,15 @@ components:
         multiSelect:
           type: boolean
           default: false
+
     TextFieldProperties:
       type: object
       properties:
         clearable:
           type: boolean
           default: false
+    ImageProperties:
+      type: object
+      properties:
+        image:
+          type: ImageResource

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.formdefinition.bean.ImageProperties;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
@@ -212,6 +213,24 @@ public final class ObjectLayoutBuilder {
         .type(SmartFormWidgetType.LABEL)
         .key(key)
         .label(label);
+  }
+
+  public static SmartWidgetDefinition image(String key, String label) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.IMAGE)
+        .key(key)
+        .label(label);
+  }
+
+  public static SmartWidgetDefinition image(String key, String label,
+      ImageProperties properties) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.IMAGE)
+        .key(key)
+        .label(label)
+        .putPropertiesItem(
+            SmartFormWidgetType.IMAGE.getValue() + PROPERTIES_SUFFIX,
+            properties);
   }
 
   public static SmartWidgetDefinition textfield(String key, String label) {
