@@ -62,6 +62,7 @@ import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
+import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.UploadedFile;
@@ -462,7 +463,13 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
               isValueApiPresent, branchActive, isEntryEditable);
     }
 
-    uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES).inputType(UiActionInputType.FILE),
+    uiActions.addIf(new UiAction().code(ACTION_IMPORT_ENTRIES)
+        .inputType(UiActionInputType.FILE)
+        .descriptor(new UiActionDescriptor()
+            .title(localeSettingApi.get(ACTION_IMPORT_ENTRIES))
+            .color(UiActions.Color.PRIMARY)
+            .type(UiActionButtonType.RAISED)
+            .feedbackType(UiActionFeedbackType.NONE)),
         isAdmin, isImportable, entryEditingEnabled);
 
     uiActions

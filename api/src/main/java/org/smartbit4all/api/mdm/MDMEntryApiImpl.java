@@ -423,8 +423,9 @@ public final class MDMEntryApiImpl implements MDMEntryApi {
                   objectNodeAndUriToCheck.getValue()))
               || uniqueValues.contains(uniqueValueStr)) {
             throw new BusinessLogicException(
-                localeSettingApi.get("mdm", descriptor.getName(), "notunique",
-                    String.join(".", path)));
+                localeSettingApi.get("mdm.notunique")
+                    + StringConstant.SPACE
+                    + localeSettingApi.get(String.join(".", path)));
           } else {
             uniqueValues.add(uniqueValueStr);
           }
