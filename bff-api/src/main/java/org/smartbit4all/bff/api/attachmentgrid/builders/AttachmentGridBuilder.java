@@ -3,12 +3,13 @@ package org.smartbit4all.bff.api.attachmentgrid.builders;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.UnaryOperator;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.grid.bean.GridModel;
-import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
+import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridApi;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
@@ -77,6 +78,24 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
     return self();
   }
 
+  /**
+   * Sets the {@link InvocationRequest} to use for saving the attachments.
+   * 
+   * <p>
+   * Function params should be:
+   * 
+   * <pre>
+   * {@code (UUID uuid, UiActionRequest request, List<BinaryContentData>) -> void }
+   * </pre>
+   * 
+   * <p>
+   * Objects are saved in the {@link #logicalSchema(String)} schema.
+   * 
+   * @param saveRequest the {@InvocationRequest} to be used as a save operation; not null
+   * @return this instance
+   * 
+   * 
+   */
   public T saveRequest(InvocationRequest saveRequest) {
     Objects.requireNonNull(saveRequest, "saveRequest cannot be null!");
     this.saveRequest = saveRequest;
@@ -198,10 +217,18 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
 
     if (this.options.getIsEditable()) {
       Objects.requireNonNull(this.saveRequest, "saveRequest cannot be null!");
-      InvocationParameter invocationParameter = this.saveRequest.getParameters().get(0);
-      if (!invocationParameter.getTypeClass().equals("java.util.List")) {
+      if (!this.saveRequest.getParameters().get(0).getTypeClass().equals(UUID.class.getName())) {
         throw new IllegalArgumentException(
-            "SaveRequest first parameter should be List<BinaryContentData>");
+            "SaveRequest first parameter should be UUID");
+      }
+      if (!this.saveRequest.getParameters().get(1).getTypeClass()
+          .equals(UiActionRequest.class.getName())) {
+        throw new IllegalArgumentException(
+            "SaveRequest second parameter should be UiActionRequest");
+      } ;
+      if (!this.saveRequest.getParameters().get(2).getTypeClass().equals(List.class.getName())) {
+        throw new IllegalArgumentException(
+            "SaveRequest third parameter should be List<BinaryContentData>");
       }
     }
   }

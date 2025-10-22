@@ -362,8 +362,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     AttachmentGridOptions options = descriptor.getOptions();
 
     InvocationRequest invocationRequest = descriptor.getSaveRequest();
-    invocationRequest.getParameters().get(0).setValue(descriptor.getAttachmentList());
+    invocationRequest.getParameters().get(0).setValue(viewUuid);
     invocationRequest.getParameters().get(1).setValue(request);
+    invocationRequest.getParameters().get(2).setValue(descriptor.getAttachmentList());
+
     try {
       invocationApi.invoke(invocationRequest);
     } catch (ApiNotFoundException e) {
