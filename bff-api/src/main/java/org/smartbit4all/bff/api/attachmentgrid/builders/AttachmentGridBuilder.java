@@ -12,6 +12,7 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.bff.api.attachmentgrid.AttachmentGridApi;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridButtons;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
 import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
@@ -29,16 +30,14 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
   protected List<AdditionalAttachmentAction> additionalActions;
   protected List<String> columns;
 
-  protected ButtonDescriptor saveButtonDescriptor;
-  protected ButtonDescriptor uploadButtonDescriptor;
-  protected ButtonDescriptor refreshButtonDescriptor;
-
+  protected AttachmentGridButtons buttons;
   protected AttachmentGridOptions options;
   protected UnaryOperator<GridModel> beforeInitCallback;
 
   protected AttachmentGridBuilder(AttachmentGridApi attachmentGridApi) {
     this.attachmentGridApi = attachmentGridApi;
     this.options = new AttachmentGridOptions();
+    this.buttons = new AttachmentGridButtons();
     this.additionalActions = new ArrayList<>();
     this.attachmentList = new ArrayList<>();
     this.columns = new ArrayList<>();
@@ -129,21 +128,43 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
     return self();
   }
 
-  public T saveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
+  public T saveListButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
     Objects.requireNonNull(saveButtonDescriptor, "saveButtonDescriptor cannot be null!");
-    this.saveButtonDescriptor = saveButtonDescriptor;
+    this.buttons.saveButtonDescriptor(saveButtonDescriptor);
     return self();
   }
 
   public T uploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
     Objects.requireNonNull(uploadButtonDescriptor, "uploadButtonDescriptor cannot be null!");
-    this.uploadButtonDescriptor = uploadButtonDescriptor;
+    this.buttons.uploadButtonDescriptor(uploadButtonDescriptor);
     return self();
   }
 
-  public T refreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
-    Objects.requireNonNull(refreshButtonDescriptor, "refreshButtonDescriptor cannot be null!");
-    this.refreshButtonDescriptor = refreshButtonDescriptor;
+  public T deleteListButtonDescriptor(ButtonDescriptor deleteListButtonDescriptor) {
+    Objects.requireNonNull(deleteListButtonDescriptor,
+        "deleteListButtonDescriptor cannot be null!");
+    this.buttons.deleteButtonDescriptor(deleteListButtonDescriptor);
+    return self();
+  }
+
+  public T previewFileButtonDescriptor(ButtonDescriptor previewFileButtonDescriptor) {
+    Objects.requireNonNull(previewFileButtonDescriptor,
+        "previewFileButtonDescriptor cannot be null!");
+    this.buttons.previewFileButtonDescriptor(previewFileButtonDescriptor);
+    return self();
+  }
+
+  public T removeFileButtonDescriptor(ButtonDescriptor removeFileButtonDescriptor) {
+    Objects.requireNonNull(removeFileButtonDescriptor,
+        "removeFileButtonDescriptor cannot be null!");
+    this.buttons.removeFileButtonDescriptor(removeFileButtonDescriptor);
+    return self();
+  }
+
+  public T downloadFileButtonDescriptor(ButtonDescriptor downloadFileButtonDescriptor) {
+    Objects.requireNonNull(downloadFileButtonDescriptor,
+        "downloadFileButtonDescriptor cannot be null!");
+    this.buttons.downloadFileButtonDescriptor(downloadFileButtonDescriptor);
     return self();
   }
 
@@ -242,9 +263,7 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
         .logicalSchema(this.logicalSchema)
         .saveRequest(this.saveRequest)
         .additionalActions(this.additionalActions)
-        .saveButtonDescriptor(this.saveButtonDescriptor)
-        .uploadButtonDescriptor(this.uploadButtonDescriptor)
-        .refreshButtonDescriptor(this.refreshButtonDescriptor)
+        .buttons(this.buttons)
         .options(this.options)
         .columns(this.columns);
     return descriptor;

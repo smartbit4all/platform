@@ -34,18 +34,30 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AdditionalAttachmentAction'
-        saveButtonDescriptor:
-          $ref: '#/components/schemas/ButtonDescriptor'
-        uploadButtonDescriptor:
-          $ref: '#/components/schemas/ButtonDescriptor'
-        refreshButtonDescriptor:
-          $ref: '#/components/schemas/ButtonDescriptor'
+        buttons:
+          $ref: '#/components/schemas/AttachmentGridButtons'
         options:
           $ref: '#/components/schemas/AttachmentGridOptions'
         columns:
           type: array
           items:
             type: string
+
+    AttachmentGridButtons:
+      type: object
+      properties:
+        saveButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
+        uploadButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
+        deleteButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
+        previewFileButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
+        downloadFileButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
+        removeFileButtonDescriptor:
+          $ref: '#/components/schemas/ButtonDescriptor'
 
     ButtonDescriptor:
       type: object

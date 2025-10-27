@@ -1,10 +1,10 @@
 package org.smartbit4all.bff.api.attachmentgrid;
 
+import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_DELETE_LIST_HANDLER;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_DOWNLOADBLE_FILE;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_DOWNLOAD_HANDLER;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_OPEN_HANDLER;
-import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_REFRESH_LIST_HANDLER;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_REMOVE_HANDLER;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_SAVE_LIST_HANDLER;
 import static org.smartbit4all.bff.api.attachmentgrid.util.AttachmentGridConstants.ATTACHMENT_TEMP_SCHEMA;
@@ -40,13 +40,8 @@ import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.ViewEventApi;
 import org.smartbit4all.api.view.bean.DownloadedFile;
-import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiAction;
-import org.smartbit4all.api.view.bean.UiActionButtonDescriptor;
-import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
-import org.smartbit4all.api.view.bean.UiActionDialogDescriptor;
-import org.smartbit4all.api.view.bean.UiActionFeedbackType;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.UploadedFile;
@@ -71,6 +66,7 @@ import org.springframework.util.ObjectUtils;
 public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocationApi {
 
   private static final Logger log = LoggerFactory.getLogger(AttachmentGridInvocationApiImpl.class);
+
 
   @Autowired(required = false)
   private ViewApi viewApi;
@@ -101,45 +97,30 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
 
     for (GridRow row : page.getRows()) {
 
+
       if (Boolean.TRUE.equals(options.getIsPreviewable())) {
-        row.addActionsItem(new UiAction()
-            .model(true)
-            .code(ATTACHMENT_OPEN_HANDLER)
-            .descriptor(new UiActionDescriptor()
-                .type(UiActionButtonType.RAISED)
-                .color(UiActions.Color.PRIMARY)
-                .icon("eye").iconPosition(IconPosition.PRE)
-                .title(localeSettingApi.get("open.attachment"))));
+
+        ButtonDescriptor incoming =
+            descriptor.getButtons().getPreviewFileButtonDescriptor();
+        UiAction builtIn =
+            AttachmentGridBuiltInButtons.PREVIEWABLE_BUILT_IN_BUTTON.apply(localeSettingApi);
+        row.addActionsItem(mergeButtons(incoming, builtIn));
       }
       if (Boolean.TRUE.equals(options.getIsDownloadable())) {
-        row.addActionsItem(new UiAction()
-            .model(true)
-            .code(ATTACHMENT_DOWNLOAD_HANDLER)
-            .descriptor(new UiActionDescriptor()
-                .type(UiActionButtonType.RAISED)
-                .color(UiActions.Color.PRIMARY)
-                .icon("download").iconPosition(IconPosition.PRE)
-                .title(localeSettingApi.get("download.attachment"))));
+
+        ButtonDescriptor incoming =
+            descriptor.getButtons().getDownloadFileButtonDescriptor();
+        UiAction builtIn =
+            AttachmentGridBuiltInButtons.DOWNLOAD_BUILT_IN_BUTTON.apply(localeSettingApi);
+        row.addActionsItem(mergeButtons(incoming, builtIn));
       }
       if (Boolean.TRUE.equals(options.getIsEditable())) {
-        row.addActionsItem(new UiAction()
-            .model(true)
-            .confirm(true)
-            .code(ATTACHMENT_REMOVE_HANDLER)
-            .descriptor(new UiActionDescriptor()
-                .title(localeSettingApi.get("remove.attachment"))
-                .type(UiActionButtonType.RAISED)
-                .color(UiActions.Color.WARN)
-                .icon("times").iconPosition(IconPosition.PRE)
-                .confirmDialog(new UiActionDialogDescriptor()
-                    .title(localeSettingApi.get("remove.attachment.confirm.header"))
-                    .text(localeSettingApi.get("remove.attachment.confirm.text"))
-                    .actionButton(new UiActionButtonDescriptor()
-                        .caption(localeSettingApi.get("remove.attachment.confirm.action"))
-                        .color(UiActions.Color.WARN))
-                    .cancelButton(new UiActionButtonDescriptor()
-                        .caption(localeSettingApi.get("remove.attachment.confirm.cancel"))
-                        .color(UiActions.Color.PRIMARY)))));
+
+        ButtonDescriptor incoming =
+            descriptor.getButtons().getRemoveFileButtonDescriptor();
+        UiAction builtIn =
+            AttachmentGridBuiltInButtons.REMOVE_BUILT_IN_BUTTON.apply(localeSettingApi);
+        row.addActionsItem(mergeButtons(incoming, builtIn));
       }
 
 
@@ -446,50 +427,37 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     String toolbarId = descriptor.getGridWidgetId()
         + getToolbarPosition(options.getToolbarPosition());
 
-    UiAction action = new UiAction()
+    ButtonDescriptor incoming =
+        descriptor.getButtons().getUploadButtonDescriptor();
+    UiAction builtIn =
+        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi);
+    UiAction uploadButton = mergeButtons(incoming, builtIn)
+        .toolbar(toolbarId)
         .input2Type(
             Boolean.TRUE.equals(options.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
-                : UiActionInputType.FILE)
-        .code(ATTACHMENT_UPLOAD_HANDLER)
-        .model(true)
-        .identifier(descriptor.getGridWidgetId())
-        .toolbar(toolbarId)
-        .descriptor(new UiActionDescriptor()
-            .type(UiActionButtonType.ICON)
-            .icon("plus").iconPosition(IconPosition.PRE)
-            .color(UiActions.Color.PRIMARY)
-            .input2Dialog(
-                new UiActionDialogDescriptor()
-                    .title(localeSettingApi.get("add.attachment.title"))
-                    .cancelButton(new UiActionButtonDescriptor()
-                        .caption(localeSettingApi.get("close"))
-                        .color(UiActions.Color.SECONDARY))));
+                : UiActionInputType.FILE);
 
-    if (descriptor.getUploadButtonDescriptor() != null) {
-      action = setButtonDescriptor(action, descriptor.getUploadButtonDescriptor());
+    if (uploadButton.getIdentifier() == null) {
+      uploadButton.identifier(descriptor.getGridWidgetId());
     }
-    return action;
+
+    return uploadButton;
   }
 
 
-  public UiAction getRefreshToOriginalGridAction(AttachmentGridDescriptor descriptor) {
+  public UiAction getDeleteListGridAction(AttachmentGridDescriptor descriptor) {
 
     String toolbarId = descriptor.getGridWidgetId()
         + getToolbarPosition(descriptor.getOptions().getToolbarPosition());
 
-    UiAction action = new UiAction()
-        .model(true)
-        .code(ATTACHMENT_REFRESH_LIST_HANDLER)
-        .toolbar(toolbarId)
-        .descriptor(new UiActionDescriptor()
-            .type(UiActionButtonType.ICON)
-            .icon("refresh").iconPosition(IconPosition.PRE)
-            .color(UiActions.Color.PRIMARY));
+    ButtonDescriptor incoming =
+        descriptor.getButtons().getDeleteButtonDescriptor();
+    UiAction builtIn =
+        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi);
+    UiAction uploadButton = mergeButtons(incoming, builtIn)
+        .toolbar(toolbarId);
 
-    if (descriptor.getRefreshButtonDescriptor() != null) {
-      action = setButtonDescriptor(action, descriptor.getRefreshButtonDescriptor());
-    }
-    return action;
+    return uploadButton;
   }
 
   public UiAction getSaveListAction(AttachmentGridDescriptor descriptor) {
@@ -497,24 +465,14 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     String toolbarId = descriptor.getGridWidgetId()
         + getToolbarPosition(descriptor.getOptions().getToolbarPosition());
 
-    UiAction action = new UiAction()
-        .code(ATTACHMENT_SAVE_LIST_HANDLER)
-        .toolbar(toolbarId)
-        .disabled(true)
-        .submit(true)
-        .model(true)
-        .descriptor(new UiActionDescriptor()
-            .type(UiActionButtonType.ICON)
-            .icon("save").iconPosition(IconPosition.PRE)
-            .color(UiActions.Color.PRIMARY)
-            .feedbackText(localeSettingApi.get("attachment.succesful.save"))
-            .feedbackType(UiActionFeedbackType.SNACKBAR));
+    ButtonDescriptor incoming =
+        descriptor.getButtons().getSaveButtonDescriptor();
+    UiAction builtIn =
+        AttachmentGridBuiltInButtons.SAVE_BUILT_IN_BUTTON.apply(localeSettingApi);
+    UiAction uploadButton = mergeButtons(incoming, builtIn)
+        .toolbar(toolbarId);
 
-    if (descriptor.getSaveButtonDescriptor() != null) {
-      action = setButtonDescriptor(action, descriptor.getSaveButtonDescriptor());
-    }
-    return action;
-
+    return uploadButton;
   }
 
   @Override
@@ -529,7 +487,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     } else if (Boolean.TRUE.equals(options.getIsEditable())) {
       actions.addAll(Arrays.asList(
           getAddAttachmentAction(descriptor),
-          getRefreshToOriginalGridAction(descriptor),
+          getDeleteListGridAction(descriptor),
           getSaveListAction(descriptor)));
     }
     return actions;
@@ -565,7 +523,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       ViewEventHandler refreshEvent = new ViewEventHandler()
           .viewEventType(ViewEventTypeEnum.INSTEAD)
           .addPathItem(ViewEventApi.ACTION)
-          .addPathItem(ATTACHMENT_REFRESH_LIST_HANDLER)
+          .addPathItem(ATTACHMENT_DELETE_LIST_HANDLER)
           .invocationRequest(invocationApi.builder(AttachmentGridInvocationApi.class)
               .build(api -> api.refreshGridToOriginalState(null, null, gridId)));
       handlers.add(refreshEvent);
@@ -684,21 +642,22 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
             .build(api -> api.saveModel(null, null, null, null)));
   }
 
-  private UiAction setButtonDescriptor(UiAction action, ButtonDescriptor bDescriptor) {
-    if (bDescriptor.getToolbar() != null) {
-      action.toolbar(bDescriptor.getToolbar());
+  private UiAction mergeButtons(ButtonDescriptor incoming, UiAction builtIn) {
+    if (incoming.getToolbar() != null) {
+      builtIn.toolbar(incoming.getToolbar());
     }
-    if (bDescriptor.getIdentifier() != null) {
-      action.identifier(bDescriptor.getIdentifier());
+    if (incoming.getIdentifier() != null) {
+      builtIn.identifier(incoming.getIdentifier());
     }
-    if (bDescriptor.getParams() != null) {
-      action.params(bDescriptor.getParams());
+    if (incoming.getParams() != null) {
+      builtIn.params(incoming.getParams());
     }
 
-    if (bDescriptor.getDescriptor() != null) {
-      Map<String, Object> oldDesc = objectApi.create(null, action.getDescriptor()).getObjectAsMap();
+    if (incoming.getDescriptor() != null) {
+      Map<String, Object> oldDesc =
+          objectApi.create(null, builtIn.getDescriptor()).getObjectAsMap();
       Map<String, Object> newDesc =
-          objectApi.create(null, bDescriptor.getDescriptor()).getObjectAsMap();
+          objectApi.create(null, incoming.getDescriptor()).getObjectAsMap();
 
 
       oldDesc.forEach((key, value) -> {
@@ -708,10 +667,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       });
       UiActionDescriptor newDescAction = objectApi.asType(UiActionDescriptor.class, newDesc);
 
-      action.setDescriptor(newDescAction);
+      builtIn.setDescriptor(newDescAction);
     }
 
-    return action;
+    return builtIn;
   }
 
   private String getToolbarPosition(ToolbarPosition pos) {
@@ -727,6 +686,5 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       default:
         return UiActions.TOOLBAR_SUFFIX;
     }
-
   }
 }

@@ -29,8 +29,8 @@ import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.collection.bean.SearchIndexDescriptor;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AdditionalAttachmentAction;
+import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridButtons;
 import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridOptions;
-import org.smartbit4all.bff.api.attachmentgrid.bean.ButtonDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -48,9 +48,7 @@ import jakarta.validation.Valid;
   AttachmentGridDescriptor.SAVE_REQUEST,
   AttachmentGridDescriptor.SEARCH_INDEX,
   AttachmentGridDescriptor.ADDITIONAL_ACTIONS,
-  AttachmentGridDescriptor.SAVE_BUTTON_DESCRIPTOR,
-  AttachmentGridDescriptor.UPLOAD_BUTTON_DESCRIPTOR,
-  AttachmentGridDescriptor.REFRESH_BUTTON_DESCRIPTOR,
+  AttachmentGridDescriptor.BUTTONS,
   AttachmentGridDescriptor.OPTIONS,
   AttachmentGridDescriptor.COLUMNS
 })
@@ -77,14 +75,8 @@ public class AttachmentGridDescriptor {
   public static final String ADDITIONAL_ACTIONS = "additionalActions";
   private List<@Valid AdditionalAttachmentAction> additionalActions = new ArrayList<>();
 
-  public static final String SAVE_BUTTON_DESCRIPTOR = "saveButtonDescriptor";
-  private ButtonDescriptor saveButtonDescriptor;
-
-  public static final String UPLOAD_BUTTON_DESCRIPTOR = "uploadButtonDescriptor";
-  private ButtonDescriptor uploadButtonDescriptor;
-
-  public static final String REFRESH_BUTTON_DESCRIPTOR = "refreshButtonDescriptor";
-  private ButtonDescriptor refreshButtonDescriptor;
+  public static final String BUTTONS = "buttons";
+  private AttachmentGridButtons buttons;
 
   public static final String OPTIONS = "options";
   private AttachmentGridOptions options;
@@ -305,88 +297,32 @@ public class AttachmentGridDescriptor {
     this.additionalActions = additionalActions;
   }
 
-  public AttachmentGridDescriptor saveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
+  public AttachmentGridDescriptor buttons(AttachmentGridButtons buttons) {
     
-    this.saveButtonDescriptor = saveButtonDescriptor;
+    this.buttons = buttons;
     return this;
   }
 
   /**
-   * Get saveButtonDescriptor
-   * @return saveButtonDescriptor
+   * Get buttons
+   * @return buttons
    */
   @jakarta.annotation.Nullable
   @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(SAVE_BUTTON_DESCRIPTOR)
+  @JsonProperty(BUTTONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public ButtonDescriptor getSaveButtonDescriptor() {
-    return saveButtonDescriptor;
+  public AttachmentGridButtons getButtons() {
+    return buttons;
   }
 
 
-  @JsonProperty(SAVE_BUTTON_DESCRIPTOR)
+  @JsonProperty(BUTTONS)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setSaveButtonDescriptor(ButtonDescriptor saveButtonDescriptor) {
-    this.saveButtonDescriptor = saveButtonDescriptor;
-  }
-
-  public AttachmentGridDescriptor uploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
-    
-    this.uploadButtonDescriptor = uploadButtonDescriptor;
-    return this;
-  }
-
-  /**
-   * Get uploadButtonDescriptor
-   * @return uploadButtonDescriptor
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(UPLOAD_BUTTON_DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public ButtonDescriptor getUploadButtonDescriptor() {
-    return uploadButtonDescriptor;
-  }
-
-
-  @JsonProperty(UPLOAD_BUTTON_DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUploadButtonDescriptor(ButtonDescriptor uploadButtonDescriptor) {
-    this.uploadButtonDescriptor = uploadButtonDescriptor;
-  }
-
-  public AttachmentGridDescriptor refreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
-    
-    this.refreshButtonDescriptor = refreshButtonDescriptor;
-    return this;
-  }
-
-  /**
-   * Get refreshButtonDescriptor
-   * @return refreshButtonDescriptor
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(REFRESH_BUTTON_DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public ButtonDescriptor getRefreshButtonDescriptor() {
-    return refreshButtonDescriptor;
-  }
-
-
-  @JsonProperty(REFRESH_BUTTON_DESCRIPTOR)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setRefreshButtonDescriptor(ButtonDescriptor refreshButtonDescriptor) {
-    this.refreshButtonDescriptor = refreshButtonDescriptor;
+  public void setButtons(AttachmentGridButtons buttons) {
+    this.buttons = buttons;
   }
 
   public AttachmentGridDescriptor options(AttachmentGridOptions options) {
@@ -468,16 +404,14 @@ public class AttachmentGridDescriptor {
         Objects.equals(this.saveRequest, attachmentGridDescriptor.saveRequest) &&
         Objects.equals(this.searchIndex, attachmentGridDescriptor.searchIndex) &&
         Objects.equals(this.additionalActions, attachmentGridDescriptor.additionalActions) &&
-        Objects.equals(this.saveButtonDescriptor, attachmentGridDescriptor.saveButtonDescriptor) &&
-        Objects.equals(this.uploadButtonDescriptor, attachmentGridDescriptor.uploadButtonDescriptor) &&
-        Objects.equals(this.refreshButtonDescriptor, attachmentGridDescriptor.refreshButtonDescriptor) &&
+        Objects.equals(this.buttons, attachmentGridDescriptor.buttons) &&
         Objects.equals(this.options, attachmentGridDescriptor.options) &&
         Objects.equals(this.columns, attachmentGridDescriptor.columns);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, searchIndex, additionalActions, saveButtonDescriptor, uploadButtonDescriptor, refreshButtonDescriptor, options, columns);
+    return Objects.hash(attachmentList, gridWidgetId, viewUuid, logicalSchema, saveRequest, searchIndex, additionalActions, buttons, options, columns);
   }
 
   @Override
@@ -491,9 +425,7 @@ public class AttachmentGridDescriptor {
     sb.append("    saveRequest: ").append(toIndentedString(saveRequest)).append("\n");
     sb.append("    searchIndex: ").append(toIndentedString(searchIndex)).append("\n");
     sb.append("    additionalActions: ").append(toIndentedString(additionalActions)).append("\n");
-    sb.append("    saveButtonDescriptor: ").append(toIndentedString(saveButtonDescriptor)).append("\n");
-    sb.append("    uploadButtonDescriptor: ").append(toIndentedString(uploadButtonDescriptor)).append("\n");
-    sb.append("    refreshButtonDescriptor: ").append(toIndentedString(refreshButtonDescriptor)).append("\n");
+    sb.append("    buttons: ").append(toIndentedString(buttons)).append("\n");
     sb.append("    options: ").append(toIndentedString(options)).append("\n");
     sb.append("    columns: ").append(toIndentedString(columns)).append("\n");
     sb.append("}");
