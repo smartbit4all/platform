@@ -11,14 +11,22 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.invocation.ApiDescriptor;
+import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
+import org.smartbit4all.api.invocation.InvocationRegisterApi;
+import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.object.bean.ObjectContainer;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApiImpl;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
+import org.smartbit4all.api.view.bean.ViewType;
 import org.smartbit4all.api.view.grid.GridModelApi;
 import org.smartbit4all.api.view.grid.GridModels;
 import org.smartbit4all.core.object.ObjectLayoutApi;
@@ -35,7 +43,11 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   @Autowired
   protected SearchIndex<User> userSearch;
   @Autowired
+  protected InvocationRegisterApi invocationRegisterApi;
+  @Autowired
   protected OrgApi orgApi;
+  @Autowired
+  private LocaleSettingApi localeSettingApi;
 
   public UserListPageApiImpl() {
     super(Object.class);
@@ -46,7 +58,15 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     ObjectContainer pageModel = new ObjectContainer();
     initGrid(view);
     refreshGrid(view.getUuid());
+
+
     view.actions(getUserListActions(view.getUuid()));
+    ApiDescriptor registrationApi =
+        invocationRegisterApi.getApi(ACCOUNT_REGISTRATION_UI_API_INTERFACE_NAME,
+            ACCOUNT_REGISTRATION_UI_API_INTERFACE_NAME);
+    if (registrationApi != null) {
+      UiActions.add(view, INVITE_USER_ACTION.apply(localeSettingApi));
+    }
     view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT,
         ObjectLayoutBuilder.grid(USER_GRID));
     return pageModel;
@@ -57,6 +77,7 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
     GridModel userGridModel = gridModelApi.createGridModel(
         userSearch.getDefinition().getDefinition(), getGridColumns(),
         User.class.getSimpleName());
+    userGridModel.paginator(true);
     GridModels.hideColumns(userGridModel, List.of(User.URI));
     gridModelApi.initGridInView(view.getUuid(), USER_GRID, userGridModel);
     gridModelApi.addGridPageCallback(view.getUuid(), USER_GRID,
@@ -98,6 +119,23 @@ public class UserListPageApiImpl extends PageApiImpl<Object> implements UserList
   @Override
   public void openAddUserDialog(UUID viewUuid, UiActionRequest request) {
     viewApi.showView(new View().viewName(getUserEditorPageName()));
+  }
+
+  @Override
+  public void inviteUser(UUID viewUuid, UiActionRequest request) {
+    try {
+      invocationApi.invoke(
+          new InvocationRequest().name(REGISTRATION_UI_API_NAME)
+              .interfaceClass(ACCOUNT_REGISTRATION_UI_API_INTERFACE_NAME)
+              .methodName(OPEN_REGISTRATION_PAGE)
+              .addParametersItem(new InvocationParameter()
+                  .name("viewType")
+                  .typeClass(ViewType.class.getName())),
+          ViewType.DIALOG);
+    } catch (ApiNotFoundException e) {
+      e.printStackTrace();
+    }
+
   }
 
   protected String getUserEditorPageName() {

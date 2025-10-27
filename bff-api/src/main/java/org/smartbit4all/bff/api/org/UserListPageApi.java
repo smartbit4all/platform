@@ -1,18 +1,38 @@
 package org.smartbit4all.bff.api.org;
 
 import java.util.UUID;
+import java.util.function.Function;
 import org.smartbit4all.api.grid.bean.GridPage;
+import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.view.PageApi;
+import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
+import org.smartbit4all.api.view.bean.UiAction;
+import org.smartbit4all.api.view.bean.UiActionButtonType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 
 public interface UserListPageApi extends PageApi<Object> {
+  public static final String ACCOUNT_REGISTRATION_UI_API_INTERFACE_NAME =
+      "org.smartbit4all.registration.ui.api.RegistrationEmailPageApi";
+  public static final String REGISTRATION_UI_API_NAME = "RegistrationEmailPageApi";
+  public static final String OPEN_REGISTRATION_PAGE = "openRegistrationPage";
 
   public static final String USER_GRID = "USER_GRID";
   public static final String OPEN_USER_EDITOR_PAGE = "OPEN_USER_EDITOR_PAGE";
   public static final String ADD_USER = "ADD_USER";
+  public static final String INVITE_USER = "INVITE_USER";
+
+
+  Function<LocaleSettingApi, UiAction> INVITE_USER_ACTION =
+      (localeSettingApi) -> new UiAction()
+          .code(INVITE_USER)
+          .descriptor(new UiActionDescriptor()
+              .type(UiActionButtonType.RAISED)
+              .color(UiActions.Color.PRIMARY)
+              .title(localeSettingApi.get(INVITE_USER)));
 
   void initGrid(View view);
 
@@ -24,6 +44,10 @@ public interface UserListPageApi extends PageApi<Object> {
 
   @ActionHandler(ADD_USER)
   void openAddUserDialog(UUID viewUuid,
+      UiActionRequest request);
+
+  @ActionHandler(INVITE_USER)
+  void inviteUser(UUID viewUuid,
       UiActionRequest request);
 
   String ACTIVATE_USER = "ACTIVATE_USER";
