@@ -643,6 +643,11 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   }
 
   private UiAction mergeButtons(ButtonDescriptor incoming, UiAction builtIn) {
+    if (incoming == null) {
+      return builtIn;
+    }
+
+
     if (incoming.getToolbar() != null) {
       builtIn.toolbar(incoming.getToolbar());
     }
