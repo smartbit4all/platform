@@ -430,9 +430,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     ButtonDescriptor incoming =
         descriptor.getButtons().getUploadButtonDescriptor();
     UiAction builtIn =
-        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi);
+        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON
+            .apply(localeSettingApi)
+            .toolbar(toolbarId);
     UiAction uploadButton = mergeButtons(incoming, builtIn)
-        .toolbar(toolbarId)
         .input2Type(
             Boolean.TRUE.equals(options.getIsMultipleInput()) ? UiActionInputType.MULTIPLE_FILES
                 : UiActionInputType.FILE);
@@ -453,9 +454,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     ButtonDescriptor incoming =
         descriptor.getButtons().getDeleteButtonDescriptor();
     UiAction builtIn =
-        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi);
-    UiAction uploadButton = mergeButtons(incoming, builtIn)
-        .toolbar(toolbarId);
+        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi)
+            .toolbar(toolbarId);
+    UiAction uploadButton = mergeButtons(incoming, builtIn);
 
     return uploadButton;
   }
@@ -468,9 +469,9 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     ButtonDescriptor incoming =
         descriptor.getButtons().getSaveButtonDescriptor();
     UiAction builtIn =
-        AttachmentGridBuiltInButtons.SAVE_BUILT_IN_BUTTON.apply(localeSettingApi);
-    UiAction uploadButton = mergeButtons(incoming, builtIn)
-        .toolbar(toolbarId);
+        AttachmentGridBuiltInButtons.SAVE_BUILT_IN_BUTTON.apply(localeSettingApi)
+            .toolbar(toolbarId);
+    UiAction uploadButton = mergeButtons(incoming, builtIn);
 
     return uploadButton;
   }
