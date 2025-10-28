@@ -43,6 +43,20 @@ public interface ObjectDefinitionApi {
    */
   ObjectDefinition<?> definition(String className);
 
+  /**
+   * The alias of the object class tries to identify the {@link ObjectDefinition}. If it is not
+   * exists then construct a new {@link ObjectDefinition} based on the denoted class as base
+   * definition. Using this function we can easily extend an existing {@link ObjectDefinition} with
+   * a given alias.
+   * 
+   * @param qualifiedName The fully qualified name of the class that could be different then the
+   * @param clazz The object class.
+   * @return The {@link ObjectDefinition} if it was identified by the existing source. If it is not
+   *         found then we try to read the {@link ObjectDefinitionData} from the storage or creates
+   *         a new definition it is not found. The newly created definition can be extended by the
+   *         ObjectDefinitionBuilder that will save the definition into the storage.
+   */
+  ObjectDefinition<?> definition(String qualifiedName, Class<?> clazz);
 
   ObjectDefinition<PersistableObject> baseDefinition(String className);
 

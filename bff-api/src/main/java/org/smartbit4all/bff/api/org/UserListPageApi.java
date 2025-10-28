@@ -16,8 +16,8 @@ import org.smartbit4all.api.view.bean.View;
 
 public interface UserListPageApi extends PageApi<Object> {
   public static final String ACCOUNT_REGISTRATION_UI_API_INTERFACE_NAME =
-      "org.smartbit4all.registration.ui.api.RegistrationEmailPageApi";
-  public static final String REGISTRATION_UI_API_NAME = "RegistrationEmailPageApi";
+      "org.smartbit4all.registration.ui.api.RegistrationInitiationPageApi";
+  public static final String REGISTRATION_UI_API_NAME = "RegistrationInitiationPageApi";
   public static final String OPEN_REGISTRATION_PAGE = "openRegistrationPage";
 
   public static final String USER_GRID = "USER_GRID";

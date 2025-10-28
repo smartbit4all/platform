@@ -1046,6 +1046,7 @@ public class ObjectApiTestBase {
   }
 
   @Test
+  @DisplayName("Saving an object with a wellknown identifier and retrieve it later on by this.")
   void testSaveWithId() throws IOException {
 
     List<Tuple> ids = new ArrayList<>();
@@ -1083,6 +1084,38 @@ public class ObjectApiTestBase {
             .map(node -> node.getValueAsString(SamplePropertyContainerWithId.PROPS,
                 SampleProperties.PRIMARY)))
         .containsExactly(idStrings);
+
+  }
+
+  @Test
+  @DisplayName("Saving an object with a wellknown hierarchical identifier where the hierarchy describes the path of the URI.")
+  void testSaveWithHierarchicalId() throws IOException {
+
+    // Let's define some ObjectDefinition to have hierarchical settings.
+    String hierarchy = "hierarchy";
+    ObjectDefinition<?> definitionHierarchy = objectDefinitionApi.definition(
+        SamplePropertyContainerWithId.class.getName() + StringConstant.DOT + hierarchy,
+        SamplePropertyContainerWithId.class);
+    // setup the definition
+    definitionHierarchy.idPath(SamplePropertyContainerWithId.ID)
+        .idHierarchySeparator(StringConstant.DOT);
+
+    List<String> ids =
+        List.of("type1.sub1.2025.10.28", "type1.sub2.2025.10.28", "type2.sub2.2025.10.27");
+
+    List<URI> savedUris = ids.stream()
+        .map(s -> objectApi.create(hierarchy, definitionHierarchy,
+            new HashMap<String, Object>(
+                Map.of(SamplePropertyContainerWithId.ID, s, SamplePropertyContainerWithId.PROPS,
+                    new SampleProperties().primary(s)))))
+        .map(n -> objectApi.save(n)).toList();
+
+    List<String> loadedIds = new ArrayList<>();
+    for (String id : ids) {
+      ObjectNode n = objectApi.loadLatest(hierarchy, definitionHierarchy, id);
+      loadedIds.add(n.getValueAsString(SamplePropertyContainerWithId.ID));
+    }
+    org.assertj.core.api.Assertions.assertThat(loadedIds).containsExactlyElementsOf(ids);
 
   }
 

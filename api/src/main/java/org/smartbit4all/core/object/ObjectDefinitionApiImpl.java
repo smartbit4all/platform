@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +35,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toMap;
 import jakarta.validation.constraints.NotNull;
 
 public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, InitializingBean {
@@ -263,7 +263,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   @SuppressWarnings("unchecked")
   @Override
   public <T> ObjectDefinition<T> definition(Class<T> clazz) {
-    ObjectDefinition<?> definition = definitionByAlias(getDefaultAlias(clazz));
+    ObjectDefinition<?> definition = definitionByAlias(getDefaultAlias(clazz), clazz.getName());
     return (ObjectDefinition<T>) definition;
   }
 
@@ -272,13 +272,18 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     if (objectUri == null || objectUri.getPath() == null) {
       return null;
     }
-    String className = UriUtils.getClassName(objectUri);
-    return definitionByAlias(className);
+    String alias = UriUtils.getClassName(objectUri);
+    return definitionByAlias(alias, null);
   }
 
   @Override
   public ObjectDefinition<?> definition(String className) {
-    return definitionByAlias(getAliasFromClassName(className));
+    return definitionByAlias(getAliasFromClassName(className), className);
+  }
+
+  @Override
+  public ObjectDefinition<?> definition(String qualifiedName, Class<?> clazz) {
+    return definitionByAlias(getAliasFromClassName(qualifiedName), clazz.getName());
   }
 
   @Override
@@ -307,7 +312,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     }
   }
 
-  private ObjectDefinition<?> definitionByAlias(String alias) {
+  private ObjectDefinition<?> definitionByAlias(String alias, String className) {
     ObjectDefinition<?> objectDefinition = null;
     lock.readLock().lock();
     try {
@@ -318,7 +323,9 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
     if (objectDefinition == null) {
       // The alias may refer to a phantom type managed by the object extension API. In that case,
       // let it be assembled and registered, and we can return early:
-      String className = getClassNameFromAlias(alias);
+      if (className == null) {
+        className = getClassNameFromAlias(alias);
+      }
       Class<?> clazz = getClassByName(className);
       if (objectExtensionApi != null && clazz == null) {
         objectDefinition = objectExtensionApi.assemble(getClassNameFromAlias(alias));

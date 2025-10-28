@@ -154,11 +154,10 @@ public class MDMSetupApiImpl implements MDMSetupApi {
           String[] fields = line.split(separator);
           Map<String, String> item = new HashMap<>();
           for (int j = 0; j < keySet.size(); ++j) {
-            try {
+            if (j < fields.length) {
               item.put(keySet.get(j), fields[j]);
-            } catch (IndexOutOfBoundsException e) {
-              log.error("The {} line ({}) failed with the the following exception:", i, line);
-              log.error(e.getMessage(), e);
+            } else {
+              item.put(keySet.get(j), StringConstant.EMPTY);
             }
           }
           items.add(item);

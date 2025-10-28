@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
@@ -758,11 +759,18 @@ public final class Storage {
   public final URI constructUriForId(ObjectDefinition<?> objectDefinition, String id) {
     Objects.requireNonNull(objectDefinition);
     Objects.requireNonNull(id);
-    id = createValidId(id);
-    List<String> fragments = new ArrayList<>();
-    int fragmentSize = 2;
-    for (int i = 0; i < id.length(); i += fragmentSize) {
-      fragments.add(id.substring(i, Math.min(id.length(), i + fragmentSize)));
+    List<String> fragments;
+    String hierarchySeparator = objectDefinition.getIdHierarchySeparator();
+    if (hierarchySeparator != null) {
+      String[] hierarchyArray = id.split(Pattern.quote(hierarchySeparator));
+      fragments = Arrays.stream(hierarchyArray).map(s -> createValidId(s)).toList();
+    } else {
+      id = createValidId(id);
+      int fragmentSize = 2; // By default tokenize by two characters.
+      fragments = new ArrayList<>();
+      for (int i = 0; i < id.length(); i += fragmentSize) {
+        fragments.add(id.substring(i, Math.min(id.length(), i + fragmentSize)));
+      }
     }
     return URI.create(scheme + StringConstant.COLON + StringConstant.SLASH
         + objectDefinition.getAlias() + StringConstant.SLASH
