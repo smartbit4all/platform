@@ -102,6 +102,19 @@ public final class ObjectDefinition<T> {
   private String[] idPath = null;
 
   /**
+   * The identifier of an object could be hierarchical but in this case we need to tokenize the id
+   * to identify the path of the uri. The uri is generated in the following way:
+   * schema:/alias/id1/id2/id3/2025/10/28 if we have an object with the id property equals to
+   * "id1.id2.id3.2025.10.28" and the seprataor is set to ".". If the separator is null then the id
+   * is evaluated in a standard mode using two characters for every path segments. The id separator
+   * is extremely useful when we have a well know hierarchy in the identifier that keeps all
+   * hierarchy level controlled in relatively small numbered. One hierarchy level should be less
+   * then a few hundred. Be careful with this feature and use only when you can ensure these
+   * conditions by design.
+   */
+  private String idHierarchySeparator = null;
+
+  /**
    * The time path is the path of the business time property that must be a LocalDateTime or
    * OffsetDateTime the uri generation is based on. If it is null then the normal URI is generated
    * during the save. If it is set then the value is extracted from the object and the URI will be
@@ -557,6 +570,15 @@ public final class ObjectDefinition<T> {
 
   public ObjectDefinition<T> timeClazz(Class<?> timeClazz) {
     this.timeClazz = timeClazz;
+    return this;
+  }
+
+  public String getIdHierarchySeparator() {
+    return idHierarchySeparator;
+  }
+
+  public ObjectDefinition<T> idHierarchySeparator(String idHierarchySeparator) {
+    this.idHierarchySeparator = idHierarchySeparator;
     return this;
   }
 
