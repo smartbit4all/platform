@@ -283,3 +283,13 @@ components:
       properties:
         image:
           type: ImageResource
+    FileUploaderProperties:
+      type: object
+      properties:
+        uiActionCode:
+          type: string
+        isMultiple:
+          type: boolean
+          default: true
+        uploadDescriptor:
+          type: UiActionUploadDescriptor

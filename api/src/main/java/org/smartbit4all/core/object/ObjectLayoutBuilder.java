@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.formdefinition.bean.FileUploaderProperties;
 import org.smartbit4all.api.formdefinition.bean.ImageProperties;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition.TypeEnum;
@@ -213,6 +214,20 @@ public final class ObjectLayoutBuilder {
         .type(SmartFormWidgetType.LABEL)
         .key(key)
         .label(label);
+  }
+
+  public static SmartWidgetDefinition fileUpload(String label,
+      FileUploaderProperties properties) {
+    Objects.requireNonNull(properties.getUiActionCode(), "code can not be null");
+    Objects.requireNonNull(properties.getUploadDescriptor(), "uploadDescriptor can not be null");
+
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.FILE_UPLOADER)
+        // .key(properties.getUiActionCode())
+        .label(label)
+        .putPropertiesItem(
+            SmartFormWidgetType.FILE_UPLOADER.getValue() + PROPERTIES_SUFFIX,
+            properties);
   }
 
   public static SmartWidgetDefinition image(String key, String label) {

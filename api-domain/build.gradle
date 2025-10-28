@@ -64,6 +64,7 @@ smartbit4all {
         "ObjectPropertyFormatter"       : "org.smartbit4all.api.object.bean.ObjectPropertyFormatter",
         "ObjectMappingDefinition"       : "org.smartbit4all.api.object.bean.ObjectMappingDefinition",
         "ContextMappingDefinition"      : "org.smartbit4all.api.object.bean.ContextMappingDefinition",
+        "UiActionUploadDescriptor"      : "org.smartbit4all.api.view.bean.UiActionUploadDescriptor",
     ]
   }
 }
