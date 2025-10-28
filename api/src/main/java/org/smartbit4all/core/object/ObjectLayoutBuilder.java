@@ -223,7 +223,7 @@ public final class ObjectLayoutBuilder {
 
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.FILE_UPLOADER)
-        // .key(properties.getUiActionCode())
+        .key(properties.getUiActionCode())
         .label(label)
         .putPropertiesItem(
             SmartFormWidgetType.FILE_UPLOADER.getValue() + PROPERTIES_SUFFIX,
