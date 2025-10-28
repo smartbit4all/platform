@@ -1038,7 +1038,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
         }
 
         result.add(storageObject
-            .lastModified(entryRow.get(objectEntryDef.modifiedAt()).toEpochSecond()));
+            .lastModified(entryRow.get(objectEntryDef.modifiedAt()).toInstant().toEpochMilli()));
 
       } catch (Exception e) {
         log.error("Failed to load object: " + uri, e);
