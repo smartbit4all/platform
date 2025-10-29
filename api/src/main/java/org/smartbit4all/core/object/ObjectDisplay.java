@@ -125,7 +125,8 @@ public final class ObjectDisplay {
     return collect;
   }
 
-  private Stream<SmartWidgetDefinition> formWidgets(SmartComponentLayoutDefinition compLayoutDef) {
+  public static Stream<SmartWidgetDefinition> formWidgets(
+      SmartComponentLayoutDefinition compLayoutDef) {
     if (compLayoutDef == null) {
       return Stream.empty();
     }
@@ -137,7 +138,7 @@ public final class ObjectDisplay {
         final List<SmartComponentLayoutDefinition> subComponents = compLayoutDef.getComponents();
         return subComponents == null
             ? Stream.empty()
-            : subComponents.stream().flatMap(this::formWidgets);
+            : subComponents.stream().flatMap(ObjectDisplay::formWidgets);
       default:
         return Stream.empty();
     }
