@@ -34,7 +34,6 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   FileUploaderProperties.UPLOAD_ACTION,
   FileUploaderProperties.CHANGE_ACTION,
-  FileUploaderProperties.DOWNLOAD_ACTION,
   FileUploaderProperties.IS_MULTIPLE,
   FileUploaderProperties.UPLOAD_DESCRIPTOR
 })
@@ -45,9 +44,6 @@ public class FileUploaderProperties {
 
   public static final String CHANGE_ACTION = "changeAction";
   private UiAction changeAction = null;
-
-  public static final String DOWNLOAD_ACTION = "downloadAction";
-  private UiAction downloadAction = null;
 
   public static final String IS_MULTIPLE = "isMultiple";
   private Boolean isMultiple = true;
@@ -112,34 +108,6 @@ public class FileUploaderProperties {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChangeAction(UiAction changeAction) {
     this.changeAction = changeAction;
-  }
-
-  public FileUploaderProperties downloadAction(UiAction downloadAction) {
-    
-    this.downloadAction = downloadAction;
-    return this;
-  }
-
-  /**
-   * Get downloadAction
-   * @return downloadAction
-   */
-  @jakarta.annotation.Nullable
-  @Valid
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(DOWNLOAD_ACTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public UiAction getDownloadAction() {
-    return downloadAction;
-  }
-
-
-  @JsonProperty(DOWNLOAD_ACTION)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDownloadAction(UiAction downloadAction) {
-    this.downloadAction = downloadAction;
   }
 
   public FileUploaderProperties isMultiple(Boolean isMultiple) {
@@ -208,14 +176,13 @@ public class FileUploaderProperties {
     FileUploaderProperties fileUploaderProperties = (FileUploaderProperties) o;
     return Objects.equals(this.uploadAction, fileUploaderProperties.uploadAction) &&
         Objects.equals(this.changeAction, fileUploaderProperties.changeAction) &&
-        Objects.equals(this.downloadAction, fileUploaderProperties.downloadAction) &&
         Objects.equals(this.isMultiple, fileUploaderProperties.isMultiple) &&
         Objects.equals(this.uploadDescriptor, fileUploaderProperties.uploadDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uploadAction, changeAction, downloadAction, isMultiple, uploadDescriptor);
+    return Objects.hash(uploadAction, changeAction, isMultiple, uploadDescriptor);
   }
 
   @Override
@@ -224,7 +191,6 @@ public class FileUploaderProperties {
     sb.append("class FileUploaderProperties {\n");
     sb.append("    uploadAction: ").append(toIndentedString(uploadAction)).append("\n");
     sb.append("    changeAction: ").append(toIndentedString(changeAction)).append("\n");
-    sb.append("    downloadAction: ").append(toIndentedString(downloadAction)).append("\n");
     sb.append("    isMultiple: ").append(toIndentedString(isMultiple)).append("\n");
     sb.append("    uploadDescriptor: ").append(toIndentedString(uploadDescriptor)).append("\n");
     sb.append("}");

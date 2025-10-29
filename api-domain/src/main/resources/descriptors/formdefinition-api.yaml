@@ -290,8 +290,6 @@ components:
           type: UiAction
         changeAction:
           type: UiAction
-        downloadAction:
-          type: UiAction
         isMultiple:
           type: boolean
           default: true
