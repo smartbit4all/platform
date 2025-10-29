@@ -20,7 +20,7 @@ import org.springframework.util.ObjectUtils;
 import com.google.common.hash.HashingInputStream;
 import com.google.common.io.ByteSource;
 import com.google.common.io.Files;
-import com.google.common.primitives.Longs;
+import com.google.common.primitives.Ints;
 
 /**
  * Provides a low-level appendable file storage abstraction that stores arbitrary binary objects
@@ -186,8 +186,8 @@ public final class ObjectStreamStore implements Closeable {
         }
       }.openStream();
 
-      long payloadCount = 0L;
-      raf.seek(nextStart + Long.BYTES);
+      int payloadCount = 0;
+      raf.seek(nextStart + Ints.BYTES);
 
       byte[] buf = new byte[8192];
       int r;
@@ -198,11 +198,11 @@ public final class ObjectStreamStore implements Closeable {
         }
       }
 
-      raf.writeLong(payloadCount);
+      raf.writeInt(payloadCount);
       raf.seek(nextStart);
-      raf.writeLong(payloadCount);
+      raf.writeInt(payloadCount);
 
-      long writtenThisBlock = Long.BYTES * 2 + payloadCount;
+      long writtenThisBlock = Ints.BYTES * 2 + payloadCount;
       totalLen += writtenThisBlock;
       nextStart += writtenThisBlock;
 
@@ -273,9 +273,9 @@ public final class ObjectStreamStore implements Closeable {
     }
 
     ByteSource byteSource = Files.asByteSource(file);
-    ByteSource sliceLen = forward ? byteSource.slice(currentOffset, Long.BYTES)
-        : byteSource.slice(currentOffset - Long.BYTES, Long.BYTES);
-    long length = Longs.fromByteArray(sliceLen.read());
+    ByteSource sliceLen = forward ? byteSource.slice(currentOffset, Ints.BYTES)
+        : byteSource.slice(currentOffset - Ints.BYTES, Ints.BYTES);
+    long length = Ints.fromByteArray(sliceLen.read());
     if (length < 0) {
       throw new IllegalStateException("The data length is less then zero: length=" + length);
     }
@@ -291,12 +291,12 @@ public final class ObjectStreamStore implements Closeable {
       public InputStream openStream() throws IOException {
         return new InflaterInputStream(
             byteSource.slice(
-                forward ? (myOffset + Long.BYTES) : (myOffset - Long.BYTES - length),
+                forward ? (myOffset + Ints.BYTES) : (myOffset - Ints.BYTES - length),
                 length).openBufferedStream(),
             new Inflater(true), 4 * 1024);
       }
     };
-    currentOffset += (forward ? 1 : -1) * (Long.BYTES * 2 + length);
+    currentOffset += (forward ? 1 : -1) * (Ints.BYTES * 2 + length);
     return new BinaryData(byteSourceSlice);
   }
 
