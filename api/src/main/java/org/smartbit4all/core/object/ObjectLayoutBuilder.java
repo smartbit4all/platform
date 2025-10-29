@@ -216,14 +216,18 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
-  public static SmartWidgetDefinition fileUpload(String label,
+  public static SmartWidgetDefinition fileUpload(String key, String label,
       FileUploaderProperties properties) {
-    Objects.requireNonNull(properties.getUiActionCode(), "code can not be null");
-    Objects.requireNonNull(properties.getUploadDescriptor(), "uploadDescriptor can not be null");
+    Objects.requireNonNull(properties.getUploadAction(),
+        "uploadAction can not be null");
+    Objects.requireNonNull(properties.getUploadAction().getCode(),
+        "uploadAction code can not be null");
+    Objects.requireNonNull(properties.getUploadDescriptor(),
+        "uploadDescriptor can not be null");
 
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.FILE_UPLOADER)
-        .key(properties.getUiActionCode())
+        .key(key)
         .label(label)
         .putPropertiesItem(
             SmartFormWidgetType.FILE_UPLOADER.getValue() + PROPERTIES_SUFFIX,

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -31,14 +32,22 @@ import jakarta.validation.Valid;
  * FileUploaderProperties
  */
 @JsonPropertyOrder({
-  FileUploaderProperties.UI_ACTION_CODE,
+  FileUploaderProperties.UPLOAD_ACTION,
+  FileUploaderProperties.CHANGE_ACTION,
+  FileUploaderProperties.DOWNLOAD_ACTION,
   FileUploaderProperties.IS_MULTIPLE,
   FileUploaderProperties.UPLOAD_DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class FileUploaderProperties {
-  public static final String UI_ACTION_CODE = "uiActionCode";
-  private String uiActionCode;
+  public static final String UPLOAD_ACTION = "uploadAction";
+  private UiAction uploadAction = null;
+
+  public static final String CHANGE_ACTION = "changeAction";
+  private UiAction changeAction = null;
+
+  public static final String DOWNLOAD_ACTION = "downloadAction";
+  private UiAction downloadAction = null;
 
   public static final String IS_MULTIPLE = "isMultiple";
   private Boolean isMultiple = true;
@@ -49,31 +58,88 @@ public class FileUploaderProperties {
   public FileUploaderProperties() {
   }
 
-  public FileUploaderProperties uiActionCode(String uiActionCode) {
+  public FileUploaderProperties uploadAction(UiAction uploadAction) {
     
-    this.uiActionCode = uiActionCode;
+    this.uploadAction = uploadAction;
     return this;
   }
 
   /**
-   * Get uiActionCode
-   * @return uiActionCode
+   * Get uploadAction
+   * @return uploadAction
    */
   @jakarta.annotation.Nullable
+  @Valid
 
   @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(UI_ACTION_CODE)
+  @JsonProperty(UPLOAD_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public String getUiActionCode() {
-    return uiActionCode;
+  public UiAction getUploadAction() {
+    return uploadAction;
   }
 
 
-  @JsonProperty(UI_ACTION_CODE)
+  @JsonProperty(UPLOAD_ACTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setUiActionCode(String uiActionCode) {
-    this.uiActionCode = uiActionCode;
+  public void setUploadAction(UiAction uploadAction) {
+    this.uploadAction = uploadAction;
+  }
+
+  public FileUploaderProperties changeAction(UiAction changeAction) {
+    
+    this.changeAction = changeAction;
+    return this;
+  }
+
+  /**
+   * Get changeAction
+   * @return changeAction
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(CHANGE_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiAction getChangeAction() {
+    return changeAction;
+  }
+
+
+  @JsonProperty(CHANGE_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setChangeAction(UiAction changeAction) {
+    this.changeAction = changeAction;
+  }
+
+  public FileUploaderProperties downloadAction(UiAction downloadAction) {
+    
+    this.downloadAction = downloadAction;
+    return this;
+  }
+
+  /**
+   * Get downloadAction
+   * @return downloadAction
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(DOWNLOAD_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiAction getDownloadAction() {
+    return downloadAction;
+  }
+
+
+  @JsonProperty(DOWNLOAD_ACTION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDownloadAction(UiAction downloadAction) {
+    this.downloadAction = downloadAction;
   }
 
   public FileUploaderProperties isMultiple(Boolean isMultiple) {
@@ -140,21 +206,25 @@ public class FileUploaderProperties {
       return false;
     }
     FileUploaderProperties fileUploaderProperties = (FileUploaderProperties) o;
-    return Objects.equals(this.uiActionCode, fileUploaderProperties.uiActionCode) &&
+    return Objects.equals(this.uploadAction, fileUploaderProperties.uploadAction) &&
+        Objects.equals(this.changeAction, fileUploaderProperties.changeAction) &&
+        Objects.equals(this.downloadAction, fileUploaderProperties.downloadAction) &&
         Objects.equals(this.isMultiple, fileUploaderProperties.isMultiple) &&
         Objects.equals(this.uploadDescriptor, fileUploaderProperties.uploadDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uiActionCode, isMultiple, uploadDescriptor);
+    return Objects.hash(uploadAction, changeAction, downloadAction, isMultiple, uploadDescriptor);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class FileUploaderProperties {\n");
-    sb.append("    uiActionCode: ").append(toIndentedString(uiActionCode)).append("\n");
+    sb.append("    uploadAction: ").append(toIndentedString(uploadAction)).append("\n");
+    sb.append("    changeAction: ").append(toIndentedString(changeAction)).append("\n");
+    sb.append("    downloadAction: ").append(toIndentedString(downloadAction)).append("\n");
     sb.append("    isMultiple: ").append(toIndentedString(isMultiple)).append("\n");
     sb.append("    uploadDescriptor: ").append(toIndentedString(uploadDescriptor)).append("\n");
     sb.append("}");
