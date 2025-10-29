@@ -1,7 +1,5 @@
 package org.smartbit4all.api.view.grid;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.utility.StringConstant.DOT;
 import java.net.URI;
 import java.util.ArrayList;
@@ -65,6 +63,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import jakarta.validation.constraints.NotNull;
 
 public class GridModelApiImpl implements GridModelApi {
@@ -972,6 +972,11 @@ public class GridModelApiImpl implements GridModelApi {
   @Override
   public void clearCallbacks(UUID viewUuid, String requestId) {
     widgetCallbackApi.clearCallbacks(viewUuid, requestId);
+
+    widgetCallbackApi.clearCallbacks(viewUuid, requestId + GRIDPAGE_POSTFIX);
+    widgetCallbackApi.clearCallbacks(viewUuid, requestId + GRIDROW_POSTFIX);
+    widgetCallbackApi.clearCallbacks(viewUuid, requestId + EXPAND_POSTFIX);
+
   }
 
   @Override

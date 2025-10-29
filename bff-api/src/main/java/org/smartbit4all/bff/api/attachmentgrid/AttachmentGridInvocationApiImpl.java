@@ -454,7 +454,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     ButtonDescriptor incoming =
         descriptor.getButtons().getDeleteButtonDescriptor();
     UiAction builtIn =
-        AttachmentGridBuiltInButtons.UPLOAD_BUILT_IN_BUTTON.apply(localeSettingApi)
+        AttachmentGridBuiltInButtons.DELETE_BUILT_IN_BUTTON.apply(localeSettingApi)
             .toolbar(toolbarId);
     UiAction uploadButton = mergeButtons(incoming, builtIn);
 
@@ -480,13 +480,14 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor) {
     AttachmentGridOptions options = descriptor.getOptions();
     List<UiAction> actions = new ArrayList<>();
+    View view = viewApi.getView(descriptor.getViewUuid());
 
     if (Boolean.TRUE.equals(options.getIsEditable())
         && Boolean.TRUE.equals(options.getAutoSave())) {
-      actions.addAll(Arrays.asList(
+      UiActions.add(view, Arrays.asList(
           getAddAttachmentAction(descriptor)));
     } else if (Boolean.TRUE.equals(options.getIsEditable())) {
-      actions.addAll(Arrays.asList(
+      UiActions.add(view, Arrays.asList(
           getAddAttachmentAction(descriptor),
           getDeleteListGridAction(descriptor),
           getSaveListAction(descriptor)));

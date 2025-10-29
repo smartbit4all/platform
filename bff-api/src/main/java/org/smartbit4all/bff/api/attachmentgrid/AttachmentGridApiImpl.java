@@ -160,6 +160,8 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     List<BinaryContentData> attachmentList = descriptor.getAttachmentList();
 
     UUID uuid = view.getUuid();
+    gridModelApi.clearCallbacks(uuid, gridId);
+
     gridModelApi.initGridInView(uuid, gridId, gridModel);
     gridModelApi.addGridPageCallback(view.getUuid(), gridId,
         invocationApi.builder(AttachmentGridInvocationApi.class)
