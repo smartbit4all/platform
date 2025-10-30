@@ -480,14 +480,13 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
   public List<UiAction> getUiActions(AttachmentGridDescriptor descriptor) {
     AttachmentGridOptions options = descriptor.getOptions();
     List<UiAction> actions = new ArrayList<>();
-    View view = viewApi.getView(descriptor.getViewUuid());
 
     if (Boolean.TRUE.equals(options.getIsEditable())
         && Boolean.TRUE.equals(options.getAutoSave())) {
-      UiActions.add(view, Arrays.asList(
+      actions.addAll(Arrays.asList(
           getAddAttachmentAction(descriptor)));
     } else if (Boolean.TRUE.equals(options.getIsEditable())) {
-      UiActions.add(view, Arrays.asList(
+      actions.addAll(Arrays.asList(
           getAddAttachmentAction(descriptor),
           getDeleteListGridAction(descriptor),
           getSaveListAction(descriptor)));

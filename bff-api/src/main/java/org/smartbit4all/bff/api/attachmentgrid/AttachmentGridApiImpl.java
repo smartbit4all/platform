@@ -73,7 +73,7 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     AttachmentGridHelper.saveDescriptorToView(descriptor, viewApi);
     setGridModel(gridModel, descriptor);
 
-    attachmentGridInvocationApi.getUiActions(descriptor).forEach(view::addActionsItem);
+    UiActions.add(view, attachmentGridInvocationApi.getUiActions(descriptor));
     attachmentGridInvocationApi.getEventHandlers(descriptor).forEach(view::addEventHandlersItem);
   }
 
@@ -94,9 +94,9 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     View view = new View().viewName(PlatformViewNames.GENERIC_PAGE)
         .type(ViewType.DIALOG)
         .putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, createDialogGridLayout(descriptor))
-        .actions(actions)
         .eventHandlers(eventHandlers);
 
+    UiActions.add(view, actions);
     viewApi.showView(view);
 
     descriptor.setViewUuid(view.getUuid());
