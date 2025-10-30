@@ -26,6 +26,7 @@ import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -147,9 +148,8 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
   @Lazy
   private ObjectExtensionApi objectExtensionApi;
 
-  @Autowired(required = false)
-  @Lazy
-  private PlatformTransactionManager transactionManager;
+  @Autowired
+  private ObjectProvider<PlatformTransactionManager> transactionManagerProvider;
 
   private static BeanMeta getMeta(Class<?> apiClass) {
     if (apiClass == null) {
@@ -387,6 +387,7 @@ public class ObjectDefinitionApiImpl implements ObjectDefinitionApi, Initializin
 
   @Override
   public void saveDefinitionData(ObjectDefinition<?> definition) {
+    PlatformTransactionManager transactionManager = transactionManagerProvider.getIfAvailable();
     if (transactionManager != null) {
       TransactionTemplate transaction = new TransactionTemplate(transactionManager);
       transaction.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
