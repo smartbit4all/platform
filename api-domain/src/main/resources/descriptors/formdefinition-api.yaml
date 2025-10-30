@@ -290,6 +290,8 @@ components:
           type: UiAction
         changeAction:
           type: UiAction
+        undoIcon:
+          type: ImageResource
         isMultiple:
           type: boolean
           default: true

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -34,6 +35,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   FileUploaderProperties.UPLOAD_ACTION,
   FileUploaderProperties.CHANGE_ACTION,
+  FileUploaderProperties.UNDO_ICON,
   FileUploaderProperties.IS_MULTIPLE,
   FileUploaderProperties.UPLOAD_DESCRIPTOR
 })
@@ -44,6 +46,9 @@ public class FileUploaderProperties {
 
   public static final String CHANGE_ACTION = "changeAction";
   private UiAction changeAction = null;
+
+  public static final String UNDO_ICON = "undoIcon";
+  private ImageResource undoIcon = null;
 
   public static final String IS_MULTIPLE = "isMultiple";
   private Boolean isMultiple = true;
@@ -108,6 +113,34 @@ public class FileUploaderProperties {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setChangeAction(UiAction changeAction) {
     this.changeAction = changeAction;
+  }
+
+  public FileUploaderProperties undoIcon(ImageResource undoIcon) {
+    
+    this.undoIcon = undoIcon;
+    return this;
+  }
+
+  /**
+   * Get undoIcon
+   * @return undoIcon
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(UNDO_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public ImageResource getUndoIcon() {
+    return undoIcon;
+  }
+
+
+  @JsonProperty(UNDO_ICON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUndoIcon(ImageResource undoIcon) {
+    this.undoIcon = undoIcon;
   }
 
   public FileUploaderProperties isMultiple(Boolean isMultiple) {
@@ -176,13 +209,14 @@ public class FileUploaderProperties {
     FileUploaderProperties fileUploaderProperties = (FileUploaderProperties) o;
     return Objects.equals(this.uploadAction, fileUploaderProperties.uploadAction) &&
         Objects.equals(this.changeAction, fileUploaderProperties.changeAction) &&
+        Objects.equals(this.undoIcon, fileUploaderProperties.undoIcon) &&
         Objects.equals(this.isMultiple, fileUploaderProperties.isMultiple) &&
         Objects.equals(this.uploadDescriptor, fileUploaderProperties.uploadDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uploadAction, changeAction, isMultiple, uploadDescriptor);
+    return Objects.hash(uploadAction, changeAction, undoIcon, isMultiple, uploadDescriptor);
   }
 
   @Override
@@ -191,6 +225,7 @@ public class FileUploaderProperties {
     sb.append("class FileUploaderProperties {\n");
     sb.append("    uploadAction: ").append(toIndentedString(uploadAction)).append("\n");
     sb.append("    changeAction: ").append(toIndentedString(changeAction)).append("\n");
+    sb.append("    undoIcon: ").append(toIndentedString(undoIcon)).append("\n");
     sb.append("    isMultiple: ").append(toIndentedString(isMultiple)).append("\n");
     sb.append("    uploadDescriptor: ").append(toIndentedString(uploadDescriptor)).append("\n");
     sb.append("}");
