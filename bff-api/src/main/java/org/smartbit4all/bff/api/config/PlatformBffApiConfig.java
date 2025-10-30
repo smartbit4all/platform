@@ -63,6 +63,7 @@ import org.smartbit4all.bff.api.utils.BffUtilsApiImpl;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApi;
 import org.smartbit4all.bff.api.validation.ValidationResultPageApiImpl;
 import org.smartbit4all.sec.apikey.ApiKeyInnerApi;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -122,14 +123,14 @@ public class PlatformBffApiConfig {
     return Invocations.asProvider(AssociationGridApi.class, associationGridApi());
   }
 
-  @Bean
+  @Bean("genericPageApi")
   GenericPageApi genericPageApiImpl() {
     return new GenericPageApiImpl();
   }
 
   @Bean
   public ProviderApiInvocationHandler<GenericPageApi> genericPageApiProvider(
-      GenericPageApi genericPageApi) {
+      @Qualifier("genericPageApi") GenericPageApi genericPageApi) {
     return Invocations.asProvider(GenericPageApi.class, genericPageApi);
   }
 
