@@ -1,9 +1,13 @@
 package org.smartbit4all.api.invocation.restclient;
 
+import java.net.URI;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.attachment.bean.BinaryContentData;
+import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.collection.bean.ObjectLookupResult;
 import org.smartbit4all.api.invocation.bean.ResponseEntityObject;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
@@ -14,15 +18,17 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodySpec;
 import org.springframework.web.util.UriComponentsBuilder;
 
 public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
+
+  private static final Logger log = LoggerFactory.getLogger(DynamicRestCallerApiImpl.class);
 
   @Autowired
   private ObjectApi objectApi;
@@ -38,6 +44,28 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
       ObjectMappingDefinition queryParams,
       ObjectMappingDefinition body,
       Map<String, Object> params) {
+    return callDynamicRest(serviceConnectionName, path, httpMethodString, contentTypeName, header,
+        queryParams, body, null, params);
+  }
+
+  @Override
+  public ResponseEntityObject callDynamicRestWithContent(String serviceConnectionName, String path,
+      String httpMethodString, String contentTypeName, ObjectMappingDefinition header,
+      ObjectMappingDefinition queryParams, BinaryContentData binaryContentData,
+      Map<String, Object> params) {
+    return callDynamicRest(serviceConnectionName, path, httpMethodString, contentTypeName, header,
+        queryParams, null, binaryContentData, params);
+  }
+
+  private ResponseEntityObject callDynamicRest(String serviceConnectionName,
+      String path,
+      String httpMethodString,
+      String contentTypeName,
+      ObjectMappingDefinition header,
+      ObjectMappingDefinition queryParams,
+      ObjectMappingDefinition body,
+      BinaryContentData binaryContentData,
+      Map<String, Object> params) {
     Objects.requireNonNull(serviceConnectionName,
         "ServiceConnection name can not be null");
     ServiceConnection serviceConnection = getServiceConnection(serviceConnectionName);
@@ -50,14 +78,11 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     Map<String, Object> serviceConnectionParameters = serviceConnection.getParameters();
     ContextObject contextObject = objectApi.contextObject().set(params);
     contextObject.set("serviceConnection", serviceConnection);
-    Object bodyObj = constructBodyObj(body, contextObject);
+    Object bodyObj = constructBodyObj(body, binaryContentData, contextObject, contentType);
     Map<String, String> headerMap = constructHeaderMap(header, contextObject);
     Map<String, String> queryParamsMap = constructQueryParamsMap(queryParams, contextObject);
 
-    RestClient restClient = RestClient.builder()
-        .messageConverters(list -> list
-            .addAll(List.of(new FormHttpMessageConverter(), new MapFormHttpMessageConverter())))
-        .build();
+    RestClient restClient = RestClientHelper.getRestClient(serviceConnection);
 
     // TODO HttpMethod parameter, contentType? uri endpoint or endpoint + path param. Headers?
     /*
@@ -71,13 +96,12 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUri);
     queryParamsMap.forEach(builder::queryParam);
 
-    String uri = builder.toUriString();
+    URI uri = builder.build().encode().toUri();
     RequestBodySpec request = restClient.method(httpMethod)
         .uri(uri)
         .body(bodyObj)
         .contentType(contentType)
         .headers(h -> headerMap.forEach((key, value) -> h.add(key, value)));
-
 
     ResponseEntity<Object> response = request
         .retrieve()
@@ -103,9 +127,16 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     return headerMap;
   }
 
-  private Object constructBodyObj(ObjectMappingDefinition body, ContextObject contextObject) {
+  private Object constructBodyObj(ObjectMappingDefinition body, BinaryContentData binaryContentData,
+      ContextObject contextObject,
+      MediaType contentType) {
     Object bodyObj = "";
-    if (body != null) {
+    if (MediaType.APPLICATION_OCTET_STREAM.equals(contentType) && binaryContentData != null) {
+      BinaryDataObject binaryDataObject =
+          objectApi.loadLatest(binaryContentData.getDataUri()).getObject(BinaryDataObject.class);
+      bodyObj = new InputStreamResource(
+          binaryDataObject.getBinaryData().inputStream());
+    } else if (body != null) {
       bodyObj = objectApi.mapper().setContext(contextObject).mapping(body).execute();
     }
     return bodyObj;
