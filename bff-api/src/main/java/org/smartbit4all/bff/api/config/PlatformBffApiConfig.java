@@ -1,5 +1,9 @@
 package org.smartbit4all.bff.api.config;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.collection.SearchIndex;
 import org.smartbit4all.api.collection.SearchIndexImpl;
@@ -67,9 +71,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.ObjectUtils;
 
 @Configuration
 public class PlatformBffApiConfig {
+
+  public static final String FORMATTED_SUBFIX = "_FORMATTED";
 
   @Bean
   BffUtilsApi bffUtilsAPi() {
@@ -202,10 +209,24 @@ public class PlatformBffApiConfig {
             .map(BinaryContentData.FILE_NAME, BinaryContentData.FILE_NAME)
             .map(BinaryContentData.EXTENSION, BinaryContentData.EXTENSION)
             .map(BinaryContentData.MIME_TYPE, BinaryContentData.MIME_TYPE)
-            .map(BinaryContentData.CREATED, BinaryContentData.CREATED, UserActivityLog.TIMESTAMP)
-            .map(BinaryContentData.UPDATED, BinaryContentData.UPDATED, UserActivityLog.TIMESTAMP)
+            .map(BinaryContentData.LOCATION, BinaryContentData.LOCATION)
+            .map(BinaryContentData.CREATED,
+                OffsetDateTime.class,
+                BinaryContentData.CREATED, UserActivityLog.TIMESTAMP)
+            .map(BinaryContentData.UPDATED,
+                OffsetDateTime.class,
+                BinaryContentData.UPDATED, UserActivityLog.TIMESTAMP)
             .map(BinaryContentData.SIZE, BinaryContentData.SIZE)
-            .map(BinaryContentData.CONTENT_HASH, BinaryContentData.CONTENT_HASH);
+            .map(BinaryContentData.CONTENT_HASH, BinaryContentData.CONTENT_HASH)
+            .mapComplex(BinaryContentData.CREATED + FORMATTED_SUBFIX, o -> {
+
+              OffsetDateTime date = o.getValue(
+                  OffsetDateTime.class,
+                  BinaryContentData.CREATED, UserActivityLog.TIMESTAMP);
+
+              return formatDate(date);
+            });
+
   }
 
   @Bean
@@ -345,6 +366,20 @@ public class PlatformBffApiConfig {
   @Bean
   RelationManagedMultiComboBoxService relationManagedMultiComboBoxService() {
     return new RelationManagedMultiComboBoxServiceImpl();
+  }
+
+  private String formatDate(OffsetDateTime date) {
+
+    if (ObjectUtils.isEmpty(date)) {
+      return null;
+    }
+
+    ZoneId berlinZone = ZoneId.of("Europe/Berlin");
+    LocalDateTime berlinDateTime = date
+        .atZoneSameInstant(berlinZone)
+        .toLocalDateTime();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
+    return berlinDateTime.format(formatter);
   }
 
 }
