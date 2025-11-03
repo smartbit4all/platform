@@ -129,7 +129,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
       widgets.add(new SmartWidgetDefinition().type(SmartFormWidgetType.SELECT_MULTIPLE)
           .key(UserEditingModel.ACTUAL_GROUPS)
-          .label(UserEditingModel.ACTUAL_GROUPS)
+          .label(localeSettingApi.get(UserEditingModel.ACTUAL_GROUPS))
           .values(values));
     }
 
@@ -138,7 +138,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     view.putComponentLayoutsItem(ObjectLayoutApi.DEFAULT_LAYOUT, layout);
   }
 
-  private void putConstraintIntoView(View view, boolean passwordIsVisible) {
+  protected void putConstraintIntoView(View view, boolean passwordIsVisible) {
     ViewConstraint viewConstraint = new ViewConstraint().componentConstraints(Arrays.asList(
         new ComponentConstraint().dataName(widgetKey(UserEditingModel.USER, User.NAME))
             .enabled(true).mandatory(true).visible(true),
