@@ -129,7 +129,7 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
 
       widgets.add(new SmartWidgetDefinition().type(SmartFormWidgetType.SELECT_MULTIPLE)
           .key(UserEditingModel.ACTUAL_GROUPS)
-          .label(UserEditingModel.ACTUAL_GROUPS)
+          .label(localeSettingApi.get(UserEditingModel.ACTUAL_GROUPS))
           .values(values));
     }
 
