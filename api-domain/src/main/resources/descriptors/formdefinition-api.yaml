@@ -292,8 +292,5 @@ components:
           type: UiAction
         undoIcon:
           type: ImageResource
-        isMultiple:
-          type: boolean
-          default: true
         uploadDescriptor:
           type: UiActionUploadDescriptor

@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ import java.util.Optional;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.ObjectNodeData;
 import org.smartbit4all.api.object.bean.ObjectNodeState;
 import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
@@ -30,8 +34,6 @@ import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.data.storage.ObjectStream;
 import com.google.common.base.Strings;
 import com.google.common.collect.Streams;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 /**
  * The object node contains an object returned by the <code>RetrievalApi</code>. It can manage the
@@ -42,6 +44,9 @@ import static java.util.stream.Collectors.toMap;
  *
  */
 public class ObjectNode {
+
+  private static final Logger log = LoggerFactory.getLogger(ObjectNode.class);
+
 
   /**
    * This bean contains all serializable information about this ObjectNode.
@@ -335,6 +340,16 @@ public class ObjectNode {
         Object innerMap = baseline.computeIfAbsent(entry.getKey(), k -> new HashMap<>());
         if (innerMap instanceof Map) {
           mergeValuesRec((Map) innerMap, (Map) entry.getValue());
+        } else {
+          try {
+            innerMap = objectApi.toMapObject(innerMap);
+            mergeValuesRec((Map) innerMap, (Map) entry.getValue());
+            baseline.put(entry.getKey(), innerMap);
+          } catch (Exception e) {
+            log.warn("Unexpected non map when merging key: {} with value: {}", entry.getKey(),
+                innerMap);
+            baseline.put(entry.getKey(), entry.getValue());
+          }
         }
       } else {
         baseline.put(entry.getKey(), entry.getValue());

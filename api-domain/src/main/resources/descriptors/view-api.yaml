@@ -1347,6 +1347,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UploadWidgetType'
+        autoUpload:
+          type: boolean
     UploadWidgetType:
       type: string
       enum: [ALL, SOUND, IMAGE]

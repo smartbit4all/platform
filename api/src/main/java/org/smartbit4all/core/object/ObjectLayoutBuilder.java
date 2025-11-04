@@ -225,6 +225,10 @@ public final class ObjectLayoutBuilder {
     Objects.requireNonNull(properties.getUploadDescriptor(),
         "uploadDescriptor can not be null");
 
+    if (properties.getUploadDescriptor().getAutoUpload() == null) {
+      properties.getUploadDescriptor().autoUpload(true);
+    }
+
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.FILE_UPLOADER)
         .key(key)
