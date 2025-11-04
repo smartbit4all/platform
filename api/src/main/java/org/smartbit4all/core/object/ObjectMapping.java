@@ -224,6 +224,9 @@ public final class ObjectMapping {
       } else if (propertyMapping.getFromPath() != null
           && !propertyMapping.getFromPath().isEmpty()) {
         value = context.getValueFromContext(propertyMapping.getFromPath());
+      } else if (propertyMapping.getFromPath() == null) {
+        // TODO temporary solution
+        value = context.getItemValues();
       } else if (propertyMapping.getConstant() != null) {
         value = propertyMapping.getConstant();
       } else {
