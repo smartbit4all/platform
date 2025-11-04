@@ -319,6 +319,17 @@ public final class ObjectLayoutBuilder {
   }
 
   public static SmartWidgetDefinition combobox(String key, String label,
+      String... values) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.SELECT)
+        .key(key)
+        .label(label)
+        .values(
+            Arrays.asList(values).stream().map(s -> new Value().code(s).displayValue(s))
+                .collect(Collectors.toList()));
+  }
+
+  public static SmartWidgetDefinition combobox(String key, String label,
       SelectionDefinition selectionDefinition) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.SELECT)
@@ -330,6 +341,17 @@ public final class ObjectLayoutBuilder {
   public static SmartWidgetDefinition combobox(String key, String label,
       Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi) {
     return enumSelector(key, label, enumClass, localeSettingApi, SmartFormWidgetType.SELECT);
+  }
+
+  public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
+      String... values) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.SELECT_MULTIPLE)
+        .key(key)
+        .label(label)
+        .values(
+            Arrays.asList(values).stream().map(s -> new Value().code(s).displayValue(s))
+                .collect(Collectors.toList()));
   }
 
   public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
