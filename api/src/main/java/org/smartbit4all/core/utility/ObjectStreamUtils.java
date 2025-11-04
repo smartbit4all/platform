@@ -1,20 +1,108 @@
 package org.smartbit4all.core.utility;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.smartbit4all.core.object.ObjectDefinition;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeList;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.core.object.ObjectReferenceConfigs;
 import org.springframework.util.StringUtils;
 
 public final class ObjectStreamUtils {
 
+  private static final Logger log = LoggerFactory.getLogger(ObjectStreamUtils.class);
+
   private ObjectStreamUtils() {}
+
+  /**
+   * Returns the terminal {@link ObjectNode} at the path of a reference chain.
+   * 
+   * <p>
+   * This operation does not throw an exception if the reference chain terminates early. Consider
+   * the below snippet:
+   * 
+   * <pre>
+   * <code>
+   * final ObjectNode root = ...;
+   * final ObjectNodeReference barRef = root.ref("foo", "bar");
+   * </code>
+   * </pre>
+   * 
+   * <p>
+   * The above snippet throws an exception if the foo ref is not present on the root node (even
+   * though by the configured {@link ObjectDefinition}s and {@link ObjectReferenceConfigs} the path
+   * is correct).
+   * 
+   * @param root the {@link ObjectNode} to start off from, not null
+   * @param first the {@link String} first element of the reference path, not null
+   * @param rest additional {@link String} elements of the reference path, nullable
+   * @return an {@link Optional} containing the referenced {@link ObjectNode} (if available)
+   */
+  public static Optional<ObjectNode> refNode(ObjectNode root, String first, String... rest) {
+    return toOptionalRef(root, first, rest).flatMap(ObjectStreamUtils::toOptionalNode);
+  }
+
+  /**
+   * Returns the terminal {@link URI} at the path of a reference chain.
+   * 
+   * <p>
+   * This operation does not throw an exception if the reference chain terminates early. Consider
+   * the below snippet:
+   * 
+   * <pre>
+   * <code>
+   * final ObjectNode root = ...;
+   * final ObjectNodeReference barRef = root.ref("foo", "bar");
+   * </code>
+   * </pre>
+   * 
+   * <p>
+   * The above snippet throws an exception if the foo ref is not present on the root node (even
+   * though by the configured {@link ObjectDefinition}s and {@link ObjectReferenceConfigs} the path
+   * is correct).
+   * 
+   * @param root the {@link ObjectNode} to start off from, not null
+   * @param first the {@link String} first element of the reference path, not null
+   * @param rest additional {@link String} elements of the reference path, nullable
+   * @return an {@link Optional} containing the {@link URI} of the referenced node (if available)
+   */
+  public static Optional<URI> refUri(ObjectNode root, String first, String... rest) {
+    return toOptionalRef(root, first, rest).flatMap(ObjectStreamUtils::toOptionalUri);
+  }
+
+  private static Optional<ObjectNodeReference> toOptionalRef(ObjectNode root, String first,
+      String... rest) {
+    Objects.requireNonNull(root, "Root ObjectNode must not be null!");
+    Objects.requireNonNull(first, "Path must contain at least one element!");
+
+    if (rest == null || rest.length < 1) {
+      try {
+        return Optional.of(root.ref(first));
+      } catch (final Exception e) {
+        log.warn("Invalid ref {} in node: {}", first, e.getMessage());
+        return Optional.empty();
+      }
+    }
+
+    final var path = new String[rest.length + 1];
+    System.arraycopy(rest, 0, path, 1, rest.length);
+    path[0] = first;
+    try {
+      return Optional.of(root.ref(path));
+    } catch (final Exception e) {
+      log.warn("Invalid ref {} in node: {}", Arrays.toString(path), e.getMessage());
+      return Optional.empty();
+    }
+  }
 
   public static Optional<ObjectNode> toOptionalNode(ObjectNodeReference ref) {
     return ref == null || ref.isEmpty() ? Optional.empty() : Optional.of(ref.get());
