@@ -146,10 +146,18 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
         .orElse(null);
   }
 
-  private final String getConverterApiName(String fromMimeType,
+  @Override
+  public final String getConverterApiName(String fromMimeType,
       String toMimeType) {
     ContentConversionContributionApi converterApi = getConverterApi(fromMimeType, toMimeType);
     return converterApi != null ? converterApi.getApiName() : null;
+  }
+
+  @Override
+  public boolean isMultiOutput(String apiName) {
+    ContentConversionContributionApi api =
+        getContributionApi(apiName);
+    return api.isMultiOutput();
   }
 
   @Override
@@ -189,6 +197,45 @@ public class ContentConversionApiImpl extends PrimaryApiImpl<ContentConversionCo
           .contentHash(dataObject.getBinaryData().hashIfPresent());
     }
     return null;
+  }
+
+  @Override
+  public List<BinaryContentData> convertToMultipleFiles(BinaryContentData binaryContentData,
+      String toMimeType,
+      String logicalSchema, Map<String, Object> parameters, String apiName) {
+    Objects.requireNonNull(binaryContentData);
+    Objects.requireNonNull(toMimeType);
+    Objects.requireNonNull(logicalSchema);
+
+    if (!isConversionAvailable(binaryContentData.getMimeType(), toMimeType)) {
+      throw new IllegalArgumentException(
+          "The conversion of " + binaryContentData + " to " + toMimeType + " is not available.");
+    }
+    ContentConversionContributionApi api =
+        getContributionApi(apiName);
+    if (api != null) {
+      List<URI> dataUris = api.convertToMultipleFiles(binaryContentData,
+          toMimeType, logicalSchema, parameters);
+
+
+      return dataUris.stream().map(uri -> {
+
+        BinaryDataObject dataObject =
+            objectApi.loadLatest(uri).getObject(BinaryDataObject.class);
+        UserActivityLog activityLog = sessionApi != null ? sessionApi.createActivityLog() : null;
+        return new BinaryContentData()
+            .dataUri(uri)
+            .fileName(mimeTypeApi.ensureFileExtension(binaryContentData.getFileName(), toMimeType))
+            .created(activityLog)
+            .updated(activityLog)
+            .mimeType(toMimeType)
+            .extension(mimeTypeApi.getExtension(toMimeType))
+            .size(dataObject.getBinaryData().length())
+            .contentHash(dataObject.getBinaryData().hashIfPresent());
+      }).collect(Collectors.toList());
+
+    }
+    return Collections.emptyList();
   }
 
 }
