@@ -42,7 +42,8 @@ import jakarta.validation.Valid;
   UiActionUploadDescriptor.UPLOAD_BUTTON_TITLE,
   UiActionUploadDescriptor.BACKGROUND_COLOUR,
   UiActionUploadDescriptor.TEXT_COLOUR,
-  UiActionUploadDescriptor.UPLOAD_WIDGETS
+  UiActionUploadDescriptor.UPLOAD_WIDGETS,
+  UiActionUploadDescriptor.AUTO_UPLOAD
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class UiActionUploadDescriptor {
@@ -69,6 +70,9 @@ public class UiActionUploadDescriptor {
 
   public static final String UPLOAD_WIDGETS = "uploadWidgets";
   private List<UploadWidgetType> uploadWidgets = new ArrayList<>();
+
+  public static final String AUTO_UPLOAD = "autoUpload";
+  private Boolean autoUpload;
 
   public UiActionUploadDescriptor() {
   }
@@ -299,6 +303,33 @@ public class UiActionUploadDescriptor {
     this.uploadWidgets = uploadWidgets;
   }
 
+  public UiActionUploadDescriptor autoUpload(Boolean autoUpload) {
+    
+    this.autoUpload = autoUpload;
+    return this;
+  }
+
+  /**
+   * Get autoUpload
+   * @return autoUpload
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(AUTO_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getAutoUpload() {
+    return autoUpload;
+  }
+
+
+  @JsonProperty(AUTO_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setAutoUpload(Boolean autoUpload) {
+    this.autoUpload = autoUpload;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -315,12 +346,13 @@ public class UiActionUploadDescriptor {
         Objects.equals(this.uploadButtonTitle, uiActionUploadDescriptor.uploadButtonTitle) &&
         Objects.equals(this.backgroundColour, uiActionUploadDescriptor.backgroundColour) &&
         Objects.equals(this.textColour, uiActionUploadDescriptor.textColour) &&
-        Objects.equals(this.uploadWidgets, uiActionUploadDescriptor.uploadWidgets);
+        Objects.equals(this.uploadWidgets, uiActionUploadDescriptor.uploadWidgets) &&
+        Objects.equals(this.autoUpload, uiActionUploadDescriptor.autoUpload);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour, uploadWidgets);
+    return Objects.hash(title, description, maxSize, formats, uploadButtonTitle, backgroundColour, textColour, uploadWidgets, autoUpload);
   }
 
   @Override
@@ -335,6 +367,7 @@ public class UiActionUploadDescriptor {
     sb.append("    backgroundColour: ").append(toIndentedString(backgroundColour)).append("\n");
     sb.append("    textColour: ").append(toIndentedString(textColour)).append("\n");
     sb.append("    uploadWidgets: ").append(toIndentedString(uploadWidgets)).append("\n");
+    sb.append("    autoUpload: ").append(toIndentedString(autoUpload)).append("\n");
     sb.append("}");
     return sb.toString();
   }

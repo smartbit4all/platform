@@ -36,7 +36,6 @@ import jakarta.validation.Valid;
   FileUploaderProperties.UPLOAD_ACTION,
   FileUploaderProperties.CHANGE_ACTION,
   FileUploaderProperties.UNDO_ICON,
-  FileUploaderProperties.IS_MULTIPLE,
   FileUploaderProperties.UPLOAD_DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -49,9 +48,6 @@ public class FileUploaderProperties {
 
   public static final String UNDO_ICON = "undoIcon";
   private ImageResource undoIcon = null;
-
-  public static final String IS_MULTIPLE = "isMultiple";
-  private Boolean isMultiple = true;
 
   public static final String UPLOAD_DESCRIPTOR = "uploadDescriptor";
   private UiActionUploadDescriptor uploadDescriptor = null;
@@ -143,33 +139,6 @@ public class FileUploaderProperties {
     this.undoIcon = undoIcon;
   }
 
-  public FileUploaderProperties isMultiple(Boolean isMultiple) {
-    
-    this.isMultiple = isMultiple;
-    return this;
-  }
-
-  /**
-   * Get isMultiple
-   * @return isMultiple
-   */
-  @jakarta.annotation.Nullable
-
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
-  @JsonProperty(IS_MULTIPLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-
-  public Boolean getIsMultiple() {
-    return isMultiple;
-  }
-
-
-  @JsonProperty(IS_MULTIPLE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setIsMultiple(Boolean isMultiple) {
-    this.isMultiple = isMultiple;
-  }
-
   public FileUploaderProperties uploadDescriptor(UiActionUploadDescriptor uploadDescriptor) {
     
     this.uploadDescriptor = uploadDescriptor;
@@ -210,13 +179,12 @@ public class FileUploaderProperties {
     return Objects.equals(this.uploadAction, fileUploaderProperties.uploadAction) &&
         Objects.equals(this.changeAction, fileUploaderProperties.changeAction) &&
         Objects.equals(this.undoIcon, fileUploaderProperties.undoIcon) &&
-        Objects.equals(this.isMultiple, fileUploaderProperties.isMultiple) &&
         Objects.equals(this.uploadDescriptor, fileUploaderProperties.uploadDescriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uploadAction, changeAction, undoIcon, isMultiple, uploadDescriptor);
+    return Objects.hash(uploadAction, changeAction, undoIcon, uploadDescriptor);
   }
 
   @Override
@@ -226,7 +194,6 @@ public class FileUploaderProperties {
     sb.append("    uploadAction: ").append(toIndentedString(uploadAction)).append("\n");
     sb.append("    changeAction: ").append(toIndentedString(changeAction)).append("\n");
     sb.append("    undoIcon: ").append(toIndentedString(undoIcon)).append("\n");
-    sb.append("    isMultiple: ").append(toIndentedString(isMultiple)).append("\n");
     sb.append("    uploadDescriptor: ").append(toIndentedString(uploadDescriptor)).append("\n");
     sb.append("}");
     return sb.toString();
