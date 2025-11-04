@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 
 @Configuration
+@Deprecated
 public class PlatformSecurityConfig {
 
   @Bean

@@ -65,4 +65,30 @@ public interface ContentConversionApi extends PrimaryApi<ContentConversionContri
   BinaryContentData convert(BinaryContentData binaryContentData, String toMimeType,
       String logicalSchema, Map<String, Object> parameters, String apiName);
 
+  /**
+   * Converts a single input file into multiple output files based on the specified target MIME
+   * type.
+   * <p>
+   * This method supports conversions where one source file produces multiple outputs, such as
+   * converting a PDF document into individual image files (one per page), or an archive file (e.g.,
+   * ZIP) into its extracted contents.
+   * </p>
+   * 
+   * @param binaryContentData The original binary content data as attachment. It must have a correct
+   *        mime type to be able to start the proper converter.
+   * @param toMimeType The target mime type.
+   * @param logicalSchema The logical schema to save the result into.
+   * @return The {@link BinaryContentData} with the local content URI of the saved result.
+   */
+  List<BinaryContentData> convertToMultipleFiles(BinaryContentData binaryContentData,
+      String toMimeType,
+      String logicalSchema, Map<String, Object> parameters, String apiName);
+
+  /**
+   * Return if the conversion returns multiple output converted files.
+   */
+  boolean isMultiOutput(String apiName);
+
+  String getConverterApiName(String fromMimeType, String toMimeType);
+
 }

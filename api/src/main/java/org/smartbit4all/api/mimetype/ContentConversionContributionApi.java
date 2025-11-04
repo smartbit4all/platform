@@ -40,4 +40,9 @@ public interface ContentConversionContributionApi extends ContributionApi {
   public URI convert(BinaryContentData content, String toMimeType,
       String logicalSchema, Map<String, Object> parameters);
 
+  public List<URI> convertToMultipleFiles(BinaryContentData content, String toMimeType,
+      String logicalSchema, Map<String, Object> parameters);
+
+  boolean isMultiOutput();
+
 }

@@ -2,8 +2,11 @@ package org.smartbit4all.api.mimetype;
 
 import java.net.URI;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.binarydata.BinaryDataObject;
@@ -16,6 +19,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyValue;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 public abstract class ContentConversionContributionApiImpl extends ContributionApiImpl
     implements ContentConversionContributionApi {
@@ -69,6 +73,11 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
     return true;
   }
 
+  @Override
+  public boolean isMultiOutput() {
+    return false;
+  }
+
   protected final ServiceConnection getServiceConnection() {
     MDMEntryApi entryApi =
         mdmApi.getApi(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION,
@@ -83,6 +92,11 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
    */
   protected abstract BinaryData convertInternal(BinaryContentData content, String toMimeType,
       Map<String, Object> parameters);
+
+  protected List<BinaryData> convertToMultipleFilesInternal(BinaryContentData content, String toMimeType,
+      Map<String, Object> parameters) {
+    return Collections.emptyList();
+  }
 
   protected void mergeParams(Map<String, Object> params) {
     ServiceConnection serviceConnection = getServiceConnection();
@@ -110,6 +124,26 @@ public abstract class ContentConversionContributionApiImpl extends ContributionA
     }
     return objectApi.saveAsNew(logicalSchema,
         binaryData.asObject());
+  }
+
+  @Override
+  public List<URI> convertToMultipleFiles(BinaryContentData content, String toMimeType,
+      String logicalSchema, Map<String, Object> parameters) {
+    if (Objects.equals(content.getMimeType(), toMimeType)) {
+      return List.of(objectApi.saveAsNew(logicalSchema,
+          objectApi.loadLatest(content.getDataUri()).getObject(BinaryDataObject.class)
+              .getBinaryData().asObject()));
+    }
+    List<BinaryData> binaryDatas = convertToMultipleFilesInternal(content, toMimeType, parameters);
+    if (CollectionUtils.isEmpty(binaryDatas)) {
+      throw new BusinessLogicException(
+          MessageFormat
+              .format(localeSettingApi.get("exception.conversion.fail"), content.getMimeType(),
+                  toMimeType, content.getFileName()));
+    }
+
+    return binaryDatas.stream().map(data -> objectApi.saveAsNew(logicalSchema,
+        data.asObject())).collect(Collectors.toList());
   }
 
 }

@@ -22,6 +22,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyMapping;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
+import org.springframework.expression.spel.SpelEvaluationException;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 /**
@@ -213,7 +214,13 @@ public final class ObjectMapping {
         value = evaluateScript(propertyMapping);
       } else if (!StringConstant.isNullOrBlank(propertyMapping.getExpression())) {
         Expression expression = getExpression(propertyMapping);
-        value = expression.getValue(getEvaluationContext());
+        try {
+          value = expression.getValue(getEvaluationContext());
+        } catch (SpelEvaluationException e) {
+          log.error("The following spring expression can't be executed {}",
+              expression.getExpressionString());
+          throw new IllegalStateException(e);
+        }
       } else if (propertyMapping.getFromPath() != null
           && !propertyMapping.getFromPath().isEmpty()) {
         value = context.getValueFromContext(propertyMapping.getFromPath());
