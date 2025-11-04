@@ -5,17 +5,21 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.toggle;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.collection.bean.VectorCollectionDescriptor;
+import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetDirection;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
+import org.smartbit4all.api.formdefinition.bean.ValueChangeMode;
 import org.smartbit4all.api.invocation.ApiNotFoundException;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -31,6 +35,7 @@ import org.smartbit4all.api.object.bean.ObjectPropertyFormatter;
 import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
+import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
@@ -47,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryDescriptorPageApiImpl
     extends PageApiImpl<MDMEntryDescriptorPageModel>
@@ -138,10 +144,16 @@ public class MDMEntryDescriptorPageApiImpl
   public MDMEntryDescriptorPageModel initModel(View view) {
     PageContext ctx = getContextByView(view);
     UiActions.add(view, ACTION_SAVE, new UiAction().code(DEFAULT_CLOSE));
-    view.putLayoutsItem(LAYOUT, getLayout());
+    view.putLayoutsItem(LAYOUT, getLayout(view.getUuid()));
     view.constraint(getViewConstraint(view.getUuid()));
 
     MDMEntryDescriptor currentEntryDescriptor = ctx.getEntryDescriptor();
+    return createPageModelFromEntryDescriptor(ctx, currentEntryDescriptor);
+  }
+
+  private MDMEntryDescriptorPageModel createPageModelFromEntryDescriptor(PageContext ctx,
+      MDMEntryDescriptor currentEntryDescriptor) {
+
     VectorCollectionDescriptor vectorCollection = currentEntryDescriptor.getVectorCollection();
     if (vectorCollection == null) {
       vectorCollection = new VectorCollectionDescriptor();
@@ -165,8 +177,57 @@ public class MDMEntryDescriptorPageApiImpl
         .csvSeparator(currentEntryDescriptor.getCsvSeparator());
   }
 
-  private SmartLayoutDefinition getLayout() {
-    return new SmartLayoutDefinition().widgets(Arrays.asList(
+  private SmartLayoutDefinition getLayout(UUID viewUuid) {
+
+    List<SmartWidgetDefinition> subWidgetBoxes = new ArrayList<>();
+    if (!ObjectUtils.isEmpty(vectorDBApi.getContributionApis())) {
+      subWidgetBoxes.add(new SmartWidgetDefinition()
+          .type(SmartFormWidgetType.CONTAINER)
+          .direction(SmartFormWidgetDirection.COL)
+          .childrenComponents(List.of(
+              new SmartWidgetDefinition()
+                  .key(widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+                      VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
+                  .label(localeSettingApi.get(
+                      VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
+                  .type(SmartFormWidgetType.TEXT_FIELD),
+              MDMVectorCollectionUtil.getEmbeddingConnectionWidget(
+                  widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+                      VectorCollectionDescriptor.EMBEDDING_CONNECTION),
+                  localeSettingApi.get(
+                      VectorCollectionDescriptor.EMBEDDING_CONNECTION),
+                  masterDataManagementApi),
+              MDMVectorCollectionUtil.getVectorDbConnectionWidget(
+                  widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
+                      VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
+                  localeSettingApi.get(
+                      VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
+                  masterDataManagementApi),
+              textbox(
+                  widgetKey(MDMEntryDescriptorPageModel.FORMATTER),
+                  localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                      VectorCollectionDescriptor.FORMATTER)))));
+    }
+
+    subWidgetBoxes.add(new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.CONTAINER).direction(SmartFormWidgetDirection.COL)
+        .childrenComponents(List.of(
+            toggle(MDMEntryDescriptorPageModel.IMPORTABLE,
+                localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                    MDMEntryDescriptorPageModel.IMPORTABLE)),
+            textfield(MDMEntryDescriptorPageModel.CSV_SEPARATOR,
+                localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
+                    MDMEntryDescriptorPageModel.CSV_SEPARATOR)))));
+
+    SmartLayoutDefinition widgets = new SmartLayoutDefinition().widgets(Arrays.asList(
+        new SmartWidgetDefinition()
+            .type(SmartFormWidgetType.SELECT)
+            .key(MDMEntryDescriptorPageModel.SELECTED_TEMPLATE)
+            .label(localeSettingApi.get(
+                MDMEntryDescriptorPageModel.class.getName(),
+                MDMEntryDescriptorPageModel.SELECTED_TEMPLATE))
+            .values(getTemplateValueList(viewUuid))
+            .valueChangeMode(ValueChangeMode.IMMEDIATE_ACTION),
         new SmartWidgetDefinition().key(MDMEntryDescriptorPageModel.NAME)
             .label(localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
                 MDMEntryDescriptorPageModel.NAME))
@@ -176,33 +237,10 @@ public class MDMEntryDescriptorPageApiImpl
                 MDMEntryDescriptorPageModel.CODE))
             .type(SmartFormWidgetType.TEXT_FIELD),
         new SmartWidgetDefinition()
-            .key(widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-                VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
-            .label(localeSettingApi.get(
-                VectorCollectionDescriptor.VECTOR_COLLECTION_NAME))
-            .type(SmartFormWidgetType.TEXT_FIELD),
-        MDMVectorCollectionUtil.getEmbeddingConnectionWidget(
-            widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-                VectorCollectionDescriptor.EMBEDDING_CONNECTION),
-            localeSettingApi.get(
-                VectorCollectionDescriptor.EMBEDDING_CONNECTION),
-            masterDataManagementApi),
-        MDMVectorCollectionUtil.getVectorDbConnectionWidget(
-            widgetKey(MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
-                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
-            localeSettingApi.get(
-                VectorCollectionDescriptor.VECTOR_D_B_CONNECTION),
-            masterDataManagementApi),
-        textbox(
-            widgetKey(MDMEntryDescriptorPageModel.FORMATTER),
-            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                VectorCollectionDescriptor.FORMATTER)),
-        toggle(MDMEntryDescriptorPageModel.IMPORTABLE,
-            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                MDMEntryDescriptorPageModel.IMPORTABLE)),
-        textfield(MDMEntryDescriptorPageModel.CSV_SEPARATOR,
-            localeSettingApi.get(MDMEntryDescriptorPageModel.class.getSimpleName(),
-                MDMEntryDescriptorPageModel.CSV_SEPARATOR))));
+            .type(SmartFormWidgetType.CONTAINER).direction(SmartFormWidgetDirection.ROW)
+            .childrenComponents(subWidgetBoxes)));
+
+    return widgets;
   }
 
   protected ViewConstraint getViewConstraint(UUID viewUuid) {
@@ -230,6 +268,13 @@ public class MDMEntryDescriptorPageApiImpl
       viewConstraint.addComponentConstraintsItem(
           new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.CODE).enabled(false)
               .visible(false).mandatory(false));
+    }
+
+    if (!Boolean.TRUE.equals(ctx.isNewEntry)
+        || ObjectUtils.isEmpty(ctx.getDefinition().getTemplates())) {
+      viewConstraint.addComponentConstraintsItem(
+          new ComponentConstraint().dataName(MDMEntryDescriptorPageModel.SELECTED_TEMPLATE)
+              .enabled(false).visible(false).mandatory(false));
     }
     return viewConstraint;
   }
@@ -290,6 +335,27 @@ public class MDMEntryDescriptorPageApiImpl
     viewApi.closeView(viewUuid);
   }
 
+
+  @Override
+  public void templateSelected(UUID viewUuid, UiActionRequest request) {
+    MDMEntryDescriptorPageModel pageModel = actionRequestHelper(request)
+        .get(UiActions.MODEL, MDMEntryDescriptorPageModel.class);
+
+    PageContext context = getContextByView(viewUuid);
+    MDMEntryDescriptor selectedTemplate =
+        context.getDefinition().getTemplates().get(pageModel.getSelectedTemplate());
+
+
+    if (selectedTemplate == null) {
+      selectedTemplate = context.getEntryDescriptor();
+    }
+
+    MDMEntryDescriptorPageModel pageModelFromEntryDescriptor =
+        createPageModelFromEntryDescriptor(context, selectedTemplate);
+    setModel(viewUuid, pageModelFromEntryDescriptor);
+
+  }
+
   protected void validateDescriptorProperties(String code, String name) {
     if (Strings.isBlank(name)) {
       throw new BusinessLogicException(
@@ -308,25 +374,44 @@ public class MDMEntryDescriptorPageApiImpl
       String code, String name, VectorCollectionDescriptor vectorCollectionDescriptor,
       MDMDefinitionOption option) {
     try {
-      MDMEntryDescriptor descriptor =
-          option.addDefaultDescriptor(GenericValue.class, code)
-              .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name(GenericValue.CODE)
-                  .addPathItem(GenericValue.CODE),
-                  new MDMTableColumnDescriptor().name(GenericValue.NAME)
-                      .addPathItem(GenericValue.NAME),
-                  new MDMTableColumnDescriptor().name(GenericValue.DESCRIPTION)
-                      .addPathItem(GenericValue.DESCRIPTION),
-                  new MDMTableColumnDescriptor().name(GenericValue.ICON)
-                      .addPathItem(GenericValue.ICON)))
-              .displayNameForm(new LangString().defaultValue(name))
-              .displayNameList(new LangString().defaultValue(name))
-              .displayNamePropertyPath(Arrays.asList(GenericValue.NAME))
-              .listPageGridViews(Collections.emptyList())
-              .isValueSet(Boolean.TRUE)
-              .vectorCollection(vectorCollectionDescriptor)
-              .importable(Boolean.TRUE.equals(clientModel.getImportable()))
-              .csvSeparator(clientModel.getCsvSeparator())
-              .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
+
+      MDMEntryDescriptor descriptor;
+
+      if (clientModel.getSelectedTemplate() != null) {
+        descriptor =
+            option.getDefinition().getTemplates().get(clientModel.getSelectedTemplate())
+                .name(code)
+                .publishedListName(code)
+                .displayNameForm(new LangString().defaultValue(name))
+                .displayNameList(new LangString().defaultValue(name))
+                .isValueSet(Boolean.TRUE)
+                .vectorCollection(vectorCollectionDescriptor)
+                .importable(Boolean.TRUE.equals(clientModel.getImportable()))
+                .csvSeparator(clientModel.getCsvSeparator());
+        option.addDescriptor(descriptor);
+
+      } else {
+        descriptor =
+            option.addDefaultDescriptor(GenericValue.class, code)
+                .tableColumns(Arrays.asList(new MDMTableColumnDescriptor().name(GenericValue.CODE)
+                    .addPathItem(GenericValue.CODE),
+                    new MDMTableColumnDescriptor().name(GenericValue.NAME)
+                        .addPathItem(GenericValue.NAME),
+                    new MDMTableColumnDescriptor().name(GenericValue.DESCRIPTION)
+                        .addPathItem(GenericValue.DESCRIPTION),
+                    new MDMTableColumnDescriptor().name(GenericValue.ICON)
+                        .addPathItem(GenericValue.ICON)))
+                .displayNameForm(new LangString().defaultValue(name))
+                .displayNameList(new LangString().defaultValue(name))
+                .displayNamePropertyPath(Arrays.asList(GenericValue.NAME))
+                .listPageGridViews(Collections.emptyList())
+                .isValueSet(Boolean.TRUE)
+                .vectorCollection(vectorCollectionDescriptor)
+                .importable(Boolean.TRUE.equals(clientModel.getImportable()))
+                .csvSeparator(clientModel.getCsvSeparator())
+                .uniquePropertyPaths(Arrays.asList(Arrays.asList(GenericValue.CODE)));
+      }
+
       MDMDefinitionOption.addCreatedUpdatedExtraProperties(descriptor);
       return descriptor;
     } catch (IllegalArgumentException e) {
@@ -335,4 +420,16 @@ public class MDMEntryDescriptorPageApiImpl
           .get(MDMEntryDescriptorPageModel.class.getSimpleName(), "error.usedcode"));
     }
   }
+
+  private List<Value> getTemplateValueList(UUID viewUuid) {
+    PageContext ctx = getContextByView(viewUuid);
+
+    return ctx.getDefinition().getTemplates()
+        .entrySet().stream()
+        .map(entrySet -> {
+          return new Value().code(entrySet.getKey())
+              .displayValue(localeSettingApi.get(entrySet.getValue().getDisplayNameList()));
+        }).collect(toList());
+  }
+
 }

@@ -1,7 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
 import static java.util.Arrays.asList;
-import static java.util.stream.Collectors.toList;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import java.net.URI;
@@ -33,7 +32,6 @@ import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewEventApi;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
-import org.smartbit4all.api.view.bean.IconPosition;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
@@ -51,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import static java.util.stream.Collectors.toList;
 
 public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdminPageApi {
 
@@ -198,14 +197,14 @@ public class MDMAdminPageApiImpl extends PageApiImpl<Object> implements MDMAdmin
     if (ctx.isAdmin() && ctx.getModificationApi() != null
         && !ObjectUtils.isEmpty(ctx.definition.getTemplates())
         && !MDMConstants.MDM_ADMIN_VALUES.equals(ctx.view.getViewName())) {
-      actions.add(new UiAction().code(ACTION_ADD_TEMPLATE_BASED_DESCRIPTOR)
-          .descriptor(new UiActionDescriptor()
-              .title(StringConstant.EMPTY)
-              .color(UiActions.Color.PRIMARY)
-              .icon("Plus")
-              .iconColor("white")
-              .iconPosition(IconPosition.PRE)
-              .type(UiActionButtonType.NORMAL)));
+      // actions.add(new UiAction().code(ACTION_ADD_TEMPLATE_BASED_DESCRIPTOR)
+      // .descriptor(new UiActionDescriptor()
+      // .title(StringConstant.EMPTY)
+      // .color(UiActions.Color.PRIMARY)
+      // .icon("Plus")
+      // .iconColor("white")
+      // .iconPosition(IconPosition.PRE)
+      // .type(UiActionButtonType.NORMAL)));
     }
 
     ctx.view.actions(actions);

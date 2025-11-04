@@ -36,7 +36,8 @@ import jakarta.validation.Valid;
   MDMEntryDescriptorPageModel.VECTOR_COLLECTION,
   MDMEntryDescriptorPageModel.IMPORTABLE,
   MDMEntryDescriptorPageModel.CSV_SEPARATOR,
-  MDMEntryDescriptorPageModel.FORMATTER
+  MDMEntryDescriptorPageModel.FORMATTER,
+  MDMEntryDescriptorPageModel.SELECTED_TEMPLATE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MDMEntryDescriptorPageModel {
@@ -57,6 +58,9 @@ public class MDMEntryDescriptorPageModel {
 
   public static final String FORMATTER = "formatter";
   private String formatter;
+
+  public static final String SELECTED_TEMPLATE = "selectedTemplate";
+  private String selectedTemplate;
 
   public MDMEntryDescriptorPageModel() {
   }
@@ -224,6 +228,33 @@ public class MDMEntryDescriptorPageModel {
     this.formatter = formatter;
   }
 
+  public MDMEntryDescriptorPageModel selectedTemplate(String selectedTemplate) {
+    
+    this.selectedTemplate = selectedTemplate;
+    return this;
+  }
+
+  /**
+   * Get selectedTemplate
+   * @return selectedTemplate
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(SELECTED_TEMPLATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getSelectedTemplate() {
+    return selectedTemplate;
+  }
+
+
+  @JsonProperty(SELECTED_TEMPLATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSelectedTemplate(String selectedTemplate) {
+    this.selectedTemplate = selectedTemplate;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -238,12 +269,13 @@ public class MDMEntryDescriptorPageModel {
         Objects.equals(this.vectorCollection, mdMEntryDescriptorPageModel.vectorCollection) &&
         Objects.equals(this.importable, mdMEntryDescriptorPageModel.importable) &&
         Objects.equals(this.csvSeparator, mdMEntryDescriptorPageModel.csvSeparator) &&
-        Objects.equals(this.formatter, mdMEntryDescriptorPageModel.formatter);
+        Objects.equals(this.formatter, mdMEntryDescriptorPageModel.formatter) &&
+        Objects.equals(this.selectedTemplate, mdMEntryDescriptorPageModel.selectedTemplate);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, name, vectorCollection, importable, csvSeparator, formatter);
+    return Objects.hash(code, name, vectorCollection, importable, csvSeparator, formatter, selectedTemplate);
   }
 
   @Override
@@ -256,6 +288,7 @@ public class MDMEntryDescriptorPageModel {
     sb.append("    importable: ").append(toIndentedString(importable)).append("\n");
     sb.append("    csvSeparator: ").append(toIndentedString(csvSeparator)).append("\n");
     sb.append("    formatter: ").append(toIndentedString(formatter)).append("\n");
+    sb.append("    selectedTemplate: ").append(toIndentedString(selectedTemplate)).append("\n");
     sb.append("}");
     return sb.toString();
   }

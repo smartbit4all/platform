@@ -30,6 +30,7 @@ smartbit4all {
      "UiActionDescriptor": "org.smartbit4all.api.view.bean.UiActionDescriptor",
      "SearchIndexDescriptor": "org.smartbit4all.api.collection.bean.SearchIndexDescriptor",
      "SubjectAssociationModificationModel": "org.smartbit4all.api.org.bean.SubjectAssociationModificationModel",
+     "MDMEntryDescriptor": "org.smartbit4all.api.mdm.bean.MDMEntryDescriptor",
     ]
   }
 }

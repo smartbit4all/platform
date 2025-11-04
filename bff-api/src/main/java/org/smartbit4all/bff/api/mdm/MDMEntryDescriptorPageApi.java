@@ -26,4 +26,7 @@ public interface MDMEntryDescriptorPageApi
   @ActionHandler(SAVE)
   void saveEntry(UUID viewUuid, UiActionRequest request);
 
+  @ActionHandler(MDMEntryDescriptorPageModel.SELECTED_TEMPLATE)
+  void templateSelected(UUID viewUuid, UiActionRequest request);
+
 }
