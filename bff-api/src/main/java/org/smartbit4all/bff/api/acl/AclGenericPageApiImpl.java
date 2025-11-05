@@ -104,7 +104,7 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
     private ObjectNode originalAclObjectNode;
 
     // uri of modifiable ACLObjectNode
-    private static final String VAR_ACLOBJECTNODE_URI = "VAR_ACLOBJECTNODE_URI";
+    public static final String VAR_ACLOBJECTNODE_URI = "VAR_ACLOBJECTNODE_URI";
 
     protected PageContext load(View view) {
       Objects.requireNonNull(view.getObjectUri(), "ACL object must be specified");
@@ -280,15 +280,19 @@ public class AclGenericPageApiImpl extends PageApiImpl<Object> implements AclGen
           .model(true)
           .toolbar(gridId + UiActions.TOOLBAR_SUFFIX)
           .identifier(gridId)
-          .descriptor(new UiActionDescriptor()
-              .icon("Plus")
-              .title(" ")
-              .type(UiActionButtonType.ICON)
-              .color(UiActions.Color.ACCENT));
+          .descriptor(createAddActionDescriptor());
       if (!view.getActions().contains(addSubjectAction)) {
         view.addActionsItem(addSubjectAction);
       }
     }
+  }
+
+  protected UiActionDescriptor createAddActionDescriptor() {
+    return new UiActionDescriptor()
+        .icon("Plus")
+        .title(" ")
+        .type(UiActionButtonType.ICON)
+        .color(UiActions.Color.ACCENT);
   }
 
   protected GridModel createGridModel(UUID viewUuid, String gridId,
