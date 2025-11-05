@@ -180,6 +180,12 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
     return self();
   }
 
+  public T autoUpload(Boolean value) {
+    Objects.requireNonNull(value, "value cannot be null!");
+    this.options.isAutoUpload(value);
+    return self();
+  }
+
   public T downloadable(Boolean value) {
     Objects.requireNonNull(value, "value cannot be null!");
     this.options.isDownloadable(value);

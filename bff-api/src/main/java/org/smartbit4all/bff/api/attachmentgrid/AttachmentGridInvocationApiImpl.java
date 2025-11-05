@@ -442,6 +442,11 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       uploadButton.identifier(descriptor.getGridWidgetId());
     }
 
+    if (descriptor.getOptions().getIsAutoUpload() != null) {
+      uploadButton.getDescriptor().getUpload()
+          .autoUpload(descriptor.getOptions().getIsAutoUpload());
+    }
+
     return uploadButton;
   }
 

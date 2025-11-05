@@ -31,6 +31,7 @@ import jakarta.validation.Valid;
  * AttachmentGridOptions
  */
 @JsonPropertyOrder({
+  AttachmentGridOptions.IS_AUTO_UPLOAD,
   AttachmentGridOptions.IS_PREVIEWABLE,
   AttachmentGridOptions.IS_DOWNLOADABLE,
   AttachmentGridOptions.IS_EDITABLE,
@@ -43,6 +44,9 @@ import jakarta.validation.Valid;
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class AttachmentGridOptions {
+  public static final String IS_AUTO_UPLOAD = "isAutoUpload";
+  private Boolean isAutoUpload = false;
+
   public static final String IS_PREVIEWABLE = "isPreviewable";
   private Boolean isPreviewable = true;
 
@@ -71,6 +75,33 @@ public class AttachmentGridOptions {
   private ToolbarPosition toolbarPosition;
 
   public AttachmentGridOptions() {
+  }
+
+  public AttachmentGridOptions isAutoUpload(Boolean isAutoUpload) {
+    
+    this.isAutoUpload = isAutoUpload;
+    return this;
+  }
+
+  /**
+   * Get isAutoUpload
+   * @return isAutoUpload
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IS_AUTO_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsAutoUpload() {
+    return isAutoUpload;
+  }
+
+
+  @JsonProperty(IS_AUTO_UPLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsAutoUpload(Boolean isAutoUpload) {
+    this.isAutoUpload = isAutoUpload;
   }
 
   public AttachmentGridOptions isPreviewable(Boolean isPreviewable) {
@@ -326,7 +357,8 @@ public class AttachmentGridOptions {
       return false;
     }
     AttachmentGridOptions attachmentGridOptions = (AttachmentGridOptions) o;
-    return Objects.equals(this.isPreviewable, attachmentGridOptions.isPreviewable) &&
+    return Objects.equals(this.isAutoUpload, attachmentGridOptions.isAutoUpload) &&
+        Objects.equals(this.isPreviewable, attachmentGridOptions.isPreviewable) &&
         Objects.equals(this.isDownloadable, attachmentGridOptions.isDownloadable) &&
         Objects.equals(this.isEditable, attachmentGridOptions.isEditable) &&
         Objects.equals(this.closeOnSave, attachmentGridOptions.closeOnSave) &&
@@ -339,13 +371,14 @@ public class AttachmentGridOptions {
 
   @Override
   public int hashCode() {
-    return Objects.hash(isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle, useIconActions, toolbarPosition);
+    return Objects.hash(isAutoUpload, isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle, useIconActions, toolbarPosition);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class AttachmentGridOptions {\n");
+    sb.append("    isAutoUpload: ").append(toIndentedString(isAutoUpload)).append("\n");
     sb.append("    isPreviewable: ").append(toIndentedString(isPreviewable)).append("\n");
     sb.append("    isDownloadable: ").append(toIndentedString(isDownloadable)).append("\n");
     sb.append("    isEditable: ").append(toIndentedString(isEditable)).append("\n");

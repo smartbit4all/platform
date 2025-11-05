@@ -88,6 +88,9 @@ components:
     AttachmentGridOptions:
       type: object
       properties:
+        isAutoUpload:
+          type: boolean
+          default: false
         isPreviewable:
           type: boolean
           default: true
