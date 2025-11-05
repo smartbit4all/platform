@@ -31,7 +31,9 @@ public enum ValueChangeMode {
   
   NONE("NONE"),
   
-  IMMEDIATE_ACTION("IMMEDIATE_ACTION");
+  IMMEDIATE_ACTION("IMMEDIATE_ACTION"),
+  
+  BLUR("BLUR");
 
   private String value;
 

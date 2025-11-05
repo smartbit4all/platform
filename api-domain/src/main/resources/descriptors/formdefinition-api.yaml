@@ -198,6 +198,7 @@ components:
       enum:
         - NONE
         - IMMEDIATE_ACTION
+        - BLUR
     SmartWidgetHint:
       type: object
       properties:
