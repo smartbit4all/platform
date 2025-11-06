@@ -193,8 +193,9 @@ components:
           type: string
     ValueChangeMode:
       description: |
-        This enum defines the value change handling strategy. Currently only one method is supported,
-        IMMEDIATE_ACTION, which will trigger an executeUiAction when the value is changed.
+        This enum defines the value change handling strategy.
+        IMMEDIATE_ACTION will trigger an executeUiAction when the value is changed.
+        BLUR which will trigger an executeUiAction when the focus is losted from the html element.
       enum:
         - NONE
         - IMMEDIATE_ACTION

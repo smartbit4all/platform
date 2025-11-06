@@ -25,7 +25,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * This enum defines the value change handling strategy. Currently only one method is supported, IMMEDIATE_ACTION, which will trigger an executeUiAction when the value is changed. 
+ * This enum defines the value change handling strategy. IMMEDIATE_ACTION will trigger an executeUiAction when the value is changed. BLUR which will trigger an executeUiAction when the focus is losted from the html element. 
  */
 public enum ValueChangeMode {
   
