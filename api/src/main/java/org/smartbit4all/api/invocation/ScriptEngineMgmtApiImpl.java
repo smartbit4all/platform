@@ -17,7 +17,8 @@ public class ScriptEngineMgmtApiImpl extends PrimaryApiImpl<ScriptEngineContribu
     if (contributionApi != null) {
       return contributionApi.getEngine(name);
     } else {
-      final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+      final ScriptEngineManager scriptEngineManager =
+          new ScriptEngineManager(getClass().getClassLoader());
       return scriptEngineManager.getEngineByName(name);
     }
   }
