@@ -44,6 +44,8 @@ import org.smartbit4all.bff.api.mdm.invocation.MethodTemplateEditorPageApi;
 import org.smartbit4all.bff.api.mdm.invocation.MethodTemplateEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApi;
 import org.smartbit4all.bff.api.mdm.invocation.ScheduledJobDefinitionEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.jsoneditor.JsonEditorPageApi;
+import org.smartbit4all.bff.api.mdm.jsoneditor.JsonEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApi;
 import org.smartbit4all.bff.api.mdm.oauth.DynamicOAuthPropertiesEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.relation.MDMRelationEditorService;
@@ -366,6 +368,19 @@ public class PlatformBffApiConfig {
   @Bean
   RelationManagedMultiComboBoxService relationManagedMultiComboBoxService() {
     return new RelationManagedMultiComboBoxServiceImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(MDMEntryListPageApi.class)
+  JsonEditorPageApi jsonEditorPageApi() {
+    return new JsonEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(JsonEditorPageApi.class)
+  public ProviderApiInvocationHandler<JsonEditorPageApi> jsonEditorPageApiProvider(
+      JsonEditorPageApi api) {
+    return Invocations.asProvider(JsonEditorPageApi.class, api);
   }
 
   private String formatDate(OffsetDateTime date) {
