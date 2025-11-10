@@ -347,6 +347,11 @@ public final class ObjectLayoutBuilder {
     return enumSelector(key, label, enumClass, localeSettingApi, SmartFormWidgetType.SELECT);
   }
 
+  public static SmartWidgetDefinition combobox(String key, String label,
+      LocaleSettingApi localeSettingApi, Enum<?>... enums) {
+    return enumSelector(key, label, localeSettingApi, SmartFormWidgetType.SELECT, enums);
+  }
+
   public static SmartWidgetDefinition multiSelectCombobox(String key, String label,
       String... values) {
     return new SmartWidgetDefinition()
@@ -427,11 +432,17 @@ public final class ObjectLayoutBuilder {
   private static SmartWidgetDefinition enumSelector(String key, String label,
       Class<? extends Enum<?>> enumClass, LocaleSettingApi localeSettingApi,
       SmartFormWidgetType type) {
+    return enumSelector(key, label, localeSettingApi, type, enumClass.getEnumConstants());
+  }
+
+  private static SmartWidgetDefinition enumSelector(String key, String label,
+      LocaleSettingApi localeSettingApi,
+      SmartFormWidgetType type, Enum<?>... enums) {
     return new SmartWidgetDefinition()
         .type(type)
         .key(key)
         .label(label)
-        .values(Arrays.stream(enumClass.getEnumConstants())
+        .values(Arrays.stream(enums)
             .map(it -> new Value()
                 .code(it.toString())
                 .displayValue(localeSettingApi == null ? it.toString() : localeSettingApi.get(it)))
