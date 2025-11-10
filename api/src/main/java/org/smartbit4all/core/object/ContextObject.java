@@ -1,6 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toMap;
 import java.lang.ref.WeakReference;
 import java.net.URI;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.Expression;
 import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.util.ObjectUtils;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Represents a container for contextual objects used during evaluation, scripting, or data mapping
@@ -400,7 +400,9 @@ public class ContextObject {
       }
       contextObjectItem.getRwLock().readLock().lock();
       try {
-        return contextObjectItem.objectNode().getObject(clazz);
+        return contextObjectItem.objectNode() != null
+            ? contextObjectItem.objectNode().getObject(clazz)
+            : objectApi().asType(clazz, contextObjectItem.data.getObject());
       } finally {
         contextObjectItem.getRwLock().readLock().unlock();
       }
