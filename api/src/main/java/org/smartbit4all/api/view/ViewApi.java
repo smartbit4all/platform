@@ -75,6 +75,14 @@ public interface ViewApi {
   List<View> getViews(String viewName);
 
   /**
+   * Returns viewDatas from current viewContext with specified viewName.
+   *
+   * @param viewName
+   * @return
+   */
+  List<View> getViewsByViewName(String viewName);
+
+  /**
    * Creates and shows a view based on MessageData parameter. MessageData.UUID will be overridden.
    *
    * @param message
