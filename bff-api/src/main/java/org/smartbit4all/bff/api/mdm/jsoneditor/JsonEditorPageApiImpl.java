@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -145,15 +146,33 @@ public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements Js
 
     String objectAsString = getStringValueFromModel(m, OBJECT_AS_STRING);
 
+    Object jsonObject;
     try {
-      m = objectApi.fromString(objectAsString, Map.class);
+      jsonObject = objectApi.fromString(objectAsString, Object.class);
     } catch (Exception e) {
       log.error("Error during deserialization");
       showError(viewUuid);
+      return;
     }
 
-    request.getParams().put(UiActions.MODEL, m);
-    super.performSave(viewUuid, request);
+    if (jsonObject instanceof List list) {
+      // Case for list of object
+
+      List<Object> objectList = list;
+      objectList.forEach(object -> {
+
+        request.getParams().put(UiActions.MODEL, object);
+        super.performSave(viewUuid, request);
+      });
+
+    } else if (jsonObject instanceof Map map) {
+      // Case for single object
+
+      request.getParams().put(UiActions.MODEL, map);
+      super.performSave(viewUuid, request);
+    } else {
+      throw new IllegalAccessError();
+    }
   }
 
   private String getStringValueFromModel(Map m, String key) {
