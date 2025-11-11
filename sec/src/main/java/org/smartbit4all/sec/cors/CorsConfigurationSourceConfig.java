@@ -1,5 +1,8 @@
 package org.smartbit4all.sec.cors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -82,6 +85,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * <pre>{@code
  * app:
  *   cors:
+ *     enabled: true
  *     mappings:
  *       - path-pattern: "/api/**"
  *         allowed-origins: ["https://frontend.example.com"]
@@ -112,6 +116,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableConfigurationProperties(CorsProperties.class)
 public class CorsConfigurationSourceConfig {
 
+	private static final Logger log = LoggerFactory.getLogger(CorsConfigurationSourceConfig.class);
+
+	public static final String QUALIFIER = "sb4CorsConfigSource";
+
 	private final CorsProperties corsProperties;
 
 	public CorsConfigurationSourceConfig(CorsProperties corsProperties) {
@@ -119,8 +127,12 @@ public class CorsConfigurationSourceConfig {
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "sb4.cors", name = "mappings")
+	@ConditionalOnProperty(prefix = "sb4.cors", name = "enabled", havingValue = "true", matchIfMissing = false)
+	@Qualifier(QUALIFIER)
 	public CorsConfigurationSource corsConfigurationSource() {
+
+		log.debug("sb4.cors.mappings property is present. Creating CORS configuration...");
+
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
 		for (CorsProperties.CorsPathConfig mapping : corsProperties.getMappings()) {
@@ -135,6 +147,7 @@ public class CorsConfigurationSourceConfig {
 
 			source.registerCorsConfiguration(mapping.getPathPattern(), configuration);
 		}
+		log.debug("CORS configuration created.");
 
 		return source;
 	}
