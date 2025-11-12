@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.smartbit4all.api.view.bean.MessageOptionType;
+import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -34,7 +35,8 @@ import jakarta.validation.Valid;
   MessageOption.CODE,
   MessageOption.LABEL,
   MessageOption.ICON,
-  MessageOption.TYPE
+  MessageOption.TYPE,
+  MessageOption.DESCRIPTOR
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class MessageOption {
@@ -49,6 +51,9 @@ public class MessageOption {
 
   public static final String TYPE = "type";
   private MessageOptionType type;
+
+  public static final String DESCRIPTOR = "descriptor";
+  private UiActionDescriptor descriptor;
 
   public MessageOption() {
   }
@@ -164,6 +169,34 @@ public class MessageOption {
     this.type = type;
   }
 
+  public MessageOption descriptor(UiActionDescriptor descriptor) {
+    
+    this.descriptor = descriptor;
+    return this;
+  }
+
+  /**
+   * Get descriptor
+   * @return descriptor
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public UiActionDescriptor getDescriptor() {
+    return descriptor;
+  }
+
+
+  @JsonProperty(DESCRIPTOR)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setDescriptor(UiActionDescriptor descriptor) {
+    this.descriptor = descriptor;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -176,12 +209,13 @@ public class MessageOption {
     return Objects.equals(this.code, messageOption.code) &&
         Objects.equals(this.label, messageOption.label) &&
         Objects.equals(this.icon, messageOption.icon) &&
-        Objects.equals(this.type, messageOption.type);
+        Objects.equals(this.type, messageOption.type) &&
+        Objects.equals(this.descriptor, messageOption.descriptor);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(code, label, icon, type);
+    return Objects.hash(code, label, icon, type, descriptor);
   }
 
   @Override
@@ -192,6 +226,7 @@ public class MessageOption {
     sb.append("    label: ").append(toIndentedString(label)).append("\n");
     sb.append("    icon: ").append(toIndentedString(icon)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
+    sb.append("    descriptor: ").append(toIndentedString(descriptor)).append("\n");
     sb.append("}");
     return sb.toString();
   }
