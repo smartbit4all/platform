@@ -160,12 +160,19 @@ public class AttachmentGridApiImpl implements AttachmentGridApi {
     List<BinaryContentData> attachmentList = descriptor.getAttachmentList();
 
     UUID uuid = view.getUuid();
-    gridModelApi.clearCallbacks(uuid, gridId);
 
     gridModelApi.initGridInView(uuid, gridId, gridModel);
-    gridModelApi.addGridPageCallback(view.getUuid(), gridId,
-        invocationApi.builder(AttachmentGridInvocationApi.class)
-            .build(a -> a.extendPageDataForAttachment(null, uuid, gridId)));
+
+    Boolean callbackInView = objectApi.asType(Boolean.class,
+        view.getParameters().get(PARAM_DEFAULT_ATTACHMENT_GRID_CALLBBACK_IN_VIEW));
+
+    if (!Boolean.TRUE.equals(callbackInView)) {
+      gridModelApi.addGridPageCallback(view.getUuid(), gridId,
+          invocationApi.builder(AttachmentGridInvocationApi.class)
+              .build(a -> a.extendPageDataForAttachment(null, uuid, gridId)));
+      view.getParameters().put(PARAM_DEFAULT_ATTACHMENT_GRID_CALLBBACK_IN_VIEW, Boolean.TRUE);
+    }
+
     if (ObjectUtils.isEmpty(attachmentList)) {
       attachmentList = new ArrayList<>();
     }
