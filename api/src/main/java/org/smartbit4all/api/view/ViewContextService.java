@@ -1,5 +1,6 @@
 package org.smartbit4all.api.view;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
@@ -90,6 +91,14 @@ public interface ViewContextService {
    * @return
    */
   View getViewFromCurrentViewContext(UUID viewUuid);
+
+  /**
+   * Returns List of viewData from the current viewContext.
+   *
+   * @param viewName
+   * @return
+   */
+  List<View> getViewsFromCurrentViewContext(String viewName);
 
   /**
    * Returns viewData from the current session.
@@ -198,6 +207,8 @@ public interface ViewContextService {
   View getAndClearViewFromPlaceholder(ViewPlaceholder placeholder);
 
   View getView(ViewContext context, UUID viewUuid);
+
+  List<View> getViews(ViewContext context, String viewName);
 
   Map<String, Object> getCache(UUID viewUuid);
 

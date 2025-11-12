@@ -9,6 +9,9 @@ import org.smartbit4all.bff.api.attachmentgrid.bean.AttachmentGridDescriptor;
 
 public interface AttachmentGridApi {
 
+  String PARAM_DEFAULT_ATTACHMENT_GRID_CALLBBACK_IN_VIEW =
+      "PARAM_DEFAULT_ATTACHMENT_GRID_CALLBBACK_IN_VIEW";
+
   /**
    * Sets up an attachment grid based on the {@link AttachmentGridDescriptor}. This requires the
    * gridWidgetId to be unique and the grid needs to be placed on a

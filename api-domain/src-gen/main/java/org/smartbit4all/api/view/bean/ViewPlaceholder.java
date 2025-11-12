@@ -35,11 +35,15 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "This object is a placeholder for the view, typically for closed children views  so these are not saved in ViewContext object, keeping it's size reasonable. ")
 @JsonPropertyOrder({
+  ViewPlaceholder.VIEW_NAME,
   ViewPlaceholder.UUID,
   ViewPlaceholder.CLOSED_CHILDREN_VIEWS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ViewPlaceholder {
+  public static final String VIEW_NAME = "viewName";
+  private String viewName;
+
   public static final String UUID = "uuid";
   private UUID uuid;
 
@@ -47,6 +51,33 @@ public class ViewPlaceholder {
   private List<@Valid ViewPlaceholder> closedChildrenViews = new ArrayList<>();
 
   public ViewPlaceholder() {
+  }
+
+  public ViewPlaceholder viewName(String viewName) {
+    
+    this.viewName = viewName;
+    return this;
+  }
+
+  /**
+   * Get viewName
+   * @return viewName
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getViewName() {
+    return viewName;
+  }
+
+
+  @JsonProperty(VIEW_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setViewName(String viewName) {
+    this.viewName = viewName;
   }
 
   public ViewPlaceholder uuid(UUID uuid) {
@@ -123,19 +154,21 @@ public class ViewPlaceholder {
       return false;
     }
     ViewPlaceholder viewPlaceholder = (ViewPlaceholder) o;
-    return Objects.equals(this.uuid, viewPlaceholder.uuid) &&
+    return Objects.equals(this.viewName, viewPlaceholder.viewName) &&
+        Objects.equals(this.uuid, viewPlaceholder.uuid) &&
         Objects.equals(this.closedChildrenViews, viewPlaceholder.closedChildrenViews);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uuid, closedChildrenViews);
+    return Objects.hash(viewName, uuid, closedChildrenViews);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class ViewPlaceholder {\n");
+    sb.append("    viewName: ").append(toIndentedString(viewName)).append("\n");
     sb.append("    uuid: ").append(toIndentedString(uuid)).append("\n");
     sb.append("    closedChildrenViews: ").append(toIndentedString(closedChildrenViews)).append("\n");
     sb.append("}");

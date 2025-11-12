@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +84,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
 
@@ -340,6 +342,14 @@ public class ViewContextServiceImpl implements ViewContextService {
   public View getViewFromCurrentViewContext(UUID viewUuid) {
     ViewContext viewContext = getCurrentViewContextEntry();
     return getView(viewContext, viewUuid);
+  }
+
+
+
+  @Override
+  public List<View> getViewsFromCurrentViewContext(String viewName) {
+    ViewContext viewContext = getCurrentViewContextEntry();
+    return getViews(viewContext, viewName);
   }
 
   @Override
@@ -1361,6 +1371,7 @@ public class ViewContextServiceImpl implements ViewContextService {
     currentLoadedPlaceholders.get().put(view.getUuid(), view);
     return new ViewPlaceholder()
         .uuid(view.getUuid())
+        .viewName(view.getViewName())
         .closedChildrenViews(view.getClosedChildrenViews());
   }
 
@@ -1416,6 +1427,26 @@ public class ViewContextServiceImpl implements ViewContextService {
       }
     }
     return view;
+  }
+
+
+
+  @Override
+  public List<View> getViews(ViewContext context, String viewName) {
+    List<View> views = context.getViews().stream()
+        .filter(v -> viewName.equals(v.getViewName())).collect(Collectors.toList());
+
+    List<ViewPlaceholder> closedViews = context.getViews().stream()
+        .map(View::getClosedChildrenViews)
+        .flatMap(List::stream)
+        .collect(toList());
+    List<ViewPlaceholder> placeholders = getViewsIncludingClosedChildren(closedViews)
+        .filter(v -> viewName.equals(v.getViewName())).toList();
+    if (!ObjectUtils.isEmpty(placeholders)) {
+      views.addAll(
+          placeholders.stream().map(placeholder -> getViewFromPlaceholder(placeholder)).toList());
+    }
+    return views;
   }
 
   private static Stream<ViewPlaceholder> getViewsIncludingClosedChildren(

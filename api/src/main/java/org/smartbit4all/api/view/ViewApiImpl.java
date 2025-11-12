@@ -256,6 +256,11 @@ public class ViewApiImpl implements ViewApi {
   }
 
   @Override
+  public List<View> getViewsByViewName(String viewName) {
+    return viewContextService.getViewsFromCurrentViewContext(viewName);
+  }
+
+  @Override
   public List<UUID> getChildrenOfView(UUID viewUuid) {
     ViewContextData viewContext = viewContextService.getCurrentViewContext();
 

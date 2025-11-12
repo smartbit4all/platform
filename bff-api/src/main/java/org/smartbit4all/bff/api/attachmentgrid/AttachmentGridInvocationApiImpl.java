@@ -44,6 +44,7 @@ import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionDescriptor;
 import org.smartbit4all.api.view.bean.UiActionInputType;
 import org.smartbit4all.api.view.bean.UiActionRequest;
+import org.smartbit4all.api.view.bean.UiActionUploadDescriptor;
 import org.smartbit4all.api.view.bean.UploadedFile;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewEventHandler;
@@ -443,8 +444,10 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
 
     if (descriptor.getOptions().getIsAutoUpload() != null) {
-      uploadButton.getDescriptor().getUpload()
-          .autoUpload(descriptor.getOptions().getIsAutoUpload());
+      UiActionUploadDescriptor upload = uploadButton.getDescriptor().getUpload();
+      upload = upload == null
+          ? new UiActionUploadDescriptor().autoUpload(descriptor.getOptions().getIsAutoUpload())
+          : upload.autoUpload(descriptor.getOptions().getIsAutoUpload());
     }
 
     return uploadButton;
