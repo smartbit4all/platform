@@ -8,6 +8,7 @@ import org.smartbit4all.api.collection.bean.VectorValue;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.contribution.PrimaryApiImpl;
 import org.smartbit4all.api.invocation.bean.ServiceConnection;
+import org.smartbit4all.api.invocation.exception.RetryException;
 import org.smartbit4all.api.mdm.MDMEntryApi;
 import org.smartbit4all.api.mdm.MasterDataManagementApi;
 import org.smartbit4all.api.object.bean.ObjectPropertyValue;
@@ -49,7 +50,8 @@ public final class EmbeddingApiImpl extends PrimaryApiImpl<EmbeddingContribution
           "The contribution api \"" + serviceConnection.getApiName()
               + "\" is not registered in the application context");
     }
-    return api.embed(serviceConnection, object, pathes);
+
+    return RetryException.callWithRetry(() -> api.embed(serviceConnection, object, pathes), 5);
   }
 
   @Override

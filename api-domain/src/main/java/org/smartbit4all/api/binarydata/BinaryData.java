@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -520,6 +521,20 @@ public class BinaryData {
    */
   public final ByteSource getByteSource() {
     return byteSource;
+  }
+
+  /**
+   * Constructs a {@link BinaryData} instance by copying the text content.
+   *
+   * @param text The input stream.
+   * @param charset The charset to convert the text.
+   * @return Null of the is is null or not readable for any reason.
+   */
+  public static final BinaryData of(String text, Charset charset) {
+    if (text == null) {
+      return null;
+    }
+    return of(new ByteArrayInputStream(text.getBytes(charset)));
   }
 
   /**
