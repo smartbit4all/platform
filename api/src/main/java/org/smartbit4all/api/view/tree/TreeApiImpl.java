@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.object.bean.VersionStrategy;
 import org.smartbit4all.api.toolbar.bean.ToolbarDefinition;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
-import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreePath;
 import org.smartbit4all.api.uitree.bean.UiTreePathPart;
+import org.smartbit4all.api.uitree.bean.UiTreeSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.ViewApi;
 import org.smartbit4all.api.view.action.ToolbarManagementApi;
@@ -58,11 +58,10 @@ public class TreeApiImpl implements TreeApi {
       // refreshNode(treeState, getConfigNode(treeState));
       rootNodes = treeState.getRootNodes();
 
-      final UiTreeDefaultSelection defaultSelection = treeState.getDefaultSelection();
+      final UiTreeSelection defaultSelection = treeState.getDefaultSelection();
       if (defaultSelection != null) {
         this.setSelectedNode(treeState,
-            defaultSelection.getPath(),
-            defaultSelection.getHandleSelection());
+            defaultSelection);
         if (Boolean.TRUE.equals(defaultSelection.getOneTimeOnly())) {
           treeState.setDefaultSelection(null);
         }
@@ -146,16 +145,18 @@ public class TreeApiImpl implements TreeApi {
   }
 
   @Override
-  public UiTreeNode setSelectedNode(UiTreeState treeState, UiTreePath path,
-      boolean handleSelection) {
+  public UiTreeNode setSelectedNode(UiTreeState treeState, UiTreeSelection selection) {
     // get config node, navigate from there
     UiTreeNode node = getConfigNode(treeState);
     // copy path so parameter.parts won't change
     UiTreePath pathCopy = new UiTreePath()
-        .parts(new ArrayList<>(path.getParts()));
+        .parts(new ArrayList<>(selection.getPath().getParts()));
     UiTreeNode lastChild = navigateToChild(treeState, node, pathCopy);
     if (lastChild != null) {
-      selectNodeInternal(treeState, lastChild.getIdentifier(), handleSelection);
+      selectNodeInternal(treeState, lastChild.getIdentifier(), selection.getHandleSelection());
+      if (Boolean.TRUE.equals(selection.getOpenNode())) {
+        expandNodeInternal(treeState, lastChild.getIdentifier());
+      }
     }
     return lastChild;
   }

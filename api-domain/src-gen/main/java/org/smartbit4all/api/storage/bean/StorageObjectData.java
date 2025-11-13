@@ -289,12 +289,13 @@ public class StorageObjectData {
    * The objects streams are attached stream of the storage objects. 
    * @return objectStreams
    */
-  @jakarta.annotation.Nullable
+  @jakarta.annotation.Nonnull
+  @NotNull
   @Valid
 
-  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The objects streams are attached stream of the storage objects. ")
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "The objects streams are attached stream of the storage objects. ")
   @JsonProperty(OBJECT_STREAMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
 
   public List<@Valid StorageObjectStreamDescriptor> getObjectStreams() {
     return objectStreams;
@@ -302,7 +303,7 @@ public class StorageObjectData {
 
 
   @JsonProperty(OBJECT_STREAMS)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setObjectStreams(List<@Valid StorageObjectStreamDescriptor> objectStreams) {
     this.objectStreams = objectStreams;
   }

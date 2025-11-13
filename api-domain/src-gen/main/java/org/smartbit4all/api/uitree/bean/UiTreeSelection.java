@@ -32,12 +32,13 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "Describes the default selected node of the tree after rendering. ")
 @JsonPropertyOrder({
-  UiTreeDefaultSelection.PATH,
-  UiTreeDefaultSelection.HANDLE_SELECTION,
-  UiTreeDefaultSelection.ONE_TIME_ONLY
+  UiTreeSelection.PATH,
+  UiTreeSelection.HANDLE_SELECTION,
+  UiTreeSelection.ONE_TIME_ONLY,
+  UiTreeSelection.OPEN_NODE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
-public class UiTreeDefaultSelection {
+public class UiTreeSelection {
   public static final String PATH = "path";
   private UiTreePath path;
 
@@ -47,10 +48,13 @@ public class UiTreeDefaultSelection {
   public static final String ONE_TIME_ONLY = "oneTimeOnly";
   private Boolean oneTimeOnly = true;
 
-  public UiTreeDefaultSelection() {
+  public static final String OPEN_NODE = "openNode";
+  private Boolean openNode = false;
+
+  public UiTreeSelection() {
   }
 
-  public UiTreeDefaultSelection path(UiTreePath path) {
+  public UiTreeSelection path(UiTreePath path) {
     
     this.path = path;
     return this;
@@ -79,7 +83,7 @@ public class UiTreeDefaultSelection {
     this.path = path;
   }
 
-  public UiTreeDefaultSelection handleSelection(Boolean handleSelection) {
+  public UiTreeSelection handleSelection(Boolean handleSelection) {
     
     this.handleSelection = handleSelection;
     return this;
@@ -107,7 +111,7 @@ public class UiTreeDefaultSelection {
     this.handleSelection = handleSelection;
   }
 
-  public UiTreeDefaultSelection oneTimeOnly(Boolean oneTimeOnly) {
+  public UiTreeSelection oneTimeOnly(Boolean oneTimeOnly) {
     
     this.oneTimeOnly = oneTimeOnly;
     return this;
@@ -135,6 +139,33 @@ public class UiTreeDefaultSelection {
     this.oneTimeOnly = oneTimeOnly;
   }
 
+  public UiTreeSelection openNode(Boolean openNode) {
+    
+    this.openNode = openNode;
+    return this;
+  }
+
+  /**
+   * Signals whether the tree node specified by the path should be opened 
+   * @return openNode
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Signals whether the tree node specified by the path should be opened ")
+  @JsonProperty(OPEN_NODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getOpenNode() {
+    return openNode;
+  }
+
+
+  @JsonProperty(OPEN_NODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setOpenNode(Boolean openNode) {
+    this.openNode = openNode;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -143,24 +174,26 @@ public class UiTreeDefaultSelection {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UiTreeDefaultSelection uiTreeDefaultSelection = (UiTreeDefaultSelection) o;
-    return Objects.equals(this.path, uiTreeDefaultSelection.path) &&
-        Objects.equals(this.handleSelection, uiTreeDefaultSelection.handleSelection) &&
-        Objects.equals(this.oneTimeOnly, uiTreeDefaultSelection.oneTimeOnly);
+    UiTreeSelection uiTreeSelection = (UiTreeSelection) o;
+    return Objects.equals(this.path, uiTreeSelection.path) &&
+        Objects.equals(this.handleSelection, uiTreeSelection.handleSelection) &&
+        Objects.equals(this.oneTimeOnly, uiTreeSelection.oneTimeOnly) &&
+        Objects.equals(this.openNode, uiTreeSelection.openNode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(path, handleSelection, oneTimeOnly);
+    return Objects.hash(path, handleSelection, oneTimeOnly, openNode);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class UiTreeDefaultSelection {\n");
+    sb.append("class UiTreeSelection {\n");
     sb.append("    path: ").append(toIndentedString(path)).append("\n");
     sb.append("    handleSelection: ").append(toIndentedString(handleSelection)).append("\n");
     sb.append("    oneTimeOnly: ").append(toIndentedString(oneTimeOnly)).append("\n");
+    sb.append("    openNode: ").append(toIndentedString(openNode)).append("\n");
     sb.append("}");
     return sb.toString();
   }
