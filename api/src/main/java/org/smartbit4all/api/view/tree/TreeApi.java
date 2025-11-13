@@ -6,7 +6,7 @@ import java.util.UUID;
 import java.util.function.Function;
 import org.smartbit4all.api.uitree.bean.SmartTreeNode;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
-import org.smartbit4all.api.uitree.bean.UiTreePath;
+import org.smartbit4all.api.uitree.bean.UiTreeSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeState;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -61,11 +61,11 @@ public interface TreeApi {
    * Expands and selects tree specified by objectPath. First URI will be searched in rootNodes.
    *
    * @param treeState
-   * @param path list of URIs and types which will be used to match nodes.
-   * @param handleSelection if true, handleSelect will be called (exactly as in
+   * @param selection Tree selection descriptor, containing path, handleSelection and openNode
+   *        attributes. If handleSelection if true, handleSelect will be called (exactly as in
    *        {@link #selectNode(UiTreeState, String)})
    */
-  UiTreeNode setSelectedNode(UiTreeState treeState, UiTreePath path, boolean handleSelection);
+  UiTreeNode setSelectedNode(UiTreeState treeState, UiTreeSelection selection);
 
   /**
    * Refreshes the state of the provided node and all its opened child nodes (continues downward
