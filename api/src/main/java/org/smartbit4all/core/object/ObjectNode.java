@@ -609,7 +609,8 @@ public class ObjectNode {
     if (value instanceof List) {
       List<?> list = (List<?>) value;
       return list.stream()
-          .map(e -> objectApi.create(this.getStorageScheme(), e).getObjectAsMap())
+          .map(
+              e -> objectApi.toMapObject(e))
           .collect(Collectors.toList());
     }
     if (value instanceof ObjectNodeList) {
