@@ -193,3 +193,11 @@ components:
             the value is the application group name."
           additionalProperties:
             type: string
+        clientAuthenticationMethod:
+          type: string
+          default: "client_secret_basic"
+        isPkceEnabled:
+          type: boolean
+          default: false
+          description: |
+            "Enabeles PKCE so it adds PKCE parameters to authorization request"
