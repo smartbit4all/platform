@@ -33,6 +33,8 @@ import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutApiImpl;
 import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
+import org.smartbit4all.core.object.ObjectUtilityApi;
+import org.smartbit4all.core.object.ObjectUtilityApiImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -49,6 +51,11 @@ public class CoreServiceConfig {
   @Bean
   public ObjectApi objectApi() {
     return new ObjectApiImpl();
+  }
+
+  @Bean
+  public ObjectUtilityApi objectUtilityApi() {
+    return new ObjectUtilityApiImpl();
   }
 
   @Bean

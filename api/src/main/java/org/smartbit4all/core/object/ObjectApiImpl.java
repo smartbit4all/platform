@@ -1,5 +1,6 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -46,7 +47,6 @@ import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import static java.util.stream.Collectors.toList;
 
 public class ObjectApiImpl implements ObjectApi {
 
@@ -736,6 +736,14 @@ public class ObjectApiImpl implements ObjectApi {
         return (T) OffsetDateTime.parse((String) value)
             .atZoneSameInstant(ZoneId.systemDefault())
             .toLocalDateTime();
+      }
+    }
+    if (clazz == Class.class && value instanceof String) {
+      try {
+        return (T) Class.forName((String) value);
+      } catch (ClassNotFoundException e) {
+        throw new IllegalArgumentException(
+            "Unable to convert value (" + value.getClass().getName() + ") to " + clazz.getName());
       }
     }
     if (value instanceof Map) {
