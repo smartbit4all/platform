@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.smartbit4all.api.uitree.bean.UiTreeDefaultSelection;
 import org.smartbit4all.api.uitree.bean.UiTreeNode;
+import org.smartbit4all.api.uitree.bean.UiTreeSelection;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -70,7 +70,7 @@ public class UiTreeState {
   private List<String> selectedNodes = new ArrayList<>();
 
   public static final String DEFAULT_SELECTION = "defaultSelection";
-  private UiTreeDefaultSelection defaultSelection;
+  private UiTreeSelection defaultSelection;
 
   public static final String PARAMS = "params";
   private Map<String, Object> params = new HashMap<>();
@@ -278,7 +278,7 @@ public class UiTreeState {
     this.selectedNodes = selectedNodes;
   }
 
-  public UiTreeState defaultSelection(UiTreeDefaultSelection defaultSelection) {
+  public UiTreeState defaultSelection(UiTreeSelection defaultSelection) {
     
     this.defaultSelection = defaultSelection;
     return this;
@@ -295,14 +295,14 @@ public class UiTreeState {
   @JsonProperty(DEFAULT_SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
 
-  public UiTreeDefaultSelection getDefaultSelection() {
+  public UiTreeSelection getDefaultSelection() {
     return defaultSelection;
   }
 
 
   @JsonProperty(DEFAULT_SELECTION)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public void setDefaultSelection(UiTreeDefaultSelection defaultSelection) {
+  public void setDefaultSelection(UiTreeSelection defaultSelection) {
     this.defaultSelection = defaultSelection;
   }
 

@@ -589,7 +589,7 @@ components:
           items:
             type: string
         defaultSelection:
-          $ref: '#/components/schemas/UiTreeDefaultSelection'
+          $ref: '#/components/schemas/UiTreeSelection'
         params:
           description: |
             Additional parameters for tree. 
@@ -656,7 +656,7 @@ components:
           format: uri
         nodeType:
           type: string
-    UiTreeDefaultSelection:
+    UiTreeSelection:
       type: object
       description: |
         Describes the default selected node of the tree after rendering.
@@ -674,6 +674,11 @@ components:
           description: |
             Signals whether the selection should be set only during initialisation, or every time
             the tree is rendered.
+        openNode:
+          type: boolean
+          default: false
+          description: |
+            Signals whether the tree node specified by the path should be opened
       required: [path, handleSelection, oneTimeOnly]
     UiTreeSortOrder:
       type: object

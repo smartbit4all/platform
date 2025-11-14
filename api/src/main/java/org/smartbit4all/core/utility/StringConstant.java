@@ -14,6 +14,8 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -257,6 +259,102 @@ public class StringConstant {
       }
     }
     return sb.toString();
+  }
+
+  /** Result of BOM detection. */
+  public static final class BomMatch {
+    public final Charset charset;
+    public final int bomLength;
+
+    private BomMatch(Charset charset, int bomLength) {
+      this.charset = charset;
+      this.bomLength = bomLength;
+    }
+  }
+
+  /**
+   * Detects the text encoding of the given bytes based on BOM (Byte Order Mark).
+   * 
+   * @return BomMatch if a known BOM is found; otherwise {@code null}.
+   */
+  public static BomMatch detectBom(byte[] data) {
+    if (data == null)
+      return null;
+
+    // UTF-8: EF BB BF
+    if (startsWith(data, (byte) 0xEF, (byte) 0xBB, (byte) 0xBF)) {
+      return new BomMatch(StandardCharsets.UTF_8, 3);
+    }
+    // UTF-32 LE: FF FE 00 00
+    if (startsWith(data, (byte) 0xFF, (byte) 0xFE, (byte) 0x00, (byte) 0x00)) {
+      return new BomMatch(Charset.forName("UTF-32LE"), 4);
+    }
+    // UTF-32 BE: 00 00 FE FF
+    if (startsWith(data, (byte) 0x00, (byte) 0x00, (byte) 0xFE, (byte) 0xFF)) {
+      return new BomMatch(Charset.forName("UTF-32BE"), 4);
+    }
+    // UTF-16 LE: FF FE
+    if (startsWith(data, (byte) 0xFF, (byte) 0xFE)) {
+      return new BomMatch(StandardCharsets.UTF_16LE, 2);
+    }
+    // UTF-16 BE: FE FF
+    if (startsWith(data, (byte) 0xFE, (byte) 0xFF)) {
+      return new BomMatch(StandardCharsets.UTF_16BE, 2);
+    }
+    return null;
+  }
+
+  /**
+   * Strict decode: only decodes if a BOM is present; otherwise returns null. Skips the BOM bytes in
+   * the output.
+   */
+  public static String decodeWithBom(byte[] data) {
+    if (data == null)
+      return null;
+    BomMatch m = detectBom(data);
+    if (m == null)
+      return null;
+    return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
+  }
+
+  /**
+   * Preferred "Unicode-first" decode: - If BOM present → decode using that Unicode charset,
+   * skipping BOM - If no BOM → decode as UTF-8 (Unicode default)
+   */
+  public static String decodePreferUnicode(byte[] data) {
+    if (data == null)
+      return null;
+    BomMatch m = detectBom(data);
+    if (m != null) {
+      return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
+    }
+    // No BOM → default to UTF-8 (Unicode) as a safe, modern default
+    return new String(data, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Variant with a custom default when no BOM is present.
+   */
+  public static String decodeWithBomOrDefault(byte[] data, Charset defaultCharset) {
+    if (data == null)
+      return null;
+    BomMatch m = detectBom(data);
+    if (m != null) {
+      return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
+    }
+    return new String(data, (defaultCharset != null ? defaultCharset : StandardCharsets.UTF_8));
+  }
+
+  // -------- helpers --------
+
+  private static boolean startsWith(byte[] data, byte... prefix) {
+    if (data.length < prefix.length)
+      return false;
+    for (int i = 0; i < prefix.length; i++) {
+      if (data[i] != prefix[i])
+        return false;
+    }
+    return true;
   }
 
 }
