@@ -2,13 +2,16 @@ package org.smartbit4all.api.value;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.core.object.ObjectApi;
@@ -74,11 +77,18 @@ public final class Values {
   }
 
   public static Stream<Value> valuesStream(Stream<ObjectNode> values, String... paths) {
-    return values
-        .map(n -> new Value()
-            .objectUri(n.getObjectUri())
-            .displayValue(n.getValueAsString(paths)));
+		return valuesStream(values, n -> n.getValueAsString(paths), null);
   }
+
+	public static Stream<Value> valuesStream(Stream<ObjectNode> values,
+			Function<ObjectNode, String> displayValueProvider,
+			Function<ObjectNode, String> codeProvider) {
+		return values
+				.map(n -> new Value()
+						.objectUri(n.getObjectUri())
+						.displayValue(displayValueProvider.apply(n))
+						.code(codeProvider == null ? null : codeProvider.apply(n)));
+	}
 
   /**
    * Given a list of selected URIs from a list of possible values, updates the selected URIs to

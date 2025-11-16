@@ -2,12 +2,15 @@ package org.smartbit4all.api.value;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.collection.CollectionApi;
@@ -329,30 +332,48 @@ public class ValueSetApiImpl implements ValueSetApi {
     return getValueSetWithValues(namespace, name, Collections.emptyList(), branchUri, path);
   }
 
+	@Override
+	public ValueSet getValueSetWithValues(String namespace, String name, URI branchUri,
+			Function<ObjectNode, String> displayValueProvider) {
+		return getValueSetWithValues(namespace, name, Collections.emptyList(), branchUri,
+				displayValueProvider, null);
+	}
+
   @Override
   public ValueSet getValueSetWithValues(String namespace, String name, List<URI> additionalValues,
       URI branchUri,
       String... path) {
-
-    ValueSetData valueSetData = valuesOf(namespace, name, branchUri, true);
-    List<URI> valueUris = valueSetData.getValues().stream()
-        .map(o -> ((ObjectNode) o))
-        .map(node -> objectApi.getLatestUri(node.getObjectUri()))
-        .collect(toList());
-
-    valueSetData.values(Values.valuesStream(Stream.concat(
-        valueSetData.getValues().stream()
-            .map(o -> ((ObjectNode) o)),
-        additionalValues.stream()
-            .filter(u -> !valueUris.contains(objectApi.getLatestUri(u)))
-            .map(objectApi::loadLatest)),
-        path)
-        // .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
-        .sorted(Values.CASE_INSENSITIVE_ORDER)
-        .map(o -> ((Object) o))
-        .collect(toList()));
-    return new ValueSet()
-        .valueSetName(name)
-        .valueSetData(valueSetData.keyProperty(Value.OBJECT_URI));
+		return getValueSetWithValues(namespace, name, additionalValues, branchUri,
+				n -> n.getValueAsString(path), null);
   }
+
+	@Override
+	public ValueSet getValueSetWithValues(String namespace, String name,
+			List<URI> additionalValues,
+			URI branchUri,
+			Function<ObjectNode, String> displayValueProvider,
+			Function<ObjectNode, String> codeProvider) {
+
+		ValueSetData valueSetData = valuesOf(namespace, name, branchUri, true);
+		List<URI> valueUris = valueSetData.getValues().stream()
+				.map(o -> ((ObjectNode) o))
+				.map(node -> objectApi.getLatestUri(node.getObjectUri()))
+				.collect(toList());
+
+		valueSetData.values(Values.valuesStream(Stream.concat(
+				valueSetData.getValues().stream()
+						.map(o -> ((ObjectNode) o)),
+				additionalValues.stream()
+						.filter(u -> !valueUris.contains(objectApi.getLatestUri(u)))
+						.map(objectApi::loadLatest)),
+				displayValueProvider,
+				codeProvider == null ? n -> null : codeProvider)
+				// .map(v -> v.objectUri(objectApi.getLatestUri(v.getObjectUri())))
+				.sorted(Values.CASE_INSENSITIVE_ORDER)
+				.map(o -> ((Object) o))
+				.collect(toList()));
+		return new ValueSet()
+				.valueSetName(name)
+				.valueSetData(valueSetData.keyProperty(Value.OBJECT_URI));
+	}
 }
