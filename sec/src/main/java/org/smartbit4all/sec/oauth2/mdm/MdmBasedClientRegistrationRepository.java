@@ -1,5 +1,8 @@
 package org.smartbit4all.sec.oauth2.mdm;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.smartbit4all.api.security.bean.OAuthClientProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -9,7 +12,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.registration.ClientRegistrations;
+import org.springframework.security.oauth2.core.AuthenticationMethod;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.util.ObjectUtils;
 
 public class MdmBasedClientRegistrationRepository implements ClientRegistrationRepository {
@@ -47,6 +52,10 @@ public class MdmBasedClientRegistrationRepository implements ClientRegistrationR
           .userInfoUri(properties.getUserInfoUri())
           .jwkSetUri(properties.getJwkSetUri());
     }
+    
+    Map<String, Object> metadata = new HashMap<String, Object>();
+    metadata.put(OAuthClientProperties.IS_PKCE_ENABLED, properties.getIsPkceEnabled());
+    
     return builder
         .clientId(properties.getClientId())
         .clientSecret(properties.getClientSecret())
@@ -55,7 +64,26 @@ public class MdmBasedClientRegistrationRepository implements ClientRegistrationR
         .scope(properties.getScope().trim().split("\\s*,\\s*"))
         .authorizationGrantType(new AuthorizationGrantType(properties.getAuthorizationGrantType()))
         .userNameAttributeName(properties.getUserNameAttribute())
+        .userInfoAuthenticationMethod(getUserInfoAuthenticationMethod(properties.getUserInfoAuthenticationMethod()))
+        .clientAuthenticationMethod(new ClientAuthenticationMethod(properties.getClientAuthenticationMethod()))
+        .providerConfigurationMetadata(metadata)
         .build();
+  }
+
+  private AuthenticationMethod getUserInfoAuthenticationMethod(String userInfoAuthenticationMethod) {
+    if (ObjectUtils.isEmpty(userInfoAuthenticationMethod)) {
+      return AuthenticationMethod.HEADER;
+    }
+
+    switch (userInfoAuthenticationMethod.toLowerCase()) {
+    case "form":
+      return AuthenticationMethod.FORM;
+    case "query":
+      return AuthenticationMethod.QUERY;
+    case "header":
+    default:
+      return AuthenticationMethod.HEADER;
+    }
   }
 
   private static CommonOAuth2Provider getCommonProvider(String providerId) {

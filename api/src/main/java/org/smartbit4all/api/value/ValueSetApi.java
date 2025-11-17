@@ -2,10 +2,13 @@ package org.smartbit4all.api.value;
 
 import java.net.URI;
 import java.util.List;
+import java.util.function.Function;
+
 import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.value.bean.ValueSetDefinitionData;
 import org.smartbit4all.api.value.bean.ValueSetExpression;
 import org.smartbit4all.api.view.bean.ValueSet;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * The value set api is responsible for the central value set registration of application tenant.
@@ -111,15 +114,28 @@ public interface ValueSetApi {
   <T> List<T> getValues(Class<T> typeClass, ValueSetData valueSet, String... path);
 
   /**
-   * Creates a ValueSet where values will be List<Value>,
-   *
-   * @param namespace
-   * @param name
-   * @param branchUri
-   * @param path This path will be used to fill displayValue
-   * @return
-   */
-  ValueSet getValueSetWithValues(String namespace, String name, URI branchUri, String... path);
+	 * Creates a ValueSet where values will be List<Value>,
+	 *
+	 * @param namespace
+	 * @param name
+	 * @param branchUri
+	 * @param path      This path will be used to fill displayValue
+	 * @return
+	 */
+	ValueSet getValueSetWithValues(String namespace, String name, URI branchUri, String... path);
+
+  /**
+	 * Creates a ValueSet where values will be List<Value>,
+	 *
+	 * @param namespace
+	 * @param name
+	 * @param branchUri
+	 * @param displayValueProvider provides a display value from the loaded object
+	 *                             node
+	 * @return
+	 */
+	ValueSet getValueSetWithValues(String namespace, String name, URI branchUri,
+			Function<ObjectNode, String> displayValueProvider);
 
   /**
    * Creates a ValueSet where values will be List<Value>,
@@ -135,5 +151,22 @@ public interface ValueSetApi {
   ValueSet getValueSetWithValues(String namespace, String name, List<URI> additionalValues,
       URI branchUri,
       String... path);
+
+	/**
+	 * Creates a ValueSet where values will be List<Value>,
+	 * 
+	 * @param namespace
+	 * @param name
+	 * @param additionalValues     values that the ValueSet might not contains now,
+	 *                             because it became inactive
+	 * @param branchUri
+	 * @param displayValueProvider provides a display value from the loaded object
+	 *                             node
+	 * @return
+	 */
+	public ValueSet getValueSetWithValues(String namespace, String name,
+			List<URI> additionalValues,
+			URI branchUri,
+			Function<ObjectNode, String> displayValueProvider, Function<ObjectNode, String> codeProvider);
 
 }

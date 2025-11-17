@@ -111,6 +111,8 @@ public class DynamicOAuthPropertiesEditorPageApiImpl extends MDMEntryEditPageApi
             textField(OAuthClientProperties.AUTHORIZATION_GRANT_TYPE),
             textField(OAuthClientProperties.USER_NAME_ATTRIBUTE),
             textField(OAuthClientProperties.USER_INFO_AUTHENTICATION_METHOD),
+            textField(OAuthClientProperties.CLIENT_AUTHENTICATION_METHOD),
+            _toggle(OAuthClientProperties.IS_PKCE_ENABLED),
             textField(OAuthClientProperties.COMMON_PROVIDER),
             textField(OAuthClientProperties.LOGOUT_OIDC_ENABLED),
             textField(OAuthClientProperties.LOGOUT_END_SESSION_ENDPOINT),

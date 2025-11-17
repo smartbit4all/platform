@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
@@ -41,10 +42,15 @@ public class MdmBasedDynamicOAuthConfig {
   DynamicOAuth2AuthenticationDataProvider dynamicOAuth2AuthenticationDataProvider() {
     return new DynamicOAuth2AuthenticationDataProvider();
   }
-
+  
+  @Bean
+  DynamicOAuth2AuthorizationRequestResolver dynamicOAuth2AuthorizationRequestResolver(
+      ClientRegistrationRepository mdmBasedClientRegistrationRepository) {
+    return new DynamicOAuth2AuthorizationRequestResolver(mdmBasedClientRegistrationRepository);
+  }
 
   @Bean
-  public OrgUserHandler dynamicOAuthOrgUserHandler() {
+  public OrgUserHandler<OAuth2AuthenticationToken> dynamicOAuthOrgUserHandler() {
     return new DynamicOAuthOrgUserHandler();
   }
 

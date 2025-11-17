@@ -61,7 +61,9 @@ import jakarta.validation.Valid;
   OAuthClientProperties.IS_USER_WITHOUT_GROUP_ALLOWED_TO_LOG_IN,
   OAuthClientProperties.DEFAULT_GROUP_NAME,
   OAuthClientProperties.ROLE_ATTRIBUTES,
-  OAuthClientProperties.ROLE_MAPPING
+  OAuthClientProperties.ROLE_MAPPING,
+  OAuthClientProperties.CLIENT_AUTHENTICATION_METHOD,
+  OAuthClientProperties.IS_PKCE_ENABLED
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class OAuthClientProperties {
@@ -142,6 +144,12 @@ public class OAuthClientProperties {
 
   public static final String ROLE_MAPPING = "roleMapping";
   private Map<String, String> roleMapping = new HashMap<>();
+
+  public static final String CLIENT_AUTHENTICATION_METHOD = "clientAuthenticationMethod";
+  private String clientAuthenticationMethod = "client_secret_basic";
+
+  public static final String IS_PKCE_ENABLED = "isPkceEnabled";
+  private Boolean isPkceEnabled = false;
 
   public OAuthClientProperties() {
   }
@@ -878,6 +886,60 @@ public class OAuthClientProperties {
     this.roleMapping = roleMapping;
   }
 
+  public OAuthClientProperties clientAuthenticationMethod(String clientAuthenticationMethod) {
+    
+    this.clientAuthenticationMethod = clientAuthenticationMethod;
+    return this;
+  }
+
+  /**
+   * Get clientAuthenticationMethod
+   * @return clientAuthenticationMethod
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(CLIENT_AUTHENTICATION_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getClientAuthenticationMethod() {
+    return clientAuthenticationMethod;
+  }
+
+
+  @JsonProperty(CLIENT_AUTHENTICATION_METHOD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setClientAuthenticationMethod(String clientAuthenticationMethod) {
+    this.clientAuthenticationMethod = clientAuthenticationMethod;
+  }
+
+  public OAuthClientProperties isPkceEnabled(Boolean isPkceEnabled) {
+    
+    this.isPkceEnabled = isPkceEnabled;
+    return this;
+  }
+
+  /**
+   * \&quot;Enabeles PKCE so it adds PKCE parameters to authorization request\&quot;
+   * @return isPkceEnabled
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "\"Enabeles PKCE so it adds PKCE parameters to authorization request\"")
+  @JsonProperty(IS_PKCE_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsPkceEnabled() {
+    return isPkceEnabled;
+  }
+
+
+  @JsonProperty(IS_PKCE_ENABLED)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsPkceEnabled(Boolean isPkceEnabled) {
+    this.isPkceEnabled = isPkceEnabled;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -912,12 +974,14 @@ public class OAuthClientProperties {
         Objects.equals(this.isUserWithoutGroupAllowedToLogIn, oauthClientProperties.isUserWithoutGroupAllowedToLogIn) &&
         Objects.equals(this.defaultGroupName, oauthClientProperties.defaultGroupName) &&
         Objects.equals(this.roleAttributes, oauthClientProperties.roleAttributes) &&
-        Objects.equals(this.roleMapping, oauthClientProperties.roleMapping);
+        Objects.equals(this.roleMapping, oauthClientProperties.roleMapping) &&
+        Objects.equals(this.clientAuthenticationMethod, oauthClientProperties.clientAuthenticationMethod) &&
+        Objects.equals(this.isPkceEnabled, oauthClientProperties.isPkceEnabled);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo, userParameterMapping, isUserWithoutGroupAllowedToLogIn, defaultGroupName, roleAttributes, roleMapping);
+    return Objects.hash(uri, registrationId, clientId, clientSecret, clientName, authorizationUri, tokenUri, userInfoUri, jwkSetUri, issuerUri, redirectUri, scope, authorizationGrantType, userNameAttribute, userInfoAuthenticationMethod, commonProvider, logoutOidcEnabled, logoutEndSessionEndpoint, logoutRedirectPath, label, logo, userParameterMapping, isUserWithoutGroupAllowedToLogIn, defaultGroupName, roleAttributes, roleMapping, clientAuthenticationMethod, isPkceEnabled);
   }
 
   @Override
@@ -950,6 +1014,8 @@ public class OAuthClientProperties {
     sb.append("    defaultGroupName: ").append(toIndentedString(defaultGroupName)).append("\n");
     sb.append("    roleAttributes: ").append(toIndentedString(roleAttributes)).append("\n");
     sb.append("    roleMapping: ").append(toIndentedString(roleMapping)).append("\n");
+    sb.append("    clientAuthenticationMethod: ").append(toIndentedString(clientAuthenticationMethod)).append("\n");
+    sb.append("    isPkceEnabled: ").append(toIndentedString(isPkceEnabled)).append("\n");
     sb.append("}");
     return sb.toString();
   }
