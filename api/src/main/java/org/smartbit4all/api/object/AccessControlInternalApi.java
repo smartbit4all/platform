@@ -134,4 +134,33 @@ public interface AccessControlInternalApi {
    */
   void executeSubjectModifications(Collection<ACLSubjectOperationModification> modifications);
 
+  /**
+   * Extract the ACL specified by aclName from the given {@link ACLObject}. If it exists then
+   * evaluates if the user has the rights to the operations to check. To identify the operations
+   * available it uses the {@link SubjectManagementApi} to identify the subjects the user belongs
+   * to.
+   * 
+   * @param userUri
+   * @param aclObject
+   * @param aclName
+   * @param operationsToCheck
+   * @param subjectModel
+   * @return
+   */
+  Set<String> getAvailableOperationsOn(URI userUri, ACLObject aclObject, String aclName,
+      List<String> operationsToCheck, String subjectModel);
+
+  /**
+   * Calls {@link #getAvailableOperationsOn(URI, ACLObject, String, List, String)} with current user
+   * in session.
+   * 
+   * @param aclObject
+   * @param aclName
+   * @param operationsToCheck
+   * @param subjectModel
+   * @return
+   */
+  Set<String> getAvailableOperationsOn(ACLObject aclObject, String aclName,
+      List<String> operationsToCheck, String subjectModel);
+
 }

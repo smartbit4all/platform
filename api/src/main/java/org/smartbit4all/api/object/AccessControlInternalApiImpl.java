@@ -89,6 +89,32 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
   }
 
   @Override
+  public Set<String> getAvailableOperationsOn(URI userUri, ACLObject aclObject, String aclName,
+      List<String> operationsToCheck, String subjectModel) {
+    ACL acl = getAclFromObject(aclObject, aclName);
+    if (acl != null) {
+      return new HashSet<>(
+          getAvailableOperationsOfUser(subjectModel, userUri, acl, operationsToCheck));
+    }
+    // If we have no ACL then we can access all the operations.
+    return new HashSet<>(operationsToCheck);
+  }
+
+  @Override
+  public Set<String> getAvailableOperationsOn(ACLObject aclObject, String aclName,
+      List<String> operationsToCheck, String subjectModel) {
+    if (sessionApi == null) {
+      return new HashSet<>(operationsToCheck);
+    }
+    return getAvailableOperationsOn(
+        sessionApi.getUserUri(),
+        aclObject,
+        aclName,
+        operationsToCheck,
+        subjectModel);
+  }
+
+  @Override
   public List<String> getAvailableOperationsOfUser(String modelName, URI userUri, ACL acl,
       List<String> operations) {
     if (operations == null) {
@@ -418,5 +444,6 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
                 .entryKind(EntryKindEnum.SET)
                 .setOperation(SetOperationEnum.UNION)));
   }
+
 
 }
