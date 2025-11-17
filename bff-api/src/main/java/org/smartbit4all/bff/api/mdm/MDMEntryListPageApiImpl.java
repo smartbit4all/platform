@@ -22,7 +22,6 @@ import org.smartbit4all.api.collection.VectorDBApi;
 import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderModel;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionBuilderUiModel;
-import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.formdefinition.bean.SmartFormWidgetType;
 import org.smartbit4all.api.formdefinition.bean.SmartLayoutDefinition;
@@ -541,10 +540,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   private FilterExpressionList createFilterExpressionIfPresent(PageContext ctx,
       FilterExpressionList filters) {
     if (ctx.getFilterModel() != null) {
-      FilterExpressionFieldList filterExpressionFieldList =
-          filterExpressionBuilderApi.getFilterExpressionFieldList(ctx.getView().getUuid(),
-              SearchPageApi.FILTER_BUILDER_WIDGET_ID);
-      filters = filterExpressionApi.of(filterExpressionFieldList);
+      filters = filterExpressionBuilderApi.getFilterExpressionList(ctx.getView().getUuid(),
+          SearchPageApi.FILTER_BUILDER_WIDGET_ID);
     }
     return filters;
   }

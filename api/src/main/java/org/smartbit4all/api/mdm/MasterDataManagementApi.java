@@ -38,6 +38,11 @@ public interface MasterDataManagementApi {
   static final String MDM_DEFINITION_SYSTEM_INTEGRATION = "systemIntegration";
 
   /**
+   * The default user profile definition name.
+   */
+  static final String MDM_USER_PROFILE = "userProfile";
+
+  /**
    * The definition name of the non-brancheds definition.
    */
   static final String MDM_DEFINITION_PARAMETERS = "parameters";
