@@ -65,7 +65,7 @@ public class MdmBasedClientRegistrationRepository implements ClientRegistrationR
         .authorizationGrantType(new AuthorizationGrantType(properties.getAuthorizationGrantType()))
         .userNameAttributeName(properties.getUserNameAttribute())
         .userInfoAuthenticationMethod(getUserInfoAuthenticationMethod(properties.getUserInfoAuthenticationMethod()))
-        .clientAuthenticationMethod(new ClientAuthenticationMethod(properties.getClientAuthenticationMethod()))
+        .clientAuthenticationMethod(properties.getClientAuthenticationMethod() == null ? null : new ClientAuthenticationMethod(properties.getClientAuthenticationMethod()))
         .providerConfigurationMetadata(metadata)
         .build();
   }
