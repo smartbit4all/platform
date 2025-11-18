@@ -58,7 +58,7 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
   }
 
   @Override
-  public Integer getLengthOfList(List<? extends Object> list) {
+  public Integer getLengthOfList(List<?> list) {
     return list == null ? 0 : list.size();
   }
 
@@ -145,11 +145,6 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
   @Override
   public <E> List<E> asList(Class<E> clazz, List<?> value) {
     return objectApi.asList(clazz, value);
-  }
-
-  @Override
-  public Integer SizeList(List<?> list) {
-    return list.size();
   }
 
   @Override

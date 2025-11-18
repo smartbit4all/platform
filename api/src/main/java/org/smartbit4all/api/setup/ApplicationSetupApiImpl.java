@@ -18,7 +18,7 @@ public abstract class ApplicationSetupApiImpl extends ContributionApiImpl
     super(clazz.getName());
     this.setupData = new ApplicationSetupData().name(getApiName()).kind(ApplicationSetupKind.API)
         .preRequisites(preRequisites != null
-            ? preRequisites.stream().map(a -> a.getClass().getName()).collect(toList())
+            ? preRequisites.stream().map(a -> a.getName()).collect(toList())
             : new ArrayList<>());
   }
 

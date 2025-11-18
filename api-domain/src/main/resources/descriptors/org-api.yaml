@@ -399,6 +399,11 @@ components:
       properties:
         rootEntry:
           $ref: '#/components/schemas/ACLEntry'
+        emptyHandling:
+          description: |
+            If this ACL is empty, should it mean that everybody can access the queried operations, or nobody.
+          enum: [ALLOW, RESTRICT]
+          default: ALLOW
     ACLEntry:
       type: object
       description: |

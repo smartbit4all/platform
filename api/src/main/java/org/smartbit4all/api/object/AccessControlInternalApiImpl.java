@@ -23,6 +23,7 @@ import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.org.SubjectManagementApi;
 import org.smartbit4all.api.org.bean.ACL;
+import org.smartbit4all.api.org.bean.ACL.EmptyHandlingEnum;
 import org.smartbit4all.api.org.bean.ACLEntry;
 import org.smartbit4all.api.org.bean.ACLEntry.EntryKindEnum;
 import org.smartbit4all.api.org.bean.ACLEntry.SetOperationEnum;
@@ -121,6 +122,11 @@ public final class AccessControlInternalApiImpl implements AccessControlInternal
       return Collections.emptyList();
     }
     if (acl == null || acl.getRootEntry() == null || acl.getRootEntry().getEntries().isEmpty()) {
+      // RESTRICT means no subject/operation specified -> no access
+      if (acl != null && acl.getEmptyHandling() == EmptyHandlingEnum.RESTRICT) {
+        return Collections.emptyList();
+      }
+      // ALLOW means no subject/operation specified -> full access
       return operations;
     }
     List<Subject> subjectsOfUser = subjectManagementApi.getSubjectsOfUser(modelName, userUri);
