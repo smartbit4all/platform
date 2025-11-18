@@ -17,7 +17,7 @@ public interface ObjectUtilityApi {
 
   String concatStrings(String a, String b);
 
-  Integer getLengthOfList(List<? extends Object> list);
+  Integer getLengthOfList(List<?> list);
 
   <E> List<E> concatLists(List<E> listA, List<E> listB);
 
