@@ -146,4 +146,9 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
     return objectApi.asList(clazz, value);
   }
 
+  @Override
+  public Integer SizeList(List<?> list) {
+    return list.size();
+  }
+
 }
