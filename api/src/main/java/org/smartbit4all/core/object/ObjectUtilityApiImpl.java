@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -149,6 +150,28 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
   @Override
   public Integer SizeList(List<?> list) {
     return list.size();
+  }
+
+  @Override
+  public <E> List<E> setItemIntoList(Integer index, List<E> list, E item, String key) {
+    Objects.requireNonNull(list);
+    if (index == null) {
+      list.add(item);
+    }
+    E current = list.get(index);
+    if (current instanceof Map) {
+      Map<Object, Object> map = (Map<Object, Object>) current;
+      if (!(item instanceof Map)) {
+        Objects.requireNonNull(key);
+        map.put(key, item);
+        return list;
+      }
+      map.putAll((Map<?, ?>) item);
+      return list;
+    }
+
+    list.set(index, item);
+    return list;
   }
 
 }

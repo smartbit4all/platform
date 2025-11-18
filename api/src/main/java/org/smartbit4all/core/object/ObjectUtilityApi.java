@@ -46,4 +46,6 @@ public interface ObjectUtilityApi {
   <E> List<E> asList(Class<E> clazz, List<?> value);
 
   Integer SizeList(List<?> list);
+
+  <E> List<E> setItemIntoList(Integer index, List<E> list, E item, String key);
 }
