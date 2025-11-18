@@ -32,12 +32,51 @@ import jakarta.validation.Valid;
  */
 @Schema(description = "The ACL config can be attached as aspect to every object in the storage. This describes available oparations for the subjects. The subjects can be contributed by adding new AccessControlApi to the application. It defines the available subjects and produce the list of subjects a given user belongs to. It does not have any uri because it usually saved as aspect or inner object as well. ")
 @JsonPropertyOrder({
-  ACL.ROOT_ENTRY
+  ACL.ROOT_ENTRY,
+  ACL.EMPTY_HANDLING
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ACL {
   public static final String ROOT_ENTRY = "rootEntry";
   private ACLEntry rootEntry;
+
+  /**
+   * If this ACL is empty, should it mean that everybody can access the queried operations, or nobody. 
+   */
+  public enum EmptyHandlingEnum {
+    ALLOW("ALLOW"),
+    
+    RESTRICT("RESTRICT");
+
+    private String value;
+
+    EmptyHandlingEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static EmptyHandlingEnum fromValue(String value) {
+      for (EmptyHandlingEnum b : EmptyHandlingEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String EMPTY_HANDLING = "emptyHandling";
+  private EmptyHandlingEnum emptyHandling = EmptyHandlingEnum.ALLOW;
 
   public ACL() {
   }
@@ -71,6 +110,33 @@ public class ACL {
     this.rootEntry = rootEntry;
   }
 
+  public ACL emptyHandling(EmptyHandlingEnum emptyHandling) {
+    
+    this.emptyHandling = emptyHandling;
+    return this;
+  }
+
+  /**
+   * If this ACL is empty, should it mean that everybody can access the queried operations, or nobody. 
+   * @return emptyHandling
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "If this ACL is empty, should it mean that everybody can access the queried operations, or nobody. ")
+  @JsonProperty(EMPTY_HANDLING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public EmptyHandlingEnum getEmptyHandling() {
+    return emptyHandling;
+  }
+
+
+  @JsonProperty(EMPTY_HANDLING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setEmptyHandling(EmptyHandlingEnum emptyHandling) {
+    this.emptyHandling = emptyHandling;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -80,12 +146,13 @@ public class ACL {
       return false;
     }
     ACL ACL = (ACL) o;
-    return Objects.equals(this.rootEntry, ACL.rootEntry);
+    return Objects.equals(this.rootEntry, ACL.rootEntry) &&
+        Objects.equals(this.emptyHandling, ACL.emptyHandling);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(rootEntry);
+    return Objects.hash(rootEntry, emptyHandling);
   }
 
   @Override
@@ -93,6 +160,7 @@ public class ACL {
     StringBuilder sb = new StringBuilder();
     sb.append("class ACL {\n");
     sb.append("    rootEntry: ").append(toIndentedString(rootEntry)).append("\n");
+    sb.append("    emptyHandling: ").append(toIndentedString(emptyHandling)).append("\n");
     sb.append("}");
     return sb.toString();
   }
