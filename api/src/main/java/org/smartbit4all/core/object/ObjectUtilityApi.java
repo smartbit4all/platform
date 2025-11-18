@@ -44,6 +44,4 @@ public interface ObjectUtilityApi {
   void throwException(String message);
 
   <E> List<E> asList(Class<E> clazz, List<?> value);
-
-  Integer SizeList(List<?> list);
 }
