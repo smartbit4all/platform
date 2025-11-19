@@ -83,7 +83,7 @@ class PrerequisiteEvaluatorTest {
       }
     }
     assertThat(first).containsExactly("A", "B", "C");
-    assertThat(second).contains("X", "Y", "Z");
+    assertThat(second).containsExactly("X", "Y", "Z");
   }
 
   @Test
