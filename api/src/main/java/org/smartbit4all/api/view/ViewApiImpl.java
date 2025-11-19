@@ -406,11 +406,13 @@ public class ViewApiImpl implements ViewApi {
     return data;
   }
 
-  private View getParentView(UUID viewUuid) {
+  @Override
+  public View getParentView(UUID viewUuid) {
     return getParentView(getView(viewUuid));
   }
 
-  private View getParentView(View view) {
+  @Override
+  public View getParentView(View view) {
     if (view == null) {
       return null;
     }

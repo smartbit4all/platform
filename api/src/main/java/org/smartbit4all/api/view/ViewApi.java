@@ -239,4 +239,7 @@ public interface ViewApi {
    */
   InvocationRequest getCallbackFromAll(UUID viewUuid, String requestId);
 
+  View getParentView(UUID viewUuid);
+
+  View getParentView(View view);
 }
