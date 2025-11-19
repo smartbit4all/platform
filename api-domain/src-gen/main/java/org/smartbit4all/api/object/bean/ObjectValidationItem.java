@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
 @JsonPropertyOrder({
   ObjectValidationItem.SEVERITY,
   ObjectValidationItem.MESSAGE,
+  ObjectValidationItem.IS_HTML,
   ObjectValidationItem.PROPERTY_PATH
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -47,6 +48,9 @@ public class ObjectValidationItem {
 
   public static final String MESSAGE = "message";
   private LangString message;
+
+  public static final String IS_HTML = "isHtml";
+  private Boolean isHtml = false;
 
   public static final String PROPERTY_PATH = "propertyPath";
   private List<String> propertyPath = new ArrayList<>();
@@ -110,6 +114,33 @@ public class ObjectValidationItem {
     this.message = message;
   }
 
+  public ObjectValidationItem isHtml(Boolean isHtml) {
+    
+    this.isHtml = isHtml;
+    return this;
+  }
+
+  /**
+   * Get isHtml
+   * @return isHtml
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IS_HTML)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsHtml() {
+    return isHtml;
+  }
+
+
+  @JsonProperty(IS_HTML)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsHtml(Boolean isHtml) {
+    this.isHtml = isHtml;
+  }
+
   public ObjectValidationItem propertyPath(List<String> propertyPath) {
     
     this.propertyPath = propertyPath;
@@ -157,12 +188,13 @@ public class ObjectValidationItem {
     ObjectValidationItem objectValidationItem = (ObjectValidationItem) o;
     return Objects.equals(this.severity, objectValidationItem.severity) &&
         Objects.equals(this.message, objectValidationItem.message) &&
+        Objects.equals(this.isHtml, objectValidationItem.isHtml) &&
         Objects.equals(this.propertyPath, objectValidationItem.propertyPath);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(severity, message, propertyPath);
+    return Objects.hash(severity, message, isHtml, propertyPath);
   }
 
   @Override
@@ -171,6 +203,7 @@ public class ObjectValidationItem {
     sb.append("class ObjectValidationItem {\n");
     sb.append("    severity: ").append(toIndentedString(severity)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    isHtml: ").append(toIndentedString(isHtml)).append("\n");
     sb.append("    propertyPath: ").append(toIndentedString(propertyPath)).append("\n");
     sb.append("}");
     return sb.toString();
