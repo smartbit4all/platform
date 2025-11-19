@@ -1,6 +1,7 @@
 package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
+import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -137,13 +138,12 @@ public class VectorCollectionImpl implements VectorCollection {
   @Override
   public List<VectorSearchResultItem> search(Object obj, int limit,
       Map<String, Object> parameters) {
-    if (log_audit.isInfoEnabled()) {
-      log_audit.info(">>>>LOOKUP: {} collection for {}", collectionName, obj);
-    }
+    String prelog = MessageFormat.format(">>>>LOOKUP: {0} collection for {1}", collectionName, obj);
     List<VectorSearchResultItem> result =
         vectorDBApi.search(vectorDBService, collectionName, embed(obj), limit, parameters);
+    String postLog = MessageFormat.format(">>>>LOOKUP RESULT: {0}", result);
     if (log_audit.isInfoEnabled()) {
-      log_audit.info(">>>>LOOKUP RESULT: {}", result);
+      log_audit.info(prelog + "\n" + postLog);
     }
     return result;
   }
