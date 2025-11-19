@@ -63,6 +63,7 @@ public class ValidationResultPageApiImpl extends PageApiImpl<ValidationResultPag
     return new ValidationResultPageModel().validationItems(result.getItems().stream()
         .map(item -> new ValidationItem()
             .severity(item.getSeverity())
+            .isHtml(item.getIsHtml())
             .message(getMessage(item)))
         .collect(toList()));
   }

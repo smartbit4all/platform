@@ -32,7 +32,8 @@ import jakarta.validation.Valid;
  */
 @JsonPropertyOrder({
   ValidationItem.SEVERITY,
-  ValidationItem.MESSAGE
+  ValidationItem.MESSAGE,
+  ValidationItem.IS_HTML
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class ValidationItem {
@@ -41,6 +42,9 @@ public class ValidationItem {
 
   public static final String MESSAGE = "message";
   private String message;
+
+  public static final String IS_HTML = "isHtml";
+  private Boolean isHtml;
 
   public ValidationItem() {
   }
@@ -100,6 +104,33 @@ public class ValidationItem {
     this.message = message;
   }
 
+  public ValidationItem isHtml(Boolean isHtml) {
+    
+    this.isHtml = isHtml;
+    return this;
+  }
+
+  /**
+   * Get isHtml
+   * @return isHtml
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IS_HTML)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsHtml() {
+    return isHtml;
+  }
+
+
+  @JsonProperty(IS_HTML)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsHtml(Boolean isHtml) {
+    this.isHtml = isHtml;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -110,12 +141,13 @@ public class ValidationItem {
     }
     ValidationItem validationItem = (ValidationItem) o;
     return Objects.equals(this.severity, validationItem.severity) &&
-        Objects.equals(this.message, validationItem.message);
+        Objects.equals(this.message, validationItem.message) &&
+        Objects.equals(this.isHtml, validationItem.isHtml);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(severity, message);
+    return Objects.hash(severity, message, isHtml);
   }
 
   @Override
@@ -124,6 +156,7 @@ public class ValidationItem {
     sb.append("class ValidationItem {\n");
     sb.append("    severity: ").append(toIndentedString(severity)).append("\n");
     sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("    isHtml: ").append(toIndentedString(isHtml)).append("\n");
     sb.append("}");
     return sb.toString();
   }

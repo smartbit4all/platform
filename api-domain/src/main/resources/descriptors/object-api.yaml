@@ -153,7 +153,16 @@ components:
         This object contains an object instance as map. It can be used to separate the references and the business data in the API implementations. The object node contains 
         an object returned by the RetrievalApi. It can manage the state of the object and we can use it to produce ApplyChangeRequest at the end of the modification.
       required:
-        [qualifiedName, versionNr, state, objectAsMap, references, referenceLists, referenceMaps, objectsStreams]
+        [
+          qualifiedName,
+          versionNr,
+          state,
+          objectAsMap,
+          references,
+          referenceLists,
+          referenceMaps,
+          objectsStreams,
+        ]
       properties:
         objectUri:
           type: string
@@ -867,6 +876,9 @@ components:
           $ref: '#/components/schemas/ObjectValidationSeverity'
         message:
           $ref: '#/components/schemas/LangString'
+        isHtml:
+          type: boolean
+          default: false
         propertyPath:
           description: |
             The validation can refer to the property of the object, like the page model. If the object is not a plat object (contains some

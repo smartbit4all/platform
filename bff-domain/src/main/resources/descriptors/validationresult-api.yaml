@@ -26,5 +26,6 @@ components:
           type: ObjectValidationSeverity
         message:
           type: string
-                 
+        isHtml:
+          type: boolean
          
