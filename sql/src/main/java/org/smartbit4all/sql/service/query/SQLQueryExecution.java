@@ -22,6 +22,7 @@ import org.smartbit4all.domain.meta.ExpressionInDataSet;
 import org.smartbit4all.domain.meta.ExpressionIsNull;
 import org.smartbit4all.domain.meta.ExpressionVisitor;
 import org.smartbit4all.domain.meta.Operand;
+import org.smartbit4all.domain.meta.OperandComposite;
 import org.smartbit4all.domain.meta.OperandProperty;
 import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertyComputed;
@@ -271,8 +272,7 @@ final class SQLQueryExecution {
    */
   private final void prepareOperand(Operand<?> operand, SQLSelectFromNode rootTable,
       SQLStatementBuilderIF builder) {
-    if (operand instanceof OperandProperty<?>) {
-      OperandProperty<?> operandProperty = (OperandProperty<?>) operand;
+    if (operand instanceof OperandProperty<?> operandProperty) {
       SQLSelectColumn column = setupProperty(rootTable, operandProperty.property(), builder);
       operandProperty.setQualifier(column.from().alias());
 
@@ -289,6 +289,11 @@ final class SQLQueryExecution {
           }
         }
       }
+    } else if (operand instanceof OperandComposite operandComposite) {
+      for (Operand<?> op : operandComposite.getOperands()) {
+        prepareOperand(op, rootTable, builder);
+      }
+
     }
   }
 
