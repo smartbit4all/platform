@@ -1,6 +1,7 @@
 package org.smartbit4all.api.invocation;
 
 import java.net.URI;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -21,6 +22,8 @@ import org.smartbit4all.api.collection.CollectionApi;
 import org.smartbit4all.api.collection.StoredReference;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
+import org.smartbit4all.api.invocation.bean.InvocationCall;
+import org.smartbit4all.api.invocation.bean.InvocationCallLog;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -39,6 +42,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
+import com.google.common.base.Objects;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static java.util.stream.Collectors.toList;
@@ -462,6 +466,48 @@ public class InvocationApiTestStatic {
         collectionApi.reference(INVOCATIONTEST, MY_STACK, InvocationStackItem.class).get();
     Assertions.assertEquals("value",
         stackItem.getVariables().get("myVariable"));
+  }
+
+  static void testCallLog(InvocationApi invocationApi,
+      CollectionApi collectionApi,
+      ObjectApi objectApi, InvocationStackApi stackApi) throws InterruptedException {
+    {
+      InvocationCallResult<String> invocationCallResult = invocationApi.callLog().execute(() -> {
+        try {
+          Thread.sleep(50);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        return "a";
+      }, new InvocationCall().invocationDescription("Just a test call"));
+      Assertions.assertTrue(Duration.between(invocationCallResult.getCallLog().getStartTime(),
+          invocationCallResult.getCallLog().getFinishTime()).toMillis() > 49
+          && Objects.equal("a", invocationCallResult.getCallResult()));
+    }
+    {
+      // Manage by hand
+      invocationApi.callLog().startCall(new InvocationCall().invocationDescription("main"));
+      // sleep in the main
+      Thread.sleep(20);
+
+      invocationApi.callLog().startCall(new InvocationCall().invocationDescription("sub1"));
+      // Sleep in sub1
+      Thread.sleep(20);
+      invocationApi.callLog().finishCall();
+
+      invocationApi.callLog().startCall(new InvocationCall().invocationDescription("sub2"));
+      // Sleep in sub2
+      Thread.sleep(20);
+      invocationApi.callLog().finishCall();
+
+      InvocationCallLog callLog = invocationApi.callLog().cancelCall();
+
+      Assertions.assertTrue(Duration.between(callLog.getStartTime(),
+          callLog.getFinishTime()).toMillis() > 60);
+
+      System.out.println(InvocationCallStack.print(callLog));
+    }
   }
 
 }

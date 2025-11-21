@@ -1124,3 +1124,37 @@ components:
           type: string
         statusCodeValue:
           type: integer
+
+# The invovation call log is an object structure to save the details of an series of invocation call for traceability purpose.
+          
+    InvocationCallLog:
+      type: object
+      description: The invocation call log is a recursive object. It has a list of log that contains the sub calls of this call.
+      properties:
+        call:
+          description: The call itself.
+          $ref: '#/components/schemas/InvocationCall'
+        startTime:
+          description: The exact time when we start the call.
+          type: string
+          format: date-time
+        finishTime:
+          description: The exact time when the call finished.
+          type: string
+          format: date-time
+        subCalls:
+          description: If we have the embedded calls of this call then this log entries can be added to this.
+          type: array
+          items:
+            $ref: '#/components/schemas/InvocationCallLog'
+
+    InvocationCall:
+      type: object
+      description: The invocation call descriptior that can be a request but also a simple textual description.
+      properties:
+        invocationRequest:
+          description: If we have the invocation request with the resolved values the it can be saved into this property inline.
+          $ref: '#/components/schemas/InvocationRequest'
+        invocationDescription:
+          description: If we doesn't have the invocation request itself then we can use this property to describe the call.
+          type: string

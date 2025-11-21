@@ -121,4 +121,10 @@ class InvocationApiTest {
         stackApi);
   }
 
+  @Test
+  void testCallLog() throws Exception {
+    InvocationApiTestStatic.testCallLog(invocationApi, collectionApi, objectApi,
+        stackApi);
+  }
+
 }
