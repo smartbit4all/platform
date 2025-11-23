@@ -29,6 +29,7 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
+import org.smartbit4all.api.invocation.bean.InvocationCallLog;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationParameterResolver;
@@ -59,7 +60,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.application.ApplicationRuntime;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -137,15 +137,17 @@ public class InvocationApiImpl implements InvocationApi {
   @Autowired
   private ScriptEngineMgmtApi scriptEngineMgmtApi;
 
-  @Autowired
-  private ApplicationContext ctx;
-
   /**
    * By default the platform uses the rest client to access and call the api of a module over the
    * same storage.
    */
-  private String defaultExecutionApiName =
+  private static String defaultExecutionApiName =
       "org.smartbit4all.api.invocation.restclient.InvocationExecutionApiRestclient";
+
+  /**
+   * The singleton log context that manages the {@link InvocationCallLog}s by threads.
+   */
+  private final InvocationLogContext logContext = new InvocationLogContext();
 
   @Override
   public InvocationParameter invoke(InvocationRequest request, Object... args)
@@ -830,6 +832,11 @@ public class InvocationApiImpl implements InvocationApi {
 
   String ctxToString(ContextObject ctx) {
     return ctx.toString();
+  }
+
+  @Override
+  public InvocationLogContext callLog() {
+    return logContext;
   }
 
 }

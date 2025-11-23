@@ -315,4 +315,9 @@ public interface InvocationApi {
 
   void run(ContextObject ctx, InvocationRun run);
 
+  /**
+   * @return The {@link InvocationLogContext} that provides tracing functions for the invocations.
+   */
+  InvocationLogContext callLog();
+
 }

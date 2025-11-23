@@ -17,6 +17,7 @@ package org.smartbit4all.domain.service.query;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -117,7 +118,7 @@ public class QueryInput {
     return name;
   }
 
-  public void select(List<Property<?>> properties) {
+  public void select(Collection<Property<?>> properties) {
     this.properties.addAll(properties);
   }
 

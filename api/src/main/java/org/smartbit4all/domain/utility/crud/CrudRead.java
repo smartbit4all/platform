@@ -15,6 +15,7 @@
 package org.smartbit4all.domain.utility.crud;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -260,7 +261,7 @@ public class CrudRead<E extends EntityDefinition> {
    *
    * @return Fluid API
    */
-  public CrudRead<E> select(List<Property<?>> properties) {
+  public CrudRead<E> select(Collection<Property<?>> properties) {
     queryInput.select(properties);
     return this;
   }
