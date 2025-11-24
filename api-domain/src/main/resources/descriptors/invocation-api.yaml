@@ -1127,6 +1127,15 @@ components:
 
 # The invovation call log is an object structure to save the details of an series of invocation call for traceability purpose.
           
+    InvocationCallLogEntry:
+      type: object
+      description: Container of the invocation call log object for persistence.
+      properties:
+        uri:
+          type: string
+          format: uri
+        log:
+          $ref: '#/components/schemas/InvocationCallLog'
     InvocationCallLog:
       type: object
       description: The invocation call log is a recursive object. It has a list of log that contains the sub calls of this call.
@@ -1150,7 +1159,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/InvocationCallLog'
-
     InvocationCall:
       type: object
       description: The invocation call descriptior that can be a request but also a simple textual description.
