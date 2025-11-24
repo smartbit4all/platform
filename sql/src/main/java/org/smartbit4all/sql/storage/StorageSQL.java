@@ -65,10 +65,15 @@ import org.smartbit4all.domain.data.storage.StorageUtil;
 import org.smartbit4all.domain.data.storage.TransactionUtils;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.meta.Expression;
+import org.smartbit4all.domain.meta.ExpressionIn;
+import org.smartbit4all.domain.meta.OperandComposite;
+import org.smartbit4all.domain.meta.OperandProperty;
+import org.smartbit4all.domain.meta.Property;
 import org.smartbit4all.domain.meta.PropertySet;
 import org.smartbit4all.domain.service.identifier.IdentifierService;
 import org.smartbit4all.domain.service.identifier.NextIdentifier;
 import org.smartbit4all.domain.service.modify.DeleteOutput;
+import org.smartbit4all.domain.utility.CompositeValue;
 import org.smartbit4all.domain.utility.crud.Crud;
 import org.smartbit4all.domain.utility.crud.CrudRead;
 import org.smartbit4all.sql.storage.StorageSQLCacheConfig.CachePolicy;
@@ -142,9 +147,14 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   @Value("${storageSql.useTransactionCache:true}")
   private boolean useTransactionCache;
 
+  @Value("${storageSql.useJoinedObjectQuery:false}")
+  private boolean useJoinedObjectQuery;
+
   // default cache and className based caches
-  private Cache<String, DataRow> defaultCache = null;
-  private Map<String, Cache<String, DataRow>> classCaches = new HashMap<>();
+  private Cache<String, DataRow> defaultEntryCache = null;
+  private Cache<String, DataRow> defaultVersionCache = null;
+  private Map<String, Cache<String, DataRow>> classEntryCaches = new HashMap<>();
+  private Map<String, Cache<String, DataRow>> classVersionCaches = new HashMap<>();
 
   @Autowired(required = false)
   private StorageSQLCacheConfig cacheConfig;
@@ -169,13 +179,24 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       cacheConfig.setEnabled(useCache);
     }
     if (cacheConfig.isEnabled()) {
-      defaultCache = CacheBuilder.newBuilder()
+      defaultEntryCache = CacheBuilder.newBuilder()
           .maximumSize(cacheConfig.getDefaultSettings().getMaxSize())
           .concurrencyLevel(cacheConcurrencyLevel)
           .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
           .removalListener((RemovalNotification<String, DataRow> notif) -> {
             if (log.isTraceEnabled()) {
-              log.trace("Cache - evict from default cache, {}", notif.getKey());
+              log.trace("Cache - evict from default entry cache, {}", notif.getKey());
+            }
+          })
+          // TODO removalListener
+          .build();
+      defaultVersionCache = CacheBuilder.newBuilder()
+          .maximumSize(cacheConfig.getDefaultSettings().getMaxSize())
+          .concurrencyLevel(cacheConcurrencyLevel)
+          .expireAfterAccess(Duration.ofMillis(expireAfterAccessInMillis))
+          .removalListener((RemovalNotification<String, DataRow> notif) -> {
+            if (log.isTraceEnabled()) {
+              log.trace("Cache - evict from default version cache, {}", notif.getKey());
             }
           })
           // TODO removalListener
@@ -609,6 +630,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       objectEntry = trHandler.getObjectEntry(uriWithoutVersion);
     }
     if (objectEntry == null) {
+      // QUERY objectEntryDef - toOptimize
       CrudRead<ObjectEntryDef> read = Crud.read(objectEntryDef)
           .select(ObjectUtils.isEmpty(properties) ? objectEntryDef.allProperties() : properties)
           .where(objectEntryDef.uri().eq(uriWithoutVersion));
@@ -856,7 +878,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     return new ArrayList<>(result);
   }
 
-  private Cache<String, DataRow> getClassCache(String className) {
+  private Cache<String, DataRow> getClassEntryCache(String className) {
     if (cacheConfig == null) {
       return null;
     }
@@ -865,11 +887,32 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       return null;
     }
     if (classCacheSettings == cacheConfig.getDefaultSettings()) {
-      return defaultCache;
+      return defaultEntryCache;
     }
 
     // cacheSettings exist specifically for this class, and not IGNORE
-    return classCaches.computeIfAbsent(className, (key) -> {
+    return getClassCache(className, classEntryCaches);
+  }
+
+  private Cache<String, DataRow> getClassVersionCache(String className) {
+    if (cacheConfig == null) {
+      return null;
+    }
+    CacheSettings classCacheSettings = cacheConfig.getSettingsForClass(className);
+    if (classCacheSettings.getPolicy() == CachePolicy.IGNORE) {
+      return null;
+    }
+    if (classCacheSettings == cacheConfig.getDefaultSettings()) {
+      return defaultVersionCache;
+    }
+
+    // cacheSettings exist specifically for this class, and not IGNORE
+    return getClassCache(className, classVersionCaches);
+  }
+
+  private Cache<String, DataRow> getClassCache(String className,
+      Map<String, Cache<String, DataRow>> caches) {
+    return caches.computeIfAbsent(className, (key) -> {
       long maxSize = cacheConfig.getMaxSize(className);
       if (log.isDebugEnabled()) {
         log.debug("Creating cache for class {}, maxSize: {}", className, maxSize);
@@ -919,6 +962,17 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
   }
 
+  private record RowPair(
+      String baseUri,
+      Long version,
+      String className,
+      Boolean isSingleVersion,
+      Long objectEntryId,
+      DataRow objectEntryRow,
+      String versionId,
+      DataRow versionRow) {
+  }
+
   // @Transactional
   @Override
   public <T> List<StorageObject<T>> loadBatch(Storage storage, List<URI> uris, Class<T> clazz,
@@ -941,42 +995,140 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       }
     }
 
-    // batch query object entries
-    Map<String, DataRow> objectEntryRows = queryObjectEntries(uriInfos);
+    Map<String, DataRow> objectEntryRows = new HashMap<>();
+    Map<String, DataRow> versionRows = new HashMap<>();
 
-    // calculate uriInfo data
-    for (UriInfo info : uriInfos) {
-      DataRow entryRow = objectEntryRows.get(info.baseUri);
-      if (entryRow != null) {
-        // surely will exist, queryObjectEntries will throw an exception if not
-        info.entryId = entryRow.get(objectEntryDef.id());
-        Long entryVersion = entryRow.get(objectEntryDef.version());
-        info.calculatedVersion =
-            info.originalVersion != null ? info.originalVersion
-                : entryVersion;
-        if (info.originalVersion != null
-            && entryVersion != null
-            && entryVersion < info.originalVersion) {
-          if (log.isErrorEnabled()) {
-            log.error("Error when trying to query {}! latestVersion ({}) < requestedVersion ({})",
-                info.uri, entryVersion, info.originalVersion);
-            log.error("Using latest version instead!", new Exception());
-          }
-          info.calculatedVersion = entryVersion;
+    List<UriInfo> urisLeft;
+    if (useJoinedObjectQuery) {
+      // check if URI is in transaction cache. if yes, put it into uriInfosLeft
+      Set<String> uniqueBaseUris = getUniqueBaseUris(uriInfos);
+      Map<String, DataRow> objectEntriesFromTransactionCache = new HashMap<>();
+      Set<String> queryFromDB =
+          fillObjectEntriesFromTransactionCache(uniqueBaseUris, objectEntriesFromTransactionCache);
+
+      // queryFromDB will be handled later, we skip objectEntriesFromTransactionCache for now
+      // later we might pass it over
+      List<UriInfo> urisToQueryFromDB = new ArrayList<>(uriInfos.size());
+      urisLeft = new ArrayList<>(uriInfos.size());
+      for (UriInfo info : uriInfos) {
+        if (queryFromDB.contains(info.baseUri)) {
+          urisToQueryFromDB.add(info);
+        } else {
+          urisLeft.add(info);
         }
-        info.versionId = createVersionId(info.entryId, info.calculatedVersion);
       }
-    }
 
-    // batch query object versions
-    Map<String, DataRow> versionRows = queryObjectVersions(uriInfos);
+      //
+      List<UriInfo> latestUris = new ArrayList<>();
+      List<UriInfo> exactUris = new ArrayList<>();
+      for (UriInfo uriInfo : urisToQueryFromDB) {
+        if (uriInfo.isSingleVersion
+            || uriInfo.originalVersion == null) {
+          latestUris.add(uriInfo);
+        } else {
+          exactUris.add(uriInfo);
+        }
+      }
+
+      if (!latestUris.isEmpty()) {
+        // querying for latest -> we cannot use normal cache (and transaction cache handled earlier)
+        Set<String> uniqueBaseUrisToQueryFromDB = getUniqueBaseUris(latestUris);
+        var condition =
+            objectVersionDef.objectEntryVersioned().uri().in(uniqueBaseUrisToQueryFromDB);
+        // we go for latest, cannot cache entry, but for
+        List<RowPair> rows = queryObjectEntryVersionJoined(
+            getVersionedPropertyMapping(),
+            condition);
+        // store result in rows maps
+        rows.forEach(row -> {
+          objectEntryRows.put(row.baseUri, row.objectEntryRow);
+          versionRows.put(row.versionId, row.versionRow);
+        });
+        cacheRowPairs(rows);
+      }
+      if (!exactUris.isEmpty()) {
+        // check if this version is in cache, populate from cache
+        Map<String, List<UriInfo>> urisByClass = exactUris.stream()
+            .collect(Collectors.groupingBy(info -> info.className != null ? info.className : ""));
+
+        Set<UriInfo> infosToQuery = new HashSet<>();
+        for (Map.Entry<String, List<UriInfo>> entry : urisByClass.entrySet()) {
+          String className = entry.getKey();
+          Cache<String, DataRow> entryCache = getClassEntryCache(className);
+          Cache<String, DataRow> versionCache = getClassVersionCache(className);
+          List<UriInfo> classUris = entry.getValue();
+          classUris.forEach(uriInfo -> {
+            String versionedUri = getUriString(uriInfo.uri); // exactVersion --> versioned URI
+            String baseUri = uriInfo.baseUri;
+            boolean isSingleVersion = uriInfo.isSingleVersion;
+
+            // skip cache for single version / non-cacheable objects
+            if (!isSingleVersion && entryCache != null && versionCache != null) {
+              DataRow cachedEntryRow = entryCache.getIfPresent(versionedUri);
+              if (cachedEntryRow != null) {
+                String versionId = createVersionId(
+                    cachedEntryRow.get(objectEntryDef.id()),
+                    uriInfo.originalVersion);
+                DataRow cachedVersionRow = versionCache.getIfPresent(versionId);
+                if (cachedEntryRow != null
+                    && cachedVersionRow != null) {
+                  if (log.isTraceEnabled()) {
+                    log.trace("Cache - hit, {}", versionId);
+                  }
+                  objectEntryRows.put(baseUri, cachedEntryRow);
+                  versionRows.put(versionId, cachedVersionRow);
+                  return;
+                }
+              }
+            }
+            // not found in cache or singleVersion -> we should query this versionId
+            infosToQuery.add(uriInfo);
+          });
+        }
+
+        // query which is not in cache
+        Set<CompositeValue> inValues = new HashSet<>();
+        for (UriInfo uriInfo : infosToQuery) {
+          inValues.add(new CompositeValue(uriInfo.baseUri, uriInfo.originalVersion));
+        }
+        Expression conditions = new ExpressionIn<>(
+            new OperandComposite(
+                new OperandProperty<>(objectVersionDef.objectEntry().uri()),
+                new OperandProperty<>(objectVersionDef.version())),
+            inValues);
+        List<RowPair> rows = queryObjectEntryVersionJoined(
+            getNormalPropertyMapping(),
+            conditions);
+        // store result in rows maps
+        rows.forEach(row -> {
+          objectEntryRows.put(row.baseUri, row.objectEntryRow);
+          versionRows.put(row.versionId, row.versionRow);
+        });
+        // put it into cache
+        cacheRowPairs(rows);
+      }
+
+      Set<String> uniqueQueriedBaseUris = getUniqueBaseUris(urisToQueryFromDB);
+      if (objectEntryRows.size() != uniqueQueriedBaseUris.size()) {
+        throw new ObjectNotFoundException(uniqueQueriedBaseUris, null, "Object not found.");
+      }
+
+      calculateUriInfoData(uriInfos, objectEntryRows);
+
+    } else {
+      urisLeft = uriInfos;
+    }
+    if (!urisLeft.isEmpty()) {
+      objectEntryRows.putAll(queryObjectEntries(uriInfos));
+      calculateUriInfoData(uriInfos, objectEntryRows);
+      versionRows.putAll(queryObjectVersions(uriInfos));
+    }
 
     // process results and create StorageObjects
     List<StorageObject<T>> result = new ArrayList<>();
 
     for (UriInfo info : uriInfos) {
-      String uriString = info.baseUri;
-      DataRow entryRow = objectEntryRows.get(uriString);
+      DataRow entryRow = getObjectEntryRow(objectEntryRows, info);
 
       if (entryRow == null) {
         continue;
@@ -1047,9 +1199,146 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
 
     long endTime = System.currentTimeMillis();
+
     addRead(endTime - startTime);
 
     return result;
+  }
+
+  private void cacheRowPairs(List<RowPair> rows) {
+    // rows (containing all version information) could be put to normal cache
+    Map<String, List<RowPair>> rowsByClass = rows.stream()
+        .filter(row -> !Boolean.TRUE.equals(row.isSingleVersion))
+        .collect(Collectors.groupingBy(row -> row.className != null ? row.className : ""));
+    for (var entry : rowsByClass.entrySet()) {
+      String className = entry.getKey();
+      Cache<String, DataRow> entryCache = getClassVersionCache(className);
+      Cache<String, DataRow> versionCache = getClassVersionCache(className);
+      if (versionCache == null || entryCache == null) {
+        continue;
+      }
+      for (RowPair row : entry.getValue()) {
+        // check object size // TODO later
+        // long maxObjectSize = cacheConfig.getMaxObjectSize(className);
+        // BinaryData content = row.get(objectVersionDef.objectContent());
+        // long objectSize = content != null ? getObjectSize(content) : 0;
+
+        // if (objectSize <= maxObjectSize) {
+        if (log.isTraceEnabled()) {
+          log.trace("Cache - storing for class {}, id: {}",
+              className, row.versionId);
+          // log.trace("Cache - storing for class {}, id: {}, size: {} bytes",
+          // className, id, objectSize);
+        }
+        String versionedUri = row.baseUri
+            + ObjectStorageImpl.versionPostfix
+            + String.valueOf(row.version);
+
+        if (entryCache.getIfPresent(versionedUri) == null) {
+          entryCache.put(versionedUri, row.objectEntryRow);
+          addedToCache(versionedUri, className);
+        } // TODO else?
+        if (versionCache.getIfPresent(row.versionId) == null) {
+          versionCache.put(row.versionId, row.versionRow);
+          addedToCache(row.versionId, className);
+        } // TODO else?
+        // } else if (log.isTraceEnabled()) {
+        // log.trace("Not caching {} for class {} - size {} exceeds limit {}",
+        // id, className, objectSize, maxObjectSize);
+        // }
+      }
+    }
+  }
+
+  private List<RowPair> queryObjectEntryVersionJoined(Map<Property<?>, Property<?>> propertyMapping,
+      Expression conditions) {
+    TableData<ObjectVersionDef> versionData = Crud.read(objectVersionDef)
+        .select(objectVersionDef.allProperties())
+        .select(propertyMapping.values())
+        .where(conditions)
+        .listData();
+    TableData<ObjectEntryDef> entityData =
+        TableDatas.of(objectEntryDef, objectEntryDef.allProperties());
+    List<RowPair> rowPairs = new ArrayList<>();
+    for (DataRow versionRow : versionData.rows()) {
+      DataRow entityRow = entityData.addRow();
+      for (var mapping : propertyMapping.entrySet()) {
+        entityRow.setObject(mapping.getKey(), versionRow.get(mapping.getValue()));
+      }
+      rowPairs.add(new RowPair(
+          entityRow.get(objectEntryDef.uri()),
+          versionRow.get(objectVersionDef.version()),
+          entityRow.get(objectEntryDef.className()),
+          entityRow.get(objectEntryDef.singleVersion()),
+          entityRow.get(objectEntryDef.id()),
+          entityRow,
+          versionRow.get(objectVersionDef.versionId()),
+          versionRow));
+
+    }
+    return rowPairs;
+  }
+
+  private Map<Property<?>, Property<?>> getVersionedPropertyMapping() {
+    ObjectEntryDef oeVersioned = objectVersionDef.objectEntryVersioned();
+    return Map.of(
+        objectEntryDef.uri(), oeVersioned.uri(),
+        objectEntryDef.id(), oeVersioned.id(),
+        objectEntryDef.scheme(), oeVersioned.scheme(),
+        objectEntryDef.className(), oeVersioned.className(),
+        objectEntryDef.createdAt(), oeVersioned.createdAt(),
+        objectEntryDef.modifiedAt(), oeVersioned.modifiedAt(),
+        objectEntryDef.uuid(), oeVersioned.uuid(),
+        objectEntryDef.version(), oeVersioned.version(),
+        objectEntryDef.refVersion(), oeVersioned.refVersion(),
+        objectEntryDef.singleVersion(), oeVersioned.singleVersion());
+  }
+
+  private Map<Property<?>, Property<?>> getNormalPropertyMapping() {
+    ObjectEntryDef oeNormal = objectVersionDef.objectEntry();
+    return Map.of(
+        objectEntryDef.uri(), oeNormal.uri(),
+        objectEntryDef.id(), oeNormal.id(),
+        objectEntryDef.scheme(), oeNormal.scheme(),
+        objectEntryDef.className(), oeNormal.className(),
+        objectEntryDef.createdAt(), oeNormal.createdAt(),
+        objectEntryDef.modifiedAt(), oeNormal.modifiedAt(),
+        objectEntryDef.uuid(), oeNormal.uuid(),
+        objectEntryDef.version(), oeNormal.version(),
+        objectEntryDef.refVersion(), oeNormal.refVersion(),
+        objectEntryDef.singleVersion(), oeNormal.singleVersion());
+  }
+
+  private void calculateUriInfoData(List<UriInfo> uriInfos, Map<String, DataRow> objectEntryRows) {
+    for (UriInfo info : uriInfos) {
+      DataRow entryRow = getObjectEntryRow(objectEntryRows, info);
+      if (entryRow != null) {
+        info.entryId = entryRow.get(objectEntryDef.id());
+        Long entryVersion = entryRow.get(objectEntryDef.version());
+        info.calculatedVersion =
+            info.originalVersion != null ? info.originalVersion
+                : entryVersion;
+        if (info.originalVersion != null
+            && entryVersion != null
+            && entryVersion < info.originalVersion) {
+          if (log.isErrorEnabled()) {
+            log.error("Error when trying to query {}! latestVersion ({}) < requestedVersion ({})",
+                info.uri, entryVersion, info.originalVersion);
+            log.error("Using latest version instead!", new Exception());
+          }
+          info.calculatedVersion = entryVersion;
+        }
+        info.versionId = createVersionId(info.entryId, info.calculatedVersion);
+      }
+    }
+  }
+
+  private DataRow getObjectEntryRow(Map<String, DataRow> objectEntryRows, UriInfo info) {
+    DataRow entryRow = objectEntryRows.get(info.baseUri);
+    if (entryRow == null) {
+      entryRow = objectEntryRows.get(getUriString(info.uri));
+    }
+    return entryRow;
   }
 
   private Map<String, DataRow> queryObjectVersions(List<UriInfo> uriInfos) {
@@ -1059,27 +1348,27 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
 
     Map<String, DataRow> versionRows = new HashMap<>();
 
-    Map<String, List<UriInfo>> urisByClass = uriInfos.stream()
-        .filter(info -> info.versionId != null)
-        .collect(Collectors.groupingBy(info -> info.className != null ? info.className : ""));
 
     // split entries into cacheable and non-cacheable groups
     Map<String, Set<String>> idsToQueryByClass = new HashMap<>();
     Set<String> nonCachedIds = new HashSet<>();
 
+    Map<String, List<UriInfo>> urisByClass = uriInfos.stream()
+        .filter(info -> info.versionId != null)
+        .collect(Collectors.groupingBy(info -> info.className != null ? info.className : ""));
     for (Map.Entry<String, List<UriInfo>> entry : urisByClass.entrySet()) {
       String className = entry.getKey();
       List<UriInfo> classUris = entry.getValue();
 
-      Cache<String, DataRow> cache = getClassCache(className);
+      Cache<String, DataRow> versionCache = getClassVersionCache(className);
       Set<String> idsToQuery = new HashSet<>();
-      classUris.forEach((info) -> {
+      classUris.forEach(info -> {
         String versionId = info.versionId;
         boolean isSingleVersion = info.isSingleVersion;
 
         // skip cache for single version objects
-        if (!isSingleVersion && cache != null) {
-          DataRow cachedRow = cache.getIfPresent(versionId);
+        if (!isSingleVersion && versionCache != null) {
+          DataRow cachedRow = versionCache.getIfPresent(versionId);
           if (cachedRow != null) {
             if (log.isTraceEnabled()) {
               log.trace("Cache - hit, {}", versionId);
@@ -1111,6 +1400,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       Set<String> allIdsToQueryFromDB =
           fillObjectVersionsFromTransactionCache(allIdsToQuery, objectVersionsFromTransactionCache);
       // read remaining versions from db
+      // QUERY objectVersionDef - toOptimize
       Map<String, DataRow> dbRows = Crud.read(objectVersionDef)
           .select(objectVersionDef.allProperties())
           .where(objectVersionDef.versionId().in(allIdsToQueryFromDB))
@@ -1127,8 +1417,8 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       // add to cache by class
       for (Map.Entry<String, Set<String>> entry : idsToQueryByClass.entrySet()) {
         String className = entry.getKey();
-        Cache<String, DataRow> cache = getClassCache(className);
-        if (cache == null) {
+        Cache<String, DataRow> versionCache = getClassVersionCache(className);
+        if (versionCache == null) {
           continue;
         }
         for (String id : entry.getValue()) {
@@ -1149,7 +1439,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
               // log.trace("Cache - storing for class {}, id: {}, size: {} bytes",
               // className, id, objectSize);
             }
-            cache.put(id, row);
+            versionCache.put(id, row);
             addedToCache(id, className);
             // } else if (log.isTraceEnabled()) {
             // log.trace("Not caching {} for class {} - size {} exceeds limit {}",
@@ -1404,9 +1694,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
           String className = entry.getKey();
           Set<String> keys = entry.getValue();
           if (!keys.isEmpty()) {
-            Cache<String, DataRow> cache = getClassCache(className);
-            if (cache != null) {
-              cache.invalidateAll(keys);
+            Cache<String, DataRow> entryCache = getClassEntryCache(className);
+            if (entryCache != null) {
+              entryCache.invalidateAll(keys);
+            }
+            Cache<String, DataRow> versionCache = getClassVersionCache(className);
+            if (versionCache != null) {
+              versionCache.invalidateAll(keys);
             }
             keys.clear();
           }
@@ -1423,14 +1717,13 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
   }
 
   private Map<String, DataRow> queryObjectEntries(List<UriInfo> uriInfos) {
-    Set<String> uniqueBaseUris = uriInfos.stream()
-        .map(info -> info.baseUri)
-        .collect(Collectors.toSet());
+    Set<String> uniqueBaseUris = getUniqueBaseUris(uriInfos);
     Map<String, DataRow> objectEntriesFromTransactionCache = new HashMap<>();
     Set<String> urisToQueryFromDB =
         fillObjectEntriesFromTransactionCache(uniqueBaseUris, objectEntriesFromTransactionCache);
     Map<String, DataRow> objectEntryRows;
     if (!urisToQueryFromDB.isEmpty()) {
+      // QUERY objectEntryDef - toOptimize
       objectEntryRows = Crud.read(objectEntryDef)
           .select(objectEntryDef.allProperties())
           .where(objectEntryDef.uri().in(urisToQueryFromDB))
@@ -1451,6 +1744,12 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       throw new ObjectNotFoundException(uniqueBaseUris, null, "Object not found.");
     }
     return objectEntryRows;
+  }
+
+  private Set<String> getUniqueBaseUris(List<UriInfo> uriInfos) {
+    return uriInfos.stream()
+        .map(info -> info.baseUri)
+        .collect(Collectors.toSet());
   }
 
   @Override
@@ -1481,6 +1780,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={}", setName);
       }
+      // QUERY objectEntryDef - not optimize
       objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.uri())
           .where(typeMatches)
@@ -1551,6 +1851,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
       if (log.isTraceEnabled()) {
         log.trace("readAll: setName={}", setName);
       }
+      // QUERY objectEntryDef - not optimize
       TableData<ObjectEntryDef> objectList = Crud.read(objectEntryDef)
           .select(objectEntryDef.uri(), objectEntryDef.createdAt())
           .where(typeMatches)
@@ -1615,6 +1916,7 @@ public class StorageSQL extends ObjectStorageImpl implements InitializingBean {
     }
     List<String> uris = urisToRemove.stream().filter(Objects::nonNull)
         .map(u -> getUriWithoutVersion(u).toString()).collect(toList());
+    // QUERY objectEntryDef - no optimizing
     TableData<ObjectEntryDef> objectEntries =
         Crud.read(objectEntryDef).select(objectEntryDef.id(), objectEntryDef.uri())
             .where(objectEntryDef.uri().in(uris))

@@ -8,11 +8,12 @@ import org.springframework.boot.test.context.SpringBootTest;
         ObjectApiSQLTestConfig.class
     },
     properties = {
-        "smartbit4all.objectapi.useReadCache=true"
+        "smartbit4all.objectapi.useReadCache=true",
+        "storageSql.useJoinedObjectQuery=true"
     })
-public class ObjectApiSQLTest extends ObjectApiTestBase {
+public class ObjectApiSQLJoinedTest extends ObjectApiTestBase {
 
-  public ObjectApiSQLTest() {
+  public ObjectApiSQLJoinedTest() {
     super();
     checkPhysicalId = true;
   }
