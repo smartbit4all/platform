@@ -470,7 +470,8 @@ public class InvocationApiTestStatic {
 
   static void testCallLog(InvocationApi invocationApi,
       CollectionApi collectionApi,
-      ObjectApi objectApi, InvocationStackApi stackApi) throws InterruptedException {
+      ObjectApi objectApi, InvocationStackApi stackApi)
+      throws InterruptedException, ApiNotFoundException {
     {
       InvocationCallResult<String> invocationCallResult = invocationApi.callLog().execute(() -> {
         try {
@@ -487,7 +488,8 @@ public class InvocationApiTestStatic {
     }
     {
       // Manage by hand
-      invocationApi.callLog().startCall(new InvocationCall().invocationDescription("main"));
+      invocationApi.callLog().startCall(new InvocationCall().invocationDescription("main"))
+          .autoAddInvocations(true);
       // sleep in the main
       Thread.sleep(20);
 
@@ -499,9 +501,18 @@ public class InvocationApiTestStatic {
       invocationApi.callLog().startCall(new InvocationCall().invocationDescription("sub2"));
       // Sleep in sub2
       Thread.sleep(20);
+
+      InvocationParameter invokeResult = invocationApi
+          .invoke(invocationApi.builder(TestApi.class).build(a -> a.echoMethod("apple")));
+      Assertions.assertEquals("apple", invokeResult.getValue());
+
       invocationApi.callLog().finishCall();
 
-      InvocationCallLog callLog = invocationApi.callLog().cancelCall();
+      InvocationCallStack callStack = invocationApi.callLog().finishCall();
+      InvocationCallLog callLog = callStack.getStartCallLog();
+
+      // org.assertj.core.api.Assertions.assertThat(callLog.getSubCalls()).anyMatch(l ->
+      // l.getCall())
 
       Assertions.assertTrue(Duration.between(callLog.getStartTime(),
           callLog.getFinishTime()).toMillis() > 60);

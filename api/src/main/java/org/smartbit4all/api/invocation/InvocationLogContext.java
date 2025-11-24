@@ -2,7 +2,6 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.function.Supplier;
 import org.smartbit4all.api.invocation.bean.InvocationCall;
 import org.smartbit4all.api.invocation.bean.InvocationCallLog;
 
@@ -26,12 +25,24 @@ public class InvocationLogContext {
   }
 
   public InvocationCallStack startCall(InvocationCall call) {
+    return startCall(call, false, false);
+  }
+
+  public InvocationCallStack startCallJoinOnly(InvocationCall call) {
+    return startCall(call, true, false);
+  }
+
+  InvocationCallStack startCall(InvocationCall call, boolean joinOnly, boolean startIfAutoAdd) {
     InvocationCallStack currentLogStack = currentCallStack.get();
+    if ((currentLogStack == null && joinOnly)
+        || (currentLogStack != null && startIfAutoAdd && !currentLogStack.isAutoAddInvocations())) {
+      return currentLogStack;
+    }
     InvocationCallLog subCall = new InvocationCallLog()
         .startTime(OffsetDateTime.now()).call(call);
     if (currentLogStack == null) {
       // It is an enry point to start from as a root.
-      currentLogStack = new InvocationCallStack();
+      currentLogStack = new InvocationCallStack(subCall);
       currentCallStack.set(currentLogStack);
     } else {
       InvocationCallLog currentLog;
@@ -43,20 +54,28 @@ public class InvocationLogContext {
   }
 
   public InvocationCallStack finishCall() {
+    return finishCall(null);
+  }
+
+  public InvocationCallStack finishCall(Object result) {
     InvocationCallStack currentLogStack = currentCallStack.get();
     if (currentLogStack == null) {
       return null;
     }
     List<InvocationCallLog> stack = currentLogStack.getStack();
     InvocationCallLog currentLog = stack.getLast();
-    currentLog.finishTime(OffsetDateTime.now());
-    if (stack.size() > 1) {
-      stack.removeLast();
+    currentLog.finishTime(OffsetDateTime.now()).result(result);
+    if (!stack.isEmpty()) {
+      currentLogStack.setLastFinishedCallLog(stack.removeLast());
+    }
+    if (stack.isEmpty()) {
+      // We finished the last call in the hierarchy so we can remove the thread local.
+      currentCallStack.remove();
     }
     return currentLogStack;
   }
 
-  public InvocationCallLog cancelCall() {
+  public InvocationCallStack cancelCall() {
     InvocationCallStack currentLogStack = currentCallStack.get();
     if (currentLogStack != null) {
       // Call all the finish of the executing calls.
@@ -64,20 +83,41 @@ public class InvocationLogContext {
       for (int i = 0; i < runningCalls; i++) {
         finishCall();
       }
-      currentCallStack.remove();
-      return currentLogStack.getStack().getFirst();
     }
-    return null;
+    return currentLogStack;
   }
 
-  public final <T> InvocationCallResult<T> execute(Supplier<T> action, InvocationCall call) {
-    startCall(call);
+  public final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action,
+      InvocationCall call) {
+    return execute(action, call, false, false);
+  }
+
+  public final <T> InvocationCallResult<T> executeJoinOnly(ThrowingSupplier<T> action,
+      InvocationCall call) {
+    return execute(action, call, true, false);
+  }
+
+  @FunctionalInterface
+  public interface ThrowingSupplier<T> {
+    T get() throws Exception;
+  }
+
+  final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action, InvocationCall call,
+      boolean joinOnly, boolean startIfAutoAdd) {
+    startCall(call, joinOnly, startIfAutoAdd);
     T result;
     InvocationCallLog callLog = null;
     try {
       result = action.get();
+    } catch (Throwable e) {
+      InvocationCallStack finishCall = finishCall();
+      throw new InvocationFailedException(call,
+          finishCall == null ? null : finishCall.getStartCallLog(), e);
     } finally {
-      callLog = cancelCall();
+      if (callLog == null) {
+        InvocationCallStack finishCall = finishCall();
+        callLog = finishCall == null ? null : finishCall.getStartCallLog();
+      }
     }
     return new InvocationCallResult<T>(callLog, result);
   }

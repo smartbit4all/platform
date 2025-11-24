@@ -29,6 +29,7 @@ import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
 import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
+import org.smartbit4all.api.invocation.bean.InvocationCall;
 import org.smartbit4all.api.invocation.bean.InvocationCallLog;
 import org.smartbit4all.api.invocation.bean.InvocationError;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
@@ -173,7 +174,19 @@ public class InvocationApiImpl implements InvocationApi {
     }
 
     if (Invocations.isScript(request)) {
-      return invokeScript(request);
+      InvocationRequest scriptRequest = request;
+      try {
+        return callLog().execute(() -> invokeScript(scriptRequest),
+            new InvocationCall().invocationRequest(request), true, true).getCallResult();
+      } catch (InvocationFailedException e) {
+        if (e.getCause() instanceof ApiNotFoundException) {
+          throw (ApiNotFoundException) e.getCause();
+        } else if (e.getCause() instanceof RuntimeException) {
+          throw (RuntimeException) e.getCause();
+        }
+        throw new IllegalCallerException(
+            "Specific exception occurred while execution the invocation.", e);
+      }
     }
 
 
@@ -189,7 +202,19 @@ public class InvocationApiImpl implements InvocationApi {
       }
     }
 
-    return invoke(apiDescriptor, request);
+    try {
+      InvocationRequest invocationRequest = request;
+      return callLog().execute(() -> invoke(apiDescriptor, invocationRequest),
+          new InvocationCall().invocationRequest(request), true, true).getCallResult();
+    } catch (InvocationFailedException e) {
+      if (e.getCause() instanceof ApiNotFoundException) {
+        throw (ApiNotFoundException) e.getCause();
+      } else if (e.getCause() instanceof RuntimeException) {
+        throw (RuntimeException) e.getCause();
+      }
+      throw new IllegalCallerException(
+          "Specific exception occurred while execution the invocation.", e);
+    }
   }
 
   private InvocationRequest copyMethodTemplateParameters(InvocationRequest request,

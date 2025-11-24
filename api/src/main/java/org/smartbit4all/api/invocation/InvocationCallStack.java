@@ -16,9 +16,26 @@ import org.smartbit4all.api.invocation.bean.InvocationRequest;
  */
 public class InvocationCallStack {
 
+  /**
+   * The first invocation call log that started this call log. It will be the point where this log
+   * will be used.
+   */
+  private final InvocationCallLog startCallLog;
+
+  /**
+   * The invocation call log that finished for the last time. If it the last in the sequence then it
+   * is the same as {@link #startCallLog}.
+   */
+  private InvocationCallLog lastFinishedCallLog;
+
   private final List<InvocationCallLog> callStack = new ArrayList<>();
 
   private boolean autoAddInvocations = false;
+
+  public InvocationCallStack(InvocationCallLog startCallLog) {
+    super();
+    this.startCallLog = startCallLog;
+  }
 
   public boolean isAutoAddInvocations() {
     return autoAddInvocations;
@@ -31,6 +48,18 @@ public class InvocationCallStack {
 
   public List<InvocationCallLog> getStack() {
     return callStack;
+  }
+
+  public InvocationCallLog getStartCallLog() {
+    return startCallLog;
+  }
+
+  public InvocationCallLog getLastFinishedCallLog() {
+    return lastFinishedCallLog;
+  }
+
+  void setLastFinishedCallLog(InvocationCallLog lastFinishedCallLog) {
+    this.lastFinishedCallLog = lastFinishedCallLog;
   }
 
   /**

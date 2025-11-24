@@ -1134,6 +1134,9 @@ components:
         call:
           description: The call itself.
           $ref: '#/components/schemas/InvocationCall'
+        result:
+          description: The result of the call if any.
+          type: object
         startTime:
           description: The exact time when we start the call.
           type: string

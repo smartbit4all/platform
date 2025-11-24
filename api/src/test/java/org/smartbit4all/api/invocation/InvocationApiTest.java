@@ -10,6 +10,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest(classes = {
     InvocationTestConfig.class,
+}, properties = {
+    "invocationregistry.refresh.fixeddelay=5000",
 })
 class InvocationApiTest {
 

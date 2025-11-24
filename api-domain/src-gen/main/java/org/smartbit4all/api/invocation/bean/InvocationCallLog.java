@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
 @Schema(description = "The invocation call log is a recursive object. It has a list of log that contains the sub calls of this call.")
 @JsonPropertyOrder({
   InvocationCallLog.CALL,
+  InvocationCallLog.RESULT,
   InvocationCallLog.START_TIME,
   InvocationCallLog.FINISH_TIME,
   InvocationCallLog.SUB_CALLS
@@ -45,6 +46,9 @@ import jakarta.validation.Valid;
 public class InvocationCallLog {
   public static final String CALL = "call";
   private InvocationCall call;
+
+  public static final String RESULT = "result";
+  private Object result;
 
   public static final String START_TIME = "startTime";
   private OffsetDateTime startTime;
@@ -84,6 +88,33 @@ public class InvocationCallLog {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCall(InvocationCall call) {
     this.call = call;
+  }
+
+  public InvocationCallLog result(Object result) {
+    
+    this.result = result;
+    return this;
+  }
+
+  /**
+   * The result of the call if any.
+   * @return result
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The result of the call if any.")
+  @JsonProperty(RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Object getResult() {
+    return result;
+  }
+
+
+  @JsonProperty(RESULT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setResult(Object result) {
+    this.result = result;
   }
 
   public InvocationCallLog startTime(OffsetDateTime startTime) {
@@ -188,6 +219,7 @@ public class InvocationCallLog {
     }
     InvocationCallLog invocationCallLog = (InvocationCallLog) o;
     return Objects.equals(this.call, invocationCallLog.call) &&
+        Objects.equals(this.result, invocationCallLog.result) &&
         Objects.equals(this.startTime, invocationCallLog.startTime) &&
         Objects.equals(this.finishTime, invocationCallLog.finishTime) &&
         Objects.equals(this.subCalls, invocationCallLog.subCalls);
@@ -195,7 +227,7 @@ public class InvocationCallLog {
 
   @Override
   public int hashCode() {
-    return Objects.hash(call, startTime, finishTime, subCalls);
+    return Objects.hash(call, result, startTime, finishTime, subCalls);
   }
 
   @Override
@@ -203,6 +235,7 @@ public class InvocationCallLog {
     StringBuilder sb = new StringBuilder();
     sb.append("class InvocationCallLog {\n");
     sb.append("    call: ").append(toIndentedString(call)).append("\n");
+    sb.append("    result: ").append(toIndentedString(result)).append("\n");
     sb.append("    startTime: ").append(toIndentedString(startTime)).append("\n");
     sb.append("    finishTime: ").append(toIndentedString(finishTime)).append("\n");
     sb.append("    subCalls: ").append(toIndentedString(subCalls)).append("\n");
