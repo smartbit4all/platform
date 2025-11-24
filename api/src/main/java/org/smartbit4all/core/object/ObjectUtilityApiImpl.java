@@ -171,10 +171,6 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
 
   @Override
   public Boolean equals(Object o, Object ob) {
-    if (o == ob) {
-      return true;
-    } else {
-      return false;
-    }
+    return o.equals(ob) ? true : false;
   }
 }
