@@ -84,6 +84,26 @@ public class InvocationLogContext {
     return Optional.of(currentLogStack);
   }
 
+  /**
+   * Append the {@link InvocationCallLog} as an already finished one to the sub calls of the
+   * currently running call if any. Could be used to append the log returned by an integration call.
+   * 
+   * @param logToAppend
+   * @return The currently running call log if any.
+   */
+  public InvocationCallLog appendSubCall(InvocationCallLog logToAppend) {
+    if (logToAppend == null) {
+      return null;
+    }
+    InvocationCallStack currentLogStack = currentCallStack.get();
+    if (currentLogStack == null) {
+      return null;
+    }
+    InvocationCallLog currentlyRunning = currentLogStack.getStack().getLast();
+    currentlyRunning.addSubCallsItem(logToAppend);
+    return currentlyRunning;
+  }
+
   public InvocationCallStack cancelCall() {
     InvocationCallStack currentLogStack = currentCallStack.get();
     if (currentLogStack != null) {
