@@ -115,8 +115,9 @@ public class InvocationCallStack {
 
     if (totalMs >= 0) {
       selfMs = totalMs - childrenTotalMs;
-      if (selfMs < 0)
+      if (selfMs < 0) {
         selfMs = 0; // guard against overlap/clock skew
+      }
     } else {
       selfMs = -1L;
     }
@@ -161,6 +162,12 @@ public class InvocationCallStack {
         .append(formatMs(t.selfMs))
         .append("]")
         .append("\n");
+    String curlCommand = (String) log.getParameters().get("integrationCall");
+    if (curlCommand != null) {
+      sb.append(indent)
+          .append(curlCommand.trim())
+          .append("\n");
+    }
 
     List<InvocationCallLog> subs = log.getSubCalls();
     if (subs != null) {
