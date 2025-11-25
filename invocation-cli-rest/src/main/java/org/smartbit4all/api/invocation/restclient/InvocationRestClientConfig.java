@@ -1,17 +1,23 @@
 package org.smartbit4all.api.invocation.restclient;
 
+import java.util.concurrent.TimeUnit;
 import org.smartbit4all.api.invocation.InvocationExecutionApi;
 import org.smartbit4all.api.invocation.Invocations;
 import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 @Configuration
+@EnableConfigurationProperties(DynamicRestRequestCacheProperties.class)
 public class InvocationRestClientConfig {
 
   @Bean
@@ -49,6 +55,21 @@ public class InvocationRestClientConfig {
     return Invocations.asProvider(
         DynamicRestCallerApi.class,
         api);
+  }
+
+  @Bean
+  public Cache<String, ResponseEntity<Object>> dynamicRestRequestCache(
+      DynamicRestRequestCacheProperties props) {
+
+    if (!props.isEnabled()) {
+      return CacheBuilder.newBuilder()
+          .maximumSize(0)
+          .build();
+    }
+
+    return CacheBuilder.newBuilder()
+        .expireAfterWrite(props.getTtlMinutes(), TimeUnit.MINUTES)
+        .build();
   }
 
 }

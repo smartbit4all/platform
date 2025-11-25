@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodySpec;
 import org.springframework.web.util.UriComponentsBuilder;
+import com.google.common.cache.Cache;
 
 public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
 
@@ -34,6 +36,9 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   private ObjectApi objectApi;
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
+
+  @Autowired
+  private Cache<String, ResponseEntity<Object>> dynamicRestRequestCache;
 
   @Override
   public ResponseEntityObject callDynamicRest(String serviceConnectionName,
@@ -103,9 +108,16 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
         .contentType(contentType)
         .headers(h -> headerMap.forEach((key, value) -> h.add(key, value)));
 
-    ResponseEntity<Object> response = request
-        .retrieve()
-        .toEntity(Object.class);
+    ResponseEntity<Object> response;
+    try {
+      response = dynamicRestRequestCache.get(uri.toString(), () -> request
+          .retrieve()
+          .toEntity(Object.class));
+    } catch (ExecutionException e) {
+      response = request
+          .retrieve()
+          .toEntity(Object.class);
+    }
 
     ResponseEntityObject responseEntityObject = new ResponseEntityObject();
 
@@ -166,4 +178,5 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     return objectApi.asType(ServiceConnection.class,
         objectAsMap);
   }
+
 }
