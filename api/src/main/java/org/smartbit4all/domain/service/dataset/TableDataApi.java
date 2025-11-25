@@ -52,6 +52,8 @@ public interface TableDataApi {
 
   <T> TableData<?> tableOf(Class<T> clazz, List<T> objectList, List<String> columns);
 
+  <T> TableData<?> tableOf(Class<T> clazz, Stream<T> objectStream, List<String> columns);
+
   TableData<?> tableOfNodes(EntityDefinition entityDef, Stream<ObjectNode> nodes,
       List<String> columns);
 

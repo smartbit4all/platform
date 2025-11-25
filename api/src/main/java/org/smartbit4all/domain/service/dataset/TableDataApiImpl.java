@@ -216,6 +216,16 @@ public class TableDataApiImpl implements TableDataApi {
   }
 
   @Override
+  public <T> TableData<?> tableOf(Class<T> clazz, Stream<T> objectStream, List<String> columns) {
+    EntityDefinition entityDefinition = entityManager.createEntityDef(clazz);
+    entityManager.registerEntityDef(entityDefinition);
+    return tableOfNodes(
+        entityDefinition,
+        objectStream.map(o -> objectApi.create(null, o)),
+        columns);
+  }
+
+  @Override
   public TableData<?> tableOfNodes(EntityDefinition entityDef, Stream<ObjectNode> nodes,
       List<String> columns) {
     // in case of embedded column names (which contains a DOT) we only need the main property (first

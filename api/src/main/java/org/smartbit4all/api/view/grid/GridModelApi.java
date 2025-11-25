@@ -108,6 +108,8 @@ public interface GridModelApi {
 
   <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, List<T> data);
 
+  <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, Stream<T> dataStream);
+
   void setData(UUID viewUuid, String gridId, TableData<?> data, boolean ignoreOrderByList);
 
   void setData(UUID viewUuid, String gridId, TableData<?> data);

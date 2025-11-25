@@ -1,5 +1,7 @@
 package org.smartbit4all.api.view.grid;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.smartbit4all.core.utility.StringConstant.DOT;
 import java.net.URI;
 import java.util.ArrayList;
@@ -63,8 +65,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import jakarta.validation.constraints.NotNull;
 
 public class GridModelApiImpl implements GridModelApi {
@@ -321,6 +321,17 @@ public class GridModelApiImpl implements GridModelApi {
           .map(GridColumnMeta::getPropertyName)
           .collect(toList());
       setData(viewUuid, gridId, tableDataApi.tableOf(clazz, data, columns));
+      return 0;
+    });
+  }
+
+  @Override
+  public <T> void setData(UUID viewUuid, String gridId, Class<T> clazz, Stream<T> dataStream) {
+    executeGridCall(viewUuid, gridId, gridModel -> {
+      List<String> columns = gridModel.getView().getDescriptor().getColumns().stream()
+          .map(GridColumnMeta::getPropertyName)
+          .collect(toList());
+      setData(viewUuid, gridId, tableDataApi.tableOf(clazz, dataStream, columns));
       return 0;
     });
   }
