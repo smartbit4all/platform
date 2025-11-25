@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.smartbit4all.api.invocation.bean.InvocationCall;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -40,6 +42,8 @@ import jakarta.validation.Valid;
   InvocationCallLog.RESULT,
   InvocationCallLog.START_TIME,
   InvocationCallLog.FINISH_TIME,
+  InvocationCallLog.PARAMETERS,
+  InvocationCallLog.SUB_CALL_EXECUTION_MODE,
   InvocationCallLog.SUB_CALLS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -55,6 +59,47 @@ public class InvocationCallLog {
 
   public static final String FINISH_TIME = "finishTime";
   private OffsetDateTime finishTime;
+
+  public static final String PARAMETERS = "parameters";
+  private Map<String, Object> parameters = new HashMap<>();
+
+  /**
+   * Gets or Sets subCallExecutionMode
+   */
+  public enum SubCallExecutionModeEnum {
+    SEQUENTIAL("SEQUENTIAL"),
+    
+    PARALLEL("PARALLEL");
+
+    private String value;
+
+    SubCallExecutionModeEnum(String value) {
+      this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+      return value;
+    }
+
+    @Override
+    public String toString() {
+      return String.valueOf(value);
+    }
+
+    @JsonCreator
+    public static SubCallExecutionModeEnum fromValue(String value) {
+      for (SubCallExecutionModeEnum b : SubCallExecutionModeEnum.values()) {
+        if (b.value.equals(value)) {
+          return b;
+        }
+      }
+      throw new IllegalArgumentException("Unexpected value '" + value + "'");
+    }
+  }
+
+  public static final String SUB_CALL_EXECUTION_MODE = "subCallExecutionMode";
+  private SubCallExecutionModeEnum subCallExecutionMode = SubCallExecutionModeEnum.SEQUENTIAL;
 
   public static final String SUB_CALLS = "subCalls";
   private List<@Valid InvocationCallLog> subCalls = new ArrayList<>();
@@ -173,6 +218,68 @@ public class InvocationCallLog {
     this.finishTime = finishTime;
   }
 
+  public InvocationCallLog parameters(Map<String, Object> parameters) {
+    
+    this.parameters = parameters;
+    return this;
+  }
+
+  public InvocationCallLog putParametersItem(String key, Object parametersItem) {
+    if (this.parameters == null) {
+      this.parameters = new HashMap<>();
+    }
+    this.parameters.put(key, parametersItem);
+    return this;
+  }
+
+  /**
+   * The additional parameters of the given call. It can be used to add these parameters in a sub call of the original call. 
+   * @return parameters
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The additional parameters of the given call. It can be used to add these parameters in a sub call of the original call. ")
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getParameters() {
+    return parameters;
+  }
+
+
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(content = JsonInclude.Include.ALWAYS, value = JsonInclude.Include.USE_DEFAULTS)
+  public void setParameters(Map<String, Object> parameters) {
+    this.parameters = parameters;
+  }
+
+  public InvocationCallLog subCallExecutionMode(SubCallExecutionModeEnum subCallExecutionMode) {
+    
+    this.subCallExecutionMode = subCallExecutionMode;
+    return this;
+  }
+
+  /**
+   * Get subCallExecutionMode
+   * @return subCallExecutionMode
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(SUB_CALL_EXECUTION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public SubCallExecutionModeEnum getSubCallExecutionMode() {
+    return subCallExecutionMode;
+  }
+
+
+  @JsonProperty(SUB_CALL_EXECUTION_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setSubCallExecutionMode(SubCallExecutionModeEnum subCallExecutionMode) {
+    this.subCallExecutionMode = subCallExecutionMode;
+  }
+
   public InvocationCallLog subCalls(List<@Valid InvocationCallLog> subCalls) {
     
     this.subCalls = subCalls;
@@ -222,12 +329,14 @@ public class InvocationCallLog {
         Objects.equals(this.result, invocationCallLog.result) &&
         Objects.equals(this.startTime, invocationCallLog.startTime) &&
         Objects.equals(this.finishTime, invocationCallLog.finishTime) &&
+        Objects.equals(this.parameters, invocationCallLog.parameters) &&
+        Objects.equals(this.subCallExecutionMode, invocationCallLog.subCallExecutionMode) &&
         Objects.equals(this.subCalls, invocationCallLog.subCalls);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(call, result, startTime, finishTime, subCalls);
+    return Objects.hash(call, result, startTime, finishTime, parameters, subCallExecutionMode, subCalls);
   }
 
   @Override
@@ -238,6 +347,8 @@ public class InvocationCallLog {
     sb.append("    result: ").append(toIndentedString(result)).append("\n");
     sb.append("    startTime: ").append(toIndentedString(startTime)).append("\n");
     sb.append("    finishTime: ").append(toIndentedString(finishTime)).append("\n");
+    sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
+    sb.append("    subCallExecutionMode: ").append(toIndentedString(subCallExecutionMode)).append("\n");
     sb.append("    subCalls: ").append(toIndentedString(subCalls)).append("\n");
     sb.append("}");
     return sb.toString();

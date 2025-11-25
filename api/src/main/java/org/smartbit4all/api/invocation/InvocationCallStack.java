@@ -58,6 +58,10 @@ public class InvocationCallStack {
     return lastFinishedCallLog;
   }
 
+  public InvocationCallLog getCurrentCallLog() {
+    return callStack.getLast();
+  }
+
   void setLastFinishedCallLog(InvocationCallLog lastFinishedCallLog) {
     this.lastFinishedCallLog = lastFinishedCallLog;
   }

@@ -1154,6 +1154,15 @@ components:
           description: The exact time when the call finished.
           type: string
           format: date-time
+        parameters:
+          description: |
+            The additional parameters of the given call. It can be used to add these parameters in a sub call of the
+            original call.
+          type: object
+          additionalProperties: true
+        subCallExecutionMode:
+          enum: [SEQUENTIAL, PARALLEL]
+          default: SEQUENTIAL
         subCalls:
           description: If we have the embedded calls of this call then this log entries can be added to this.
           type: array

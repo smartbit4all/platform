@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.smartbit4all.api.invocation.bean.InvocationCall;
 import org.smartbit4all.api.invocation.bean.InvocationCallLog;
 
@@ -75,6 +76,14 @@ public class InvocationLogContext {
     return currentLogStack;
   }
 
+  public Optional<InvocationCallStack> getCurrent() {
+    InvocationCallStack currentLogStack = currentCallStack.get();
+    if (currentLogStack == null) {
+      return Optional.empty();
+    }
+    return Optional.of(currentLogStack);
+  }
+
   public InvocationCallStack cancelCall() {
     InvocationCallStack currentLogStack = currentCallStack.get();
     if (currentLogStack != null) {
@@ -102,9 +111,9 @@ public class InvocationLogContext {
     T get() throws Exception;
   }
 
-  final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action, InvocationCall call,
-      boolean joinOnly, boolean startIfAutoAdd) {
-    startCall(call, joinOnly, startIfAutoAdd);
+  public final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action, InvocationCall call,
+      boolean joinOnly, boolean autoAddInvocations) {
+    startCall(call, joinOnly, autoAddInvocations);
     T result;
     InvocationCallLog callLog = null;
     try {
