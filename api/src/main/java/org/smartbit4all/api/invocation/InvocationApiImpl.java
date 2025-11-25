@@ -176,8 +176,8 @@ public class InvocationApiImpl implements InvocationApi {
     if (Invocations.isScript(request)) {
       InvocationRequest scriptRequest = request;
       try {
-        return callLog().execute(() -> invokeScript(scriptRequest),
-            new InvocationCall().invocationRequest(request), true, true).getCallResult();
+        return callLog().executeJoinOnly(() -> invokeScript(scriptRequest),
+            new InvocationCall().invocationRequest(request)).getCallResult();
       } catch (InvocationFailedException e) {
         if (e.getCause() instanceof ApiNotFoundException) {
           throw (ApiNotFoundException) e.getCause();
@@ -204,8 +204,8 @@ public class InvocationApiImpl implements InvocationApi {
 
     try {
       InvocationRequest invocationRequest = request;
-      return callLog().execute(() -> invoke(apiDescriptor, invocationRequest),
-          new InvocationCall().invocationRequest(request), true, true).getCallResult();
+      return callLog().executeJoinOnly(() -> invoke(apiDescriptor, invocationRequest),
+          new InvocationCall().invocationRequest(request)).getCallResult();
     } catch (InvocationFailedException e) {
       if (e.getCause() instanceof ApiNotFoundException) {
         throw (ApiNotFoundException) e.getCause();

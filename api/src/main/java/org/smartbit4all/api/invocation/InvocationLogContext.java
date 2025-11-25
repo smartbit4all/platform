@@ -36,7 +36,7 @@ public class InvocationLogContext {
   InvocationCallStack startCall(InvocationCall call, boolean joinOnly, boolean autoAddInvocations) {
     InvocationCallStack currentLogStack = currentCallStack.get();
     if ((currentLogStack == null && joinOnly)) {
-      return currentLogStack;
+      return null;
     }
     InvocationCallLog subCall = new InvocationCallLog()
         .startTime(OffsetDateTime.now()).call(call);
@@ -117,12 +117,12 @@ public class InvocationLogContext {
 
   public final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action,
       InvocationCall call) {
-    return execute(action, call, false, false);
+    return execute(action, call, false, false, false);
   }
 
   public final <T> InvocationCallResult<T> executeJoinOnly(ThrowingSupplier<T> action,
       InvocationCall call) {
-    return execute(action, call, true, false);
+    return execute(action, call, true, false, true);
   }
 
   @FunctionalInterface
@@ -131,19 +131,30 @@ public class InvocationLogContext {
   }
 
   public final <T> InvocationCallResult<T> execute(ThrowingSupplier<T> action, InvocationCall call,
-      boolean joinOnly, boolean autoAddInvocations) {
-    startCall(call, joinOnly, autoAddInvocations);
+      boolean joinOnly, boolean autoAddInvocations, boolean addIfAutoAddSet) {
+    boolean createLog = true;
+    if (addIfAutoAddSet) {
+      InvocationCallStack currentLogStack = currentCallStack.get();
+      if (currentLogStack != null) {
+        createLog = currentLogStack.isAutoAddInvocations();
+      }
+    }
+    InvocationCallStack startCall = null;
+    if (createLog) {
+      startCall = startCall(call, joinOnly, autoAddInvocations);
+      createLog = createLog & (startCall != null);
+    }
     T result;
     InvocationCallLog callLog = null;
     try {
       result = action.get();
     } catch (Throwable e) {
-      InvocationCallStack finishCall = finishCall();
+      InvocationCallStack finishCall = createLog ? finishCall() : null;
       throw new InvocationFailedException(call,
           finishCall == null ? null : finishCall.getStartCallLog(), e);
     } finally {
       if (callLog == null) {
-        InvocationCallStack finishCall = finishCall();
+        InvocationCallStack finishCall = createLog ? finishCall() : null;
         callLog = finishCall == null ? null : finishCall.getStartCallLog();
       }
     }
