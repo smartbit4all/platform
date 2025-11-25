@@ -33,17 +33,16 @@ public class InvocationLogContext {
     return startCall(call, true, false);
   }
 
-  InvocationCallStack startCall(InvocationCall call, boolean joinOnly, boolean startIfAutoAdd) {
+  InvocationCallStack startCall(InvocationCall call, boolean joinOnly, boolean autoAddInvocations) {
     InvocationCallStack currentLogStack = currentCallStack.get();
-    if ((currentLogStack != null && joinOnly)
-        || (currentLogStack != null && startIfAutoAdd && !currentLogStack.isAutoAddInvocations())) {
+    if ((currentLogStack == null && joinOnly)) {
       return currentLogStack;
     }
     InvocationCallLog subCall = new InvocationCallLog()
         .startTime(OffsetDateTime.now()).call(call);
     if (currentLogStack == null) {
       // It is an enry point to start from as a root.
-      currentLogStack = new InvocationCallStack(subCall);
+      currentLogStack = new InvocationCallStack(subCall).autoAddInvocations(autoAddInvocations);
       currentCallStack.set(currentLogStack);
     } else {
       InvocationCallLog currentLog;
