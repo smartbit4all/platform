@@ -35,7 +35,7 @@ public class InvocationLogContext {
 
   InvocationCallStack startCall(InvocationCall call, boolean joinOnly, boolean startIfAutoAdd) {
     InvocationCallStack currentLogStack = currentCallStack.get();
-    if ((currentLogStack == null && joinOnly)
+    if ((currentLogStack != null && joinOnly)
         || (currentLogStack != null && startIfAutoAdd && !currentLogStack.isAutoAddInvocations())) {
       return currentLogStack;
     }
@@ -148,7 +148,7 @@ public class InvocationLogContext {
         callLog = finishCall == null ? null : finishCall.getStartCallLog();
       }
     }
-    return new InvocationCallResult<T>(callLog, result);
+    return new InvocationCallResult<>(callLog, result);
   }
 
 }
