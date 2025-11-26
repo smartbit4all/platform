@@ -91,10 +91,14 @@ public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements Js
   }
 
   private void initLayout(View view) {
+
+    MDMEntryDescriptor mdmEntryDescriptor =
+        parameters(view).get(MDMConstants.PARAM_ENTRY_DESCRIPTOR, MDMEntryDescriptor.class);
+
     SmartComponentLayoutDefinition layout = ObjectLayoutBuilder.container(LayoutDirection.VERTICAL)
         .addComponentsItem(form(LayoutDirection.VERTICAL,
             ObjectLayoutBuilder.label("labelKey",
-                localeSettingApi.get(JSON_EDITOR_TITLE)),
+                localeSettingApi.get(mdmEntryDescriptor.getDisplayNameForm())),
             ObjectLayoutBuilder.fileUpload(
                 "mockFile", "label",
                 new FileUploaderProperties()
