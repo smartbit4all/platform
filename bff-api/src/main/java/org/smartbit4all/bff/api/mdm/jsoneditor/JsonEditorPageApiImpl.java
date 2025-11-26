@@ -12,13 +12,18 @@ import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartbit4all.api.binarydata.BinaryData;
+import org.smartbit4all.api.config.PlatformApiConfig;
 import org.smartbit4all.api.formdefinition.bean.FileUploaderProperties;
+import org.smartbit4all.api.mdm.MDMConstants;
+import org.smartbit4all.api.mdm.bean.MDMEntryDescriptor;
 import org.smartbit4all.api.object.bean.ObjectDefinitionData;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
+import org.smartbit4all.api.view.bean.DownloadedFile;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageTextType;
 import org.smartbit4all.api.view.bean.MessageType;
@@ -31,16 +36,18 @@ import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApi;
 import org.smartbit4all.bff.api.mdm.MDMEntryEditPageApiImpl;
 import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
+import org.smartbit4all.core.utility.StringConstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.base.Strings;
 
 public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements JsonEditorPageApi {
 
-
   private static final Logger log = LoggerFactory.getLogger(JsonEditorPageApiImpl.class);
 
+  private static final String EXPORT_MODEL_AS_JSON = "exportModelAsJson";
   private static final String OBJECT_AS_STRING = "OBJECT_AS_STRING";
 
   @Autowired
@@ -75,6 +82,10 @@ public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements Js
     UiActions.add(view,
         ACTION_SAVE_BUTTON.apply(localeSettingApi),
         ACTION_CLOSE_BUTTON.apply(localeSettingApi));
+
+    if (!ObjectUtils.isEmpty(objectAsString)) {
+      UiActions.add(view, 1, ACTION_EXPORT.apply(localeSettingApi));
+    }
 
     return model;
   }
@@ -127,6 +138,11 @@ public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements Js
       Map<String, Object> modelMap = objectApi.asType(Map.class, model);
       modelMap.put(OBJECT_AS_STRING, objectAsString);
       setModel(viewUuid, modelMap);
+
+      if (!ObjectUtils.isEmpty(objectAsString)) {
+        UiActions.add(viewApi.getView(viewUuid),
+            1, ACTION_EXPORT.apply(localeSettingApi));
+      }
 
     } catch (IOException e) {
       log.error("Error during deserialization", e);
@@ -187,6 +203,35 @@ public class JsonEditorPageApiImpl extends MDMEntryEditPageApiImpl implements Js
         .viewUuid(viewUuid)
         .textType(MessageTextType.HTML)
         .type(MessageType.INFO));
+  }
+
+  @Override
+  public void export(UUID viewUuid, UiActionRequest request) {
+    Object modelObj = actionRequestHelper(request)
+        .getMap()
+        .get(UiActions.MODEL);
+    if (!(modelObj instanceof Map m)) {
+      throw new IllegalAccessError();
+    }
+
+    String objectAsString = getStringValueFromModel(m, OBJECT_AS_STRING);
+    try (InputStream in =
+        new ByteArrayInputStream(objectAsString.getBytes(StandardCharsets.UTF_8))) {
+      BinaryData jsonData = BinaryData.of(in);
+
+      MDMEntryDescriptor mdmEntryDescriptor =
+          parameters(viewUuid).get(MDMConstants.PARAM_ENTRY_DESCRIPTOR, MDMEntryDescriptor.class);
+
+      viewApi.getView(viewUuid).putDownloadableItemsItem(EXPORT_MODEL_AS_JSON,
+          objectApi.saveAsNew(PlatformApiConfig.SCHEMA_TEMP, jsonData.asObject()));
+      viewApi.downloadFile(new DownloadedFile()
+          .uuid(viewUuid)
+          .identifier(EXPORT_MODEL_AS_JSON)
+          .filename(mdmEntryDescriptor.getName() + StringConstant.DOT + "json"));
+
+    } catch (IOException e) {
+      log.error(e.getMessage(), e);
+    }
   }
 
 

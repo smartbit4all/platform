@@ -37,6 +37,20 @@ public interface JsonEditorPageApi extends MDMEntryEditPageApi {
               .type(UiActionButtonType.RAISED)
               .color(UiActions.Color.PRIMARY));
 
+  public static final String EXPORT_AS_JSON = "EXPORT_AS_JSON";
+  Function<LocaleSettingApi, UiAction> ACTION_EXPORT =
+      (localeSettingApi) -> new UiAction()
+          .code(EXPORT_AS_JSON)
+          .model(true)
+          .descriptor(new UiActionDescriptor()
+              .title(localeSettingApi.get(EXPORT_AS_JSON))
+              .icon("file-export").iconPosition(IconPosition.PRE)
+              .type(UiActionButtonType.RAISED)
+              .color(UiActions.Color.PRIMARY));
+
+  @ActionHandler(EXPORT_AS_JSON)
+  void export(UUID viewUuid, UiActionRequest request);
+
   Function<LocaleSettingApi, UiAction> ACTION_CLOSE_BUTTON =
       (localeSettingApi) -> new UiAction()
           .code(MDMEntryEditPageApi.ACTION_CANCEL)
