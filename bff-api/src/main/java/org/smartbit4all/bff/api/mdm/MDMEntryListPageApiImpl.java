@@ -949,6 +949,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
                 (isAdmin || ctx.isCurrentApprover()));
       } else {
         uiActions
+            .addIf(createUiActionWithDescriptor(ACTION_VIEW_ENTRY),
+                isAdmin, !entryEditingEnabled)
             .addIf(createUiActionWithDescriptor(ACTION_RESTORE_ENTRY), isAdmin, entryEditingEnabled,
                 ctx.inactives)
             .addIf(createUiActionWithDescriptor(ACTION_EDIT_ENTRY), isAdmin, entryEditingEnabled,
