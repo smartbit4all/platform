@@ -769,7 +769,7 @@ public class StorageTest {
     OffsetDateTime now = OffsetDateTime.now();
     String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
     for (int i = 1; i <= 10; i++) {
-      OffsetDateTime minusSeconds = now.minusDays(i);
+      OffsetDateTime minusSeconds = now.minusDays(i + 1);
       for (int j = 0; j < 5; j++) {
         URI uri = objectApi.saveAsNew(storageScheme,
             new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
@@ -783,7 +783,7 @@ public class StorageTest {
         .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
         .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
         .cronExpression("0 0 0 * * *");
-    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+    URI configUri = archiveApi.createConfig(config, null);
 
     Storage storage = storageApi.get(storageScheme);
     {
@@ -808,7 +808,7 @@ public class StorageTest {
     OffsetDateTime now = OffsetDateTime.now();
     String storageScheme = StorageTestConfig.TESTSCHEME + "-archiveDays";
     for (int i = 1; i <= 10; i++) {
-      OffsetDateTime minusSeconds = now.minusDays(i);
+      OffsetDateTime minusSeconds = now.minusDays(i + 1);
       for (int j = 0; j < 5; j++) {
         uris.add(objectApi.saveAsNew(storageScheme,
             new SampleTimeBasedData().name("object-" + i + StringConstant.MINUS_SIGN + j)
@@ -826,9 +826,10 @@ public class StorageTest {
             .build(api -> api.getRemovableItems(null, null)))
         .addCollectionsItem(descriptor)
         .cronExpression("0 0 0 * * *");
-    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+    URI configUri = archiveApi.createConfig(config, null);
 
     int executeArchive = archiveApi.executeArchive(configUri);
+    archiveApi.executeArchive(objectApi.getLatestUri(configUri));
     Assertions.assertEquals(50, executeArchive);
     StoredList list = collectionApi.list(storageScheme, "testList");
     assertEquals(0, list.uris().size());
@@ -837,7 +838,7 @@ public class StorageTest {
         .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
         .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
         .cronExpression("0 0 0 * * *");
-    URI newConfigUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, newConfig);
+    URI newConfigUri = archiveApi.createConfig(newConfig, null);
     archiveApi.executeArchive(newConfigUri);
   }
 
@@ -866,7 +867,7 @@ public class StorageTest {
             .build(api -> api.getRemovableItems(null, null)))
         .addCollectionsItem(descriptor)
         .cronExpression("0 0 0 * * *");
-    URI configUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, config);
+    URI configUri = archiveApi.createConfig(config, null);
 
     int executeArchive = archiveApi.executeArchive(configUri);
     Assertions.assertEquals(50, executeArchive);
@@ -877,7 +878,7 @@ public class StorageTest {
         .addTypeClassNamesItem(SampleTimeBasedData.class.getName())
         .beforeDurationInMillis(Long.valueOf(1000 * 60 * 60))
         .cronExpression("0 0 0 * * *");
-    URI newConfigUri = objectApi.saveAsNew(StorageArchiveApi.SCHEMA_ARCHIVAL, newConfig);
+    URI newConfigUri = archiveApi.createConfig(newConfig, null);
     archiveApi.executeArchive(newConfigUri);
   }
 

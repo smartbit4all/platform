@@ -14,8 +14,11 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +29,6 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.domain.data.storage.Storage;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public abstract class UriUtils {
 
@@ -165,6 +166,25 @@ public abstract class UriUtils {
     }
     String[] split = path.split(StringConstant.SLASH);
     return split[split.length - 1];
+  }
+
+  public static final LocalDateTime getCreationDate(URI uri) {
+    if (uri == null) {
+      return null;
+    }
+    String path = uri.getPath();
+    if (path == null) {
+      return null;
+    }
+    String[] split = path.split(StringConstant.SLASH);
+    if (split[1].matches("\\d+")) {
+      return LocalDateTime.of(Integer.parseInt(split[1]), Integer.parseInt(split[2]),
+          Integer.parseInt(split[3]), Integer.parseInt(split[4]), Integer.parseInt(split[5]),
+          Integer.parseInt(split[6]));
+    } else {
+      return LocalDateTime.of(Integer.parseInt(split[2]), Integer.parseInt(split[3]),
+          Integer.parseInt(split[4]), Integer.parseInt(split[5]), Integer.parseInt(split[6]));
+    }
   }
 
   public static final String getSchema(URI uri) {

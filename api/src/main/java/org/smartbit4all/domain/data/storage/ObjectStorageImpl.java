@@ -458,6 +458,9 @@ public abstract class ObjectStorageImpl implements ObjectStorage, ApplicationCon
     // return Stream
     // .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient))
     // .takeWhile(l -> l != null);
+    if (from.isAfter(to)) {
+      return Stream.empty();
+    }
     return takeWhile(Stream
         .generate(new StorageTimeSeriesIterator(storage, setName, clazzName, from, to, gradient)),
         l -> l != null);

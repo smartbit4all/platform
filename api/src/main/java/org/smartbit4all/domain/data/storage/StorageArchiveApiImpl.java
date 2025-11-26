@@ -1,5 +1,6 @@
 package org.smartbit4all.domain.data.storage;
 
+import static java.util.stream.Collectors.toList;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,11 +42,12 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.object.ObjectNodeReference;
+import org.smartbit4all.core.utility.UriUtils;
 import org.smartbit4all.domain.application.ApplicationRuntimeApi;
 import org.smartbit4all.domain.config.DomainConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.support.CronExpression;
-import static java.util.stream.Collectors.toList;
+import org.springframework.util.ObjectUtils;
 
 /*
  * Delete unnecessary files from file system
@@ -87,20 +90,10 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
     if (lock.tryLock()) {
       try {
         boolean runArchival = false;
-        ObjectNode configNode = objectApi.load(config);
+        ObjectNode configNode = objectApi.loadLatest(config);
         OffsetDateTime now = OffsetDateTime.now();
         URI executionUri = configNode.getValue(URI.class, StorageArchiveProcessConfig.EXECUTION);
-        if (executionUri == null) {
-          // It is the fist time to run so create the execution object, save it and start the
-          // process.
-          executionUri = objectApi.saveAsNew(SCHEMA_ARCHIVAL,
-              new StorageArchiveProcessExecution().config(config)
-                  .nextRunAt(now).state(StateEnum.READY));
-          configNode.setValue(executionUri, StorageArchiveProcessConfig.EXECUTION);
-          objectApi.save(configNode);
-          runArchival = true;
-        }
-        ObjectNode executionNode = objectApi.load(executionUri);
+        ObjectNode executionNode = objectApi.loadLatest(executionUri);
         StateEnum stateEnum =
             executionNode.getValue(StorageArchiveProcessExecution.StateEnum.class,
                 StorageArchiveProcessExecution.STATE);
@@ -119,6 +112,19 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
       }
     }
     return result;
+  }
+
+
+
+  @Override
+  public URI createConfig(StorageArchiveProcessConfig config, URI branchUri) {
+    URI newConfigUri = objectApi.saveAsNew(SCHEMA_ARCHIVAL, config, branchUri);
+    URI executionUri = objectApi.saveAsNew(SCHEMA_ARCHIVAL,
+        new StorageArchiveProcessExecution().config(objectApi.getLatestUri(newConfigUri))
+            .nextRunAt(OffsetDateTime.now()).state(StateEnum.READY));
+    ObjectNode configNode = objectApi.loadLatest(newConfigUri);
+    configNode.setValue(executionUri, StorageArchiveProcessConfig.EXECUTION);
+    return objectApi.save(configNode, branchUri);
   }
 
   private final int archive(URI executionUri) {
@@ -225,23 +231,18 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
     if (archiveProcessConfig.getMode() == ModeEnum.OBJECTS_BY_CREATION_TIME
         && archiveProcessConfig.getBeforeDurationInMillis() != null) {
       OffsetDateTime now = OffsetDateTime.now();
-      OffsetDateTime endOfArchival =
-          now.minus(archiveProcessConfig.getBeforeDurationInMillis(), ChronoUnit.MILLIS);
+      final long userConfig = archiveProcessConfig.getBeforeDurationInMillis();
+      final long hardLimit = 24 * 60 * 60 * 1000L;
+      final long cutoff = Math.max(userConfig, hardLimit);
+      OffsetDateTime endOfArchival = now.minus(cutoff, ChronoUnit.MILLIS);
       List<StorageArchiveBatchEntry> result = new ArrayList<>();
-      for (String className : archiveProcessConfig.getTypeClassNames()) {
-        Iterator<URI> iterOldest = storage.readOldests(null, className).iterator();
-        if (iterOldest.hasNext()) {
-          URI oldestUri = iterOldest.next();
-          StorageObject<?> storageObject = storage.load(oldestUri);
-          OffsetDateTime createdAt = storageObject.getCreatedAt();
-          // Starting from the created at we iterate through the objects.
-          Stream<List<URI>> collectorStream = storage.streamOfTimeSeries(null, className,
-              createdAt.toLocalDateTime(), endOfArchival.toLocalDateTime(), ChronoUnit.HOURS);
-          InvocationRequest objectPredicate = archiveProcessConfig.getObjectPredicate();
-          result.addAll(collectorStream.flatMap(l -> l.stream())
-              .filter(u -> invokePredicate(objectPredicate, u))
-              .map(u -> new StorageArchiveBatchEntry().objectUri(u))
-              .collect(toList()));
+      if (ObjectUtils.isEmpty(archiveProcessConfig.getTypeClassNames())) {
+        collectItemsByCreationTime(archiveProcessConfig, storage, endOfArchival, result,
+            null);
+      } else {
+        for (String className : archiveProcessConfig.getTypeClassNames()) {
+          collectItemsByCreationTime(archiveProcessConfig, storage, endOfArchival, result,
+              className);
         }
       }
       return result;
@@ -255,6 +256,27 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
           .collect(Collectors.toList());
     }
     return Collections.emptyList();
+  }
+
+  private void collectItemsByCreationTime(StorageArchiveProcessConfig archiveProcessConfig,
+      Storage storage,
+      OffsetDateTime endOfArchival, List<StorageArchiveBatchEntry> result, String className) {
+    Iterator<URI> iterOldest = storage.readOldests(null, className).iterator();
+    if (iterOldest.hasNext()) {
+      URI oldestUri = iterOldest.next();
+      OffsetDateTime createdAt = null;
+
+      createdAt = UriUtils.getCreationDate(oldestUri).atOffset(ZoneOffset.UTC);
+
+      // Starting from the created at we iterate through the objects.
+      Stream<List<URI>> collectorStream = storage.streamOfTimeSeries(null, className,
+          createdAt.toLocalDateTime(), endOfArchival.toLocalDateTime(), ChronoUnit.HOURS);
+      InvocationRequest objectPredicate = archiveProcessConfig.getObjectPredicate();
+      result.addAll(collectorStream.flatMap(l -> l.stream())
+          .filter(u -> invokePredicate(objectPredicate, u))
+          .map(u -> new StorageArchiveBatchEntry().objectUri(u))
+          .collect(toList()));
+    }
   }
 
   private StorageArchiveBatchEntry collectContainer(
@@ -366,7 +388,7 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
     File file = new File(folder);
     File[] list = file.listFiles();
 
-    if (list != null)
+    if (list != null) {
       for (File fil : list) {
         if (fil.isDirectory()) {
           deleteFiles(fil.getAbsolutePath());
@@ -374,6 +396,7 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
           deleteFile(fil);
         }
       }
+    }
   }
 
   private void deleteOldVersions(String folder, int versionBefore) {
@@ -418,7 +441,7 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
     File[] list = file.listFiles();
     List<String> fileNames = new ArrayList<>();
 
-    if (list != null)
+    if (list != null) {
       for (File fil : list) {
         if (fil.isDirectory()) {
           fileNames.addAll(findFile(name, fil));
@@ -426,6 +449,7 @@ public class StorageArchiveApiImpl implements StorageArchiveApi {
           fileNames.add(fil.getAbsolutePath());
         }
       }
+    }
 
     return fileNames;
   }

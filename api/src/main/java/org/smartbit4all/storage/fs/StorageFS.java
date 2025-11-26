@@ -1,5 +1,6 @@
 package org.smartbit4all.storage.fs;
 
+import static java.util.stream.Collectors.toList;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -64,7 +65,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import com.fasterxml.jackson.core.JsonParseException;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The file system based implementation of the {@link ObjectStorage} interface. This is responsible
@@ -118,6 +118,11 @@ public class StorageFS extends ObjectStorageImpl {
    * The file extension (*.extension) of the object stream files.
    */
   private static final String SO_OBJECTSTREAM = ".os";
+
+  /**
+   * The file extension (*.extension) of the table data files.
+   */
+  private static final String TD_FILEEXTENSION = ".td";
 
   /**
    * The transaction manager (there must be only one in one application) that is configured. Used to
@@ -190,17 +195,19 @@ public class StorageFS extends ObjectStorageImpl {
    * @param file The file inside the root of the storage.
    * @return The URI if the file denotes a valid object file.
    */
-  public final URI getUriByFile(File file) {
+  public final URI getUriByFile(File file, List<String> extensions) {
     if (file == null) {
       return null;
     }
     String filePathString = file.getPath();
-    if (!filePathString.endsWith(SO_FILEEXTENSION)) {
+    Optional<String> extension =
+        extensions.stream().filter(e -> filePathString.endsWith(e)).findFirst();
+    if (extension.isEmpty()) {
       return null;
     }
     Path rootPath = rootFolder.toPath();
     Path filePath =
-        Paths.get(filePathString.substring(0, filePathString.length() - SO_FILEEXTENSION.length()));
+        Paths.get(filePathString.substring(0, filePathString.length() - extension.get().length()));
     if (!filePath.startsWith(rootPath) && filePath.getNameCount() > (rootPath.getNameCount() + 1)) {
       return null;
     }
@@ -224,6 +231,11 @@ public class StorageFS extends ObjectStorageImpl {
   private final File getObjectDataFile(URI objectUri) {
     return getDataFileByUri(objectUri, SO_FILEEXTENSION);
   }
+
+  private final File getFileWithTDExtension(URI uri) {
+    return getDataFileByUri(uri, TD_FILEEXTENSION);
+  }
+
 
   /**
    * Constructs the base path of the version folder.
@@ -712,13 +724,23 @@ public class StorageFS extends ObjectStorageImpl {
   protected <O> List<O> readAll(Storage storage, String setName, String clazzName,
       Function<URI, O> reader) {
     // Check if the given directory exists or not.
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
 
     String storageScheme = storage.getScheme();
-    String setPath = StringConstant.SLASH + objectDefinition.getAlias()
-        + (Strings.isBlank(setName) ? StringConstant.EMPTY
-            : StringConstant.SLASH
-                + setName);
+    String setPath;
+    if (clazzName != null) {
+      ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
+
+      setPath = StringConstant.SLASH + objectDefinition.getAlias()
+          + (Strings.isBlank(setName) ? StringConstant.EMPTY
+              : StringConstant.SLASH
+                  + setName);
+    } else {
+      setPath =
+          (Strings.isBlank(setName) ? StringConstant.EMPTY
+              : StringConstant.SLASH
+                  + setName);
+    }
+
     File setFolder =
         new File(rootFolder,
             storageScheme + setPath);
@@ -740,14 +762,20 @@ public class StorageFS extends ObjectStorageImpl {
               public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
                   throws IOException {
                 String fileName = file.getFileName().toString();
+                String extension = null;
                 if (fileName.endsWith(SO_FILEEXTENSION)) {
+                  extension = SO_FILEEXTENSION;
+                } else if (fileName.endsWith(TD_FILEEXTENSION)) {
+                  extension = TD_FILEEXTENSION;
+                }
+                if (extension != null) {
                   // We read the object with the standard operation by creating a valid URI from the
                   // path.
                   String path = setPath + StringConstant.SLASH
                       + setFolderPath.relativize(file.getParent()).toString().replace('\\', '/')
                       + StringConstant.SLASH
                       + fileName.substring(0,
-                          fileName.length() - SO_FILEEXTENSION.length());
+                          fileName.length() - extension.length());
                   URI uri = UriUtils.createUri(storageScheme, null,
                       path,
                       null);
@@ -794,22 +822,33 @@ public class StorageFS extends ObjectStorageImpl {
 
   @Override
   public List<URI> readOldests(Storage storage, String setName, String clazzName) {
-    ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
-
     String storageScheme = storage.getScheme();
-    String setPath = StringConstant.SLASH + objectDefinition.getAlias()
-        + (Strings.isBlank(setName) ? StringConstant.EMPTY
-            : StringConstant.SLASH
-                + setName);
+    String setPath;
+    if (clazzName != null) {
+      ObjectDefinition<?> objectDefinition = objectDefinitionApi.definition(clazzName);
+      setPath = StringConstant.SLASH + objectDefinition.getAlias()
+          + (Strings.isBlank(setName) ? StringConstant.EMPTY
+              : StringConstant.SLASH
+                  + setName);
+    } else {
+      setPath = StringConstant.SLASH
+          + (Strings.isBlank(setName) ? StringConstant.EMPTY
+              : StringConstant.SLASH
+                  + setName);
+    }
+
     File setFolder =
         new File(rootFolder,
             storageScheme + setPath);
     Path setFolderPath = setFolder.toPath();
-    Optional<FolderInfo> oldestFolderWithOFile = FileIO.findOldestFolderWithOFile(setFolderPath);
+    Optional<FolderInfo> oldestFolderWithOFile =
+        FileIO.findOldestFolderWithFile(setFolderPath);
     if (oldestFolderWithOFile.isPresent()) {
       List<File> objectFiles = oldestFolderWithOFile.get().getObjectFiles();
-      return objectFiles.stream().map(f -> getUriByFile(f)).collect(toList());
+      return objectFiles.stream()
+          .map(f -> getUriByFile(f, List.of(SO_FILEEXTENSION, TD_FILEEXTENSION))).collect(toList());
     }
+
     return Collections.emptyList();
   }
 
@@ -847,11 +886,12 @@ public class StorageFS extends ObjectStorageImpl {
   }
 
   private final boolean remove(URI uri) {
-    List<File> toDelete = new ArrayList<>(4);
+    List<File> toDelete = new ArrayList<>(5);
     toDelete.add(getObjectDataFile(uri));
     toDelete.add(getObjectTransactionFile(uri));
     toDelete.add(getObjectLockFile(uri));
     toDelete.add(getObjectVersionBasePath(uri));
+    toDelete.add(getFileWithTDExtension(uri));
     return FileIO.deleteAll(toDelete);
   }
 
