@@ -2,12 +2,22 @@ package org.smartbit4all.api.collection;
 
 import static java.util.stream.Collectors.toList;
 import java.net.URI;
+import java.text.MessageFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +32,7 @@ import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldWidgetTyp
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionList;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperandData;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionOperation;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.Value;
@@ -36,20 +47,11 @@ import org.smartbit4all.domain.meta.PropertyObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
+import jakarta.annotation.Nullable;
 
 public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   private static final Logger log = LoggerFactory.getLogger(FilterExpressionApiImpl.class);
-
-  public FilterExpressionApiImpl() {
-    super();
-  }
-
-  @Autowired
-  private LocaleSettingApi localeApi;
-
-  @Autowired
-  private ObjectApi objectApi;
 
   private static List<FilterExpressionOperation> unaryOperations =
       Arrays.asList(FilterExpressionOperation.IS_EMPTY, FilterExpressionOperation.IS_NOT_EMPTY);
@@ -57,6 +59,17 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   private static List<FilterExpressionOperation> parenthesisOperations =
       Arrays.asList(FilterExpressionOperation.EXPRESSION, FilterExpressionOperation.EXISTS,
           FilterExpressionOperation.NOT_EXISTS);
+
+  private static final String LOCALE_PREFIX = "filter-description";
+
+  @Autowired
+  private LocaleSettingApi localeApi;
+
+  @Autowired
+  private ObjectApi objectApi;
+
+  @Autowired
+  private SessionApi sessionApi;
 
   @Override
   public FilterExpressionList of(FilterExpressionFieldList filterExpressionFieldList) {
@@ -83,7 +96,8 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
         }).map(FilterExpressionField::getExpressionData).map(this::handleLikeExpressions)
         .collect(Collectors.toList());
 
-    return filterExpressions.isEmpty() ? null
+    return filterExpressions.isEmpty()
+        ? null
         : new FilterExpressionList().expressions(filterExpressions);
   }
 
@@ -111,6 +125,149 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   }
 
   @Override
+  public List<String> describe(FilterExpressionFieldList filterExpressionFieldList) {
+    return describe(filterExpressionFieldList, null);
+  }
+
+  @Override
+  public List<String> describe(FilterExpressionFieldList filterExpressionFieldList, String locale) {
+    final Locale loc;
+    if (Strings.isNullOrEmpty(locale)) {
+      loc = sessionApi.getLocale();
+    } else {
+      loc = Locale.forLanguageTag(locale);
+    }
+
+
+    if (filterExpressionFieldList == null
+        || filterExpressionFieldList.getFilters() == null
+        || filterExpressionFieldList.getFilters().isEmpty()) {
+      return Collections.singletonList(localeApi.get(loc, LOCALE_PREFIX, "no-filters"));
+    }
+
+    final List<String> result = new ArrayList<>();
+    for (final var filter : filterExpressionFieldList.getFilters()) {
+      final String label = filter.getLabel();
+      final FilterExpressionOperandData userData = getOperandWithValues(filter);
+      if (userData == null) {
+        continue;
+      }
+
+      final FilterExpressionData expr = filter.getExpressionData();
+      final var description = switch (expr.getCurrentOperation()) {
+        case EQUAL -> describeUserData(loc, "equal", label, userData.getValueAsString());
+        case NOT_EQUAL -> describeUserData(loc, "not-equal", label, userData.getValueAsString());
+        case BETWEEN -> describeUserDataBetween(
+            loc, "between", label,
+            expr.getOperand2().getValueAsString(),
+            expr.getOperand3().getValueAsString());
+        case NOT_BETWEEN -> describeUserDataBetween(
+            loc, "not-between", label,
+            expr.getOperand2().getValueAsString(),
+            expr.getOperand3().getValueAsString());
+        case GREATER -> describeUserData(loc, "greater", label, userData.getSelectedValues());
+        case GREATER_OR_EQUAL -> describeUserData(
+            loc, "greatereq", label,
+            userData.getValueAsString());
+        case LESS -> describeUserData(loc, "less", label, userData.getValueAsString());
+        case LESS_OR_EQUAL -> describeUserData(loc, "lesseq", label, userData.getValueAsString());
+        case IN -> describeUserData(loc, "in", label, userData.getSelectedValues());
+        case NOT_IN -> describeUserData(loc, "not-in", label, userData.getSelectedValues());
+        case LIKE -> describeUserData(loc, "like", label, userData.getValueAsString());
+        case NOT_LIKE -> describeUserData(loc, "not-like", label, userData.getValueAsString());
+        case IS_EMPTY -> describeUserData(loc, "empty", label, userData.getValueAsString());
+        case IS_NOT_EMPTY -> describeUserData(loc, "not-empty", label, userData.getValueAsString());
+        // these are special cases, even nested in case of expression. Going to revisit this later:
+        case EXISTS, NOT_EXISTS, EXPRESSION -> Optional.<String>empty();
+      };
+      description.ifPresent(result::add);
+    }
+    return result.isEmpty()
+        ? Collections.singletonList(localeApi.get(loc, LOCALE_PREFIX, "no-filters"))
+        : result;
+  }
+
+  private Optional<String> describeUserData(Locale locale, String key, String label, String value) {
+    return describeUserData(locale, key, label, Collections.singletonList(value));
+  }
+
+  private Optional<String> describeUserData(Locale locale, String key, String label,
+      List<String> values) {
+    if (values == null || values.isEmpty()) {
+      return Optional.empty();
+    }
+
+    String valueToSet = values.stream()
+        .filter(it -> !Strings.isNullOrEmpty(it))
+        .collect(Collectors.joining(StringConstant.COMMA_SPACE));
+    if (Strings.isNullOrEmpty(valueToSet)) {
+      return Optional.empty();
+    }
+
+    return Optional.of(MessageFormat.format(
+        localeApi.get(locale, LOCALE_PREFIX, key),
+        label,
+        valueToSet));
+  }
+
+  private Optional<String> describeUserDataBetween(
+      Locale locale,
+      String key,
+      String label,
+      String from,
+      String to) {
+    if (Strings.isNullOrEmpty(from) && Strings.isNullOrEmpty(to)) {
+      return Optional.empty();
+    }
+    from = Strings.isNullOrEmpty(from) ? "..." : tryParseDateStr(locale, from);
+    to = Strings.isNullOrEmpty(to) ? "..." : tryParseDateStr(locale, to);
+
+    String valueToSet = from + StringConstant.SPACE_HYPHEN_SPACE + to;
+    return Optional.of(MessageFormat.format(
+        localeApi.get(locale, LOCALE_PREFIX, key),
+        label,
+        valueToSet));
+  }
+
+  private String tryParseDateStr(Locale locale, String dateStr) {
+    try {
+      final LocalDate odt = OffsetDateTime.parse(dateStr)
+          .atZoneSameInstant(ZoneId.systemDefault())
+          .toLocalDate();
+      return DateTimeFormatter
+          .ofLocalizedDate(FormatStyle.LONG)
+          .withLocale(locale)
+          .format(odt);
+    } catch (Exception e) {
+      try {
+        final LocalDateTime ldt = LocalDateTime.parse(dateStr);
+        return DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(ldt);
+      } catch (Exception e2) {
+        try {
+          final LocalDate ld = LocalDate.parse(dateStr);
+          return DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale).format(ld);
+        } catch (Exception e3) {
+          return dateStr;
+        }
+      }
+    }
+  }
+
+  @Override
+  public boolean isPristine(FilterExpressionFieldList filterExpressionFieldList) {
+    if (filterExpressionFieldList == null || filterExpressionFieldList.getFilters() == null
+        || filterExpressionFieldList.getFilters().isEmpty()) {
+      return true;
+    }
+
+    final var filters = filterExpressionFieldList.getFilters();
+    return 0L == filters.stream()
+        .map(this::getOperandWithValues)
+        .filter(Objects::nonNull)
+        .count();
+  }
+
+  @Override
   public boolean operandHasValue(FilterExpressionOperandData operandData) {
     return operandData != null
         && !Boolean.TRUE.equals(operandData.getIsDataName())
@@ -126,6 +283,28 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
 
   private boolean operandHasValueOrValues(FilterExpressionOperandData operandData) {
     return operandHasValue(operandData) || operandHasValues(operandData);
+  }
+
+  private @Nullable FilterExpressionOperandData getOperandWithValues(
+      final FilterExpressionField field) {
+    if (field == null) {
+      return null;
+    }
+
+    final var expr = field.getExpressionData();
+    if (expr == null) {
+      return null;
+    }
+
+    final List<Function<FilterExpressionData, FilterExpressionOperandData>> accessors = List.of(
+        FilterExpressionData::getOperand1,
+        FilterExpressionData::getOperand2,
+        FilterExpressionData::getOperand3);
+    return accessors.stream()
+        .map(it -> it.apply(expr))
+        .filter(this::operandHasValueOrValues)
+        .findFirst()
+        .orElse(null);
   }
 
   @Override
