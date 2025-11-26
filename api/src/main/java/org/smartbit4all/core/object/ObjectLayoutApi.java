@@ -1,10 +1,13 @@
 package org.smartbit4all.core.object;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 import org.smartbit4all.api.object.bean.ObjectLayoutDescriptor;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDefinitionDescriptor;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 
 /**
  * Facilitates registration and management of object layout archetypes.
@@ -43,5 +46,10 @@ public interface ObjectLayoutApi {
   ObjectDisplay getSketchDisplay(ObjectNode objectNode, ObjectLayoutDescriptor descriptor);
 
   LayoutDefinitionDescriptor getLayoutDefinitionDescriptor(String jsonString);
+
+  SmartComponentLayoutDefinition constructSimpleLayout(Map<String, Object> o);
+
+  SmartComponentLayoutDefinition constructSimpleLayout(Map<String, Object> o,
+      LayoutDirection orientation);
 
 }
