@@ -23,6 +23,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodySpec;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,7 +37,8 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   private ObjectApi objectApi;
   @Autowired
   private MasterDataManagementApi masterDataManagementApi;
-
+  @Autowired
+  private DynamicRestRequestCacheProperties requestCacheProperties;
   @Autowired
   private Cache<String, ResponseEntity<Object>> dynamicRestRequestCache;
 
@@ -108,16 +110,7 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
         .contentType(contentType)
         .headers(h -> headerMap.forEach((key, value) -> h.add(key, value)));
 
-    ResponseEntity<Object> response;
-    try {
-      response = dynamicRestRequestCache.get(uri.toString(), () -> request
-          .retrieve()
-          .toEntity(Object.class));
-    } catch (ExecutionException e) {
-      response = request
-          .retrieve()
-          .toEntity(Object.class);
-    }
+    ResponseEntity<Object> response = retrive(uri, request);
 
     ResponseEntityObject responseEntityObject = new ResponseEntityObject();
 
@@ -127,6 +120,36 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     return responseEntityObject.body(response.getBody())
         .statusCode(response.getStatusCode().toString())
         .statusCodeValue(response.getStatusCode().value());
+  }
+
+  private ResponseEntity<Object> retrive(URI uri, RequestBodySpec request) {
+    if (!requestCacheProperties.isEnabled()) {
+      return executeCall(request);
+    }
+
+    String url = uri.toString();
+    // check regex match BEFORE checking cache
+    boolean matches = CollectionUtils.isEmpty(requestCacheProperties.getHostPatterns())
+        || requestCacheProperties.getHostPatterns().stream()
+            .anyMatch(pattern -> url.matches(pattern));
+
+    if (!matches) {
+      return executeCall(request);
+    }
+
+    ResponseEntity<Object> response;
+    try {
+      response = dynamicRestRequestCache.get(uri.toString(), () -> executeCall(request));
+    } catch (ExecutionException e) {
+      response = executeCall(request);
+    }
+    return response;
+  }
+
+  private ResponseEntity<Object> executeCall(RequestBodySpec request) {
+    return request
+        .retrieve()
+        .toEntity(Object.class);
   }
 
   private Map<String, String> constructHeaderMap(ObjectMappingDefinition header,
