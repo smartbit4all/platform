@@ -29,6 +29,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import org.smartbit4all.api.collection.DefaultComparatorProvider;
 import org.smartbit4all.api.collection.DefaultComparatorProviderImpl;
+import org.smartbit4all.api.invocation.Invocations;
+import org.smartbit4all.api.invocation.ProviderApiInvocationHandler;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.domain.application.TimeManagementService;
 import org.smartbit4all.domain.application.TimeManagementServiceImpl;
@@ -229,6 +231,13 @@ public class DomainServiceConfig {
   @Bean
   public StorageArchiveApi getStorageArchiveApi() {
     return new StorageArchiveApiImpl();
+  }
+
+  @Bean
+  public ProviderApiInvocationHandler<StorageArchiveApi> getStorageArchiveApiProvider(
+      StorageArchiveApi api) {
+    return Invocations.asProvider(StorageArchiveApi.class,
+        StorageArchiveApi.class.getName(), api);
   }
 
   @Bean

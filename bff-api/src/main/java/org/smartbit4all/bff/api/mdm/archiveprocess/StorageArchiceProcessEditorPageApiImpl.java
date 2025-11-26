@@ -5,6 +5,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.label;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfieldNumber;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,7 @@ import org.smartbit4all.core.object.ObjectLayoutApi;
 import org.smartbit4all.core.object.ObjectLayoutBuilder;
 import org.smartbit4all.core.object.ObjectMapHelper;
 import org.smartbit4all.core.object.ObjectSerializerByObjectMapper;
+import org.smartbit4all.domain.data.storage.StorageArchiveApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,6 +49,8 @@ public class StorageArchiceProcessEditorPageApiImpl extends MDMEntryEditPageApiI
 
   @Autowired
   LocaleSettingApi localeSettingApi;
+  @Autowired
+  private StorageArchiveApi storageArchiveApi;
 
   @Override
   public Object initModel(View view) {
@@ -143,8 +147,13 @@ public class StorageArchiceProcessEditorPageApiImpl extends MDMEntryEditPageApiI
       modelMap.put(StorageArchiveProcessConfig.TYPE_CLASS_NAMES, new ArrayList<>());
       updatedModel = modelMap;
     }
-
-
+    StorageArchiveProcessConfig config =
+        objectApi.asType(StorageArchiveProcessConfig.class, updatedModel);
+    if (ObjectUtils.isEmpty(config.getUri())) {
+      URI savedConfig =
+          storageArchiveApi.createConfig(config, viewApi.getView(viewUuid).getBranchUri());
+      updatedModel = objectApi.loadLatest(savedConfig).getObjectAsMap();
+    }
 
     params.put(UiActions.MODEL, updatedModel);
     super.performSave(viewUuid, request);

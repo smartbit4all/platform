@@ -73,7 +73,7 @@ public class InvocationApiMdmConfig {
   public static final String MDM_ENTRY_JOBDEFINITION = "InvocationJobDefinition";
 
   @Bean
-  MDMDefinitionOption mdmOption() {
+  MDMDefinitionOption invocationApiMdmOption() {
     MDMDefinition mdmDefinition =
         new MDMDefinition().name(MasterDataManagementApi.MDM_DEFINITION_SYSTEM_INTEGRATION)
             .adminGroupName(PlatformSecurityOption.admin.getName());

@@ -56,6 +56,8 @@ public class FileIO {
   private static final int LARGEST_DATE_TIME_SEGMENT = 5000;
 
   public static final String SO_FILEEXTENSION = ".o";
+  public static final String TD_FILEEXTENSION = ".td";
+  public static final String SINGLE_VERSION_URI_POSTFIX = "-s";
 
   private FileIO() {
     // static utility
@@ -708,14 +710,15 @@ public class FileIO {
     return buffer.toByteArray();
   }
 
-  public static Optional<FolderInfo> findOldestFolderWithOFile(Path root) {
+  public static Optional<FolderInfo> findOldestFolderWithFile(Path root) {
 
-    return findOldestFolderWithOFileRec(root.toFile(), new ArrayList<>());
+    return findOldestFolderWithFileRec(root.toFile(), new ArrayList<>(),
+        List.of(SO_FILEEXTENSION, TD_FILEEXTENSION));
 
   }
 
-  private static Optional<FolderInfo> findOldestFolderWithOFileRec(File currentFile,
-      List<Integer> dateTimePath) {
+  private static Optional<FolderInfo> findOldestFolderWithFileRec(File currentFile,
+      List<Integer> dateTimePath, List<String> extensions) {
     int dateTimePosition = dateTimePath.size();
     if (dateTimePosition > 6) {
       // We are deeper then the expected date time precision.
@@ -726,6 +729,7 @@ public class FileIO {
     Map<LocalDateTime, File> directoriesByTime = new HashMap<>();
     List<File> objectFiles = new ArrayList<>();
     for (int i = 0; i < files.length; i++) {
+      int idx = i;
       if (files[i].isDirectory()) {
         Integer directoryNumber = Ints.tryParse(files[i].getName());
         if (directoryNumber != null && 0 <= directoryNumber
@@ -737,8 +741,16 @@ public class FileIO {
           if (time != null) {
             directoriesByTime.put(time, files[i]);
           }
+        } else {
+          List<Integer> proposedDatetTimePath = new ArrayList<>();
+          proposedDatetTimePath.addAll(dateTimePath);
+          LocalDateTime time = getDateTime(proposedDatetTimePath);
+          if (time != null) {
+            directoriesByTime.put(time, files[i]);
+          }
         }
-      } else if (files[i].isFile() && files[i].getName().endsWith(SO_FILEEXTENSION)) {
+      } else if (files[i].isFile()
+          && extensions.stream().anyMatch(extension -> files[idx].getName().endsWith(extension))) {
         objectFiles.add(files[i]);
       }
     }
@@ -757,9 +769,11 @@ public class FileIO {
           .map(e -> e.getValue()).collect(Collectors.toList());
       for (File subDir : sortedDirectories) {
         List<Integer> dateTimePathList = new ArrayList<>(dateTimePath);
-        dateTimePathList.add(Integer.valueOf(subDir.toPath().getFileName().toString()));
+        if (Ints.tryParse(subDir.toPath().getFileName().toString()) != null) {
+          dateTimePathList.add(Integer.valueOf(subDir.toPath().getFileName().toString()));
+        }
         Optional<FolderInfo> oldestFolderWithOFileRec =
-            findOldestFolderWithOFileRec(subDir, dateTimePathList);
+            findOldestFolderWithFileRec(subDir, dateTimePathList, extensions);
         if (oldestFolderWithOFileRec.isPresent()) {
           return oldestFolderWithOFileRec;
         }

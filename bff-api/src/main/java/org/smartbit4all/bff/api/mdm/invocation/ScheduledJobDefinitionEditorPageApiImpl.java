@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.JobParameter;
 import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition;
+import org.smartbit4all.api.invocation.bean.ScheduledJobDefinition.ExecutionScopeEnum;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
@@ -156,11 +157,12 @@ public class ScheduledJobDefinitionEditorPageApiImpl extends MDMEntryEditPageApi
                     localeSettingApi.get(
                         ScheduledJobDefinition.class.getName(),
                         ScheduledJobDefinition.CRON_EXPRESSION)),
-                ObjectLayoutBuilder.textfield(
+                ObjectLayoutBuilder.combobox(
                     widgetKey(ScheduledJobDefinition.EXECUTION_SCOPE),
                     localeSettingApi.get(
                         ScheduledJobDefinition.class.getName(),
-                        ScheduledJobDefinition.EXECUTION_SCOPE)),
+                        ScheduledJobDefinition.EXECUTION_SCOPE),
+                    ExecutionScopeEnum.class, localeSettingApi),
                 ObjectLayoutBuilder.textfield(
                     widgetKey(ScheduledJobDefinition.JOB_DEFINITION_CODE),
                     localeSettingApi.get(

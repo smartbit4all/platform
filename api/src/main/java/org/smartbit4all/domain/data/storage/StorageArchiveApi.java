@@ -1,6 +1,7 @@
 package org.smartbit4all.domain.data.storage;
 
 import java.net.URI;
+import org.smartbit4all.api.storage.bean.StorageArchiveProcessConfig;
 import org.smartbit4all.api.storage.bean.StorageArchiveProcessExecution;
 import org.smartbit4all.domain.config.DomainConfig;
 
@@ -34,5 +35,7 @@ public interface StorageArchiveApi {
    * @return Number of archived objects.
    */
   int executeArchive(URI config);
+
+  URI createConfig(StorageArchiveProcessConfig config, URI branchUri);
 
 }
