@@ -27,6 +27,7 @@ import java.util.List;
 import org.smartbit4all.api.diagram.bean.DiagramColor;
 import org.smartbit4all.api.diagram.bean.DiagramShape;
 import org.smartbit4all.api.diagram.bean.LabelText;
+import org.smartbit4all.api.view.bean.Style;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import jakarta.validation.constraints.*;
@@ -47,7 +48,9 @@ import jakarta.validation.Valid;
   DiagramDescriptor.SHOW_LABELS_FOR_Y_AXIS,
   DiagramDescriptor.SHOW_LEGEND_FOR_CHART,
   DiagramDescriptor.BACKGROUND_COLOR,
-  DiagramDescriptor.SHAPES
+  DiagramDescriptor.SHAPES,
+  DiagramDescriptor.MAINTAIN_ASPECT_RATIO,
+  DiagramDescriptor.STYLE
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class DiagramDescriptor {
@@ -83,6 +86,12 @@ public class DiagramDescriptor {
 
   public static final String SHAPES = "shapes";
   private List<@Valid DiagramShape> shapes = new ArrayList<>();
+
+  public static final String MAINTAIN_ASPECT_RATIO = "maintainAspectRatio";
+  private Boolean maintainAspectRatio = true;
+
+  public static final String STYLE = "style";
+  private Style style = null;
 
   public DiagramDescriptor() {
   }
@@ -395,6 +404,61 @@ public class DiagramDescriptor {
     this.shapes = shapes;
   }
 
+  public DiagramDescriptor maintainAspectRatio(Boolean maintainAspectRatio) {
+    
+    this.maintainAspectRatio = maintainAspectRatio;
+    return this;
+  }
+
+  /**
+   * Get maintainAspectRatio
+   * @return maintainAspectRatio
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(MAINTAIN_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getMaintainAspectRatio() {
+    return maintainAspectRatio;
+  }
+
+
+  @JsonProperty(MAINTAIN_ASPECT_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setMaintainAspectRatio(Boolean maintainAspectRatio) {
+    this.maintainAspectRatio = maintainAspectRatio;
+  }
+
+  public DiagramDescriptor style(Style style) {
+    
+    this.style = style;
+    return this;
+  }
+
+  /**
+   * Get style
+   * @return style
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Style getStyle() {
+    return style;
+  }
+
+
+  @JsonProperty(STYLE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setStyle(Style style) {
+    this.style = style;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -414,12 +478,14 @@ public class DiagramDescriptor {
         Objects.equals(this.showLabelsForYAxis, diagramDescriptor.showLabelsForYAxis) &&
         Objects.equals(this.showLegendForChart, diagramDescriptor.showLegendForChart) &&
         Objects.equals(this.backgroundColor, diagramDescriptor.backgroundColor) &&
-        Objects.equals(this.shapes, diagramDescriptor.shapes);
+        Objects.equals(this.shapes, diagramDescriptor.shapes) &&
+        Objects.equals(this.maintainAspectRatio, diagramDescriptor.maintainAspectRatio) &&
+        Objects.equals(this.style, diagramDescriptor.style);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, title, minX, maxX, minY, maxY, showLabelsForXAxis, showLabelsForYAxis, showLegendForChart, backgroundColor, shapes);
+    return Objects.hash(type, title, minX, maxX, minY, maxY, showLabelsForXAxis, showLabelsForYAxis, showLegendForChart, backgroundColor, shapes, maintainAspectRatio, style);
   }
 
   @Override
@@ -437,6 +503,8 @@ public class DiagramDescriptor {
     sb.append("    showLegendForChart: ").append(toIndentedString(showLegendForChart)).append("\n");
     sb.append("    backgroundColor: ").append(toIndentedString(backgroundColor)).append("\n");
     sb.append("    shapes: ").append(toIndentedString(shapes)).append("\n");
+    sb.append("    maintainAspectRatio: ").append(toIndentedString(maintainAspectRatio)).append("\n");
+    sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("}");
     return sb.toString();
   }
