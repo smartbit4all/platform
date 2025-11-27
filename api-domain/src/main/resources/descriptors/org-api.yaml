@@ -596,6 +596,9 @@ components:
           type: string
           description: |
             The name of the subject model.
+        userUri:
+          type: string
+          format: uri
         items:
           type: array
           items:
