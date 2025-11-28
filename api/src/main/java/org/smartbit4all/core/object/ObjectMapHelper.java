@@ -2,6 +2,7 @@ package org.smartbit4all.core.object;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This helper can enclose a {@link Map} that contains Objects as values identified by Strings.
@@ -197,6 +198,11 @@ public class ObjectMapHelper {
     Map<String, T> result = objectApi.asMap(clazz, (Map<String, ?>) param);
     map.put(key, result);
     return result;
+  }
+
+  public List<Map<String, Object>> getAsListOfMap(String key) {
+    List<Object> list = getAsList(key, Object.class);
+    return list.stream().map(o -> objectApi.toMapObject(o)).collect(Collectors.toList());
   }
 
   public void put(String key, Object value) {
