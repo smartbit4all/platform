@@ -38,6 +38,15 @@ public final class ObjectLayoutBuilder {
 
   private static final String PROPERTIES_SUFFIX = "_properties";
 
+  public static class LabelPositionClass {
+    private LabelPositionClass() {}
+
+    public static final String LABEL_RIGHT = "label-right";
+    public static final String LABEL_LEFT = "label-left";
+    public static final String LABEL_TOP = "label-top";
+    public static final String LABEL_BOTTOM = "label-bottom";
+  }
+
   /**
    * Constructs a grid layout definition with the provided grid identifier.
    *
