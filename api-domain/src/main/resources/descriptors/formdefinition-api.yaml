@@ -115,6 +115,12 @@ components:
         cssLabelClass:
           type: string
           description: Optional css class of the label of the widget
+        isFloatLabel:
+          type: boolean
+          default: true
+        labelPositionClass:
+          type: string
+          description: Optional css class of the label direction
         style:
           type: Style
         labelStyle:

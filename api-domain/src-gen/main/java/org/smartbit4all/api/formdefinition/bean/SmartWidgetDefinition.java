@@ -61,6 +61,8 @@ import jakarta.validation.Valid;
   SmartWidgetDefinition.SHOW_LABEL,
   SmartWidgetDefinition.CSS_CLASS,
   SmartWidgetDefinition.CSS_LABEL_CLASS,
+  SmartWidgetDefinition.IS_FLOAT_LABEL,
+  SmartWidgetDefinition.LABEL_POSITION_CLASS,
   SmartWidgetDefinition.STYLE,
   SmartWidgetDefinition.LABEL_STYLE,
   SmartWidgetDefinition.IS_PASSWORD,
@@ -125,6 +127,12 @@ public class SmartWidgetDefinition {
 
   public static final String CSS_LABEL_CLASS = "cssLabelClass";
   private String cssLabelClass;
+
+  public static final String IS_FLOAT_LABEL = "isFloatLabel";
+  private Boolean isFloatLabel = true;
+
+  public static final String LABEL_POSITION_CLASS = "labelPositionClass";
+  private String labelPositionClass;
 
   public static final String STYLE = "style";
   private Style style = null;
@@ -571,6 +579,60 @@ public class SmartWidgetDefinition {
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public void setCssLabelClass(String cssLabelClass) {
     this.cssLabelClass = cssLabelClass;
+  }
+
+  public SmartWidgetDefinition isFloatLabel(Boolean isFloatLabel) {
+    
+    this.isFloatLabel = isFloatLabel;
+    return this;
+  }
+
+  /**
+   * Get isFloatLabel
+   * @return isFloatLabel
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(IS_FLOAT_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getIsFloatLabel() {
+    return isFloatLabel;
+  }
+
+
+  @JsonProperty(IS_FLOAT_LABEL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setIsFloatLabel(Boolean isFloatLabel) {
+    this.isFloatLabel = isFloatLabel;
+  }
+
+  public SmartWidgetDefinition labelPositionClass(String labelPositionClass) {
+    
+    this.labelPositionClass = labelPositionClass;
+    return this;
+  }
+
+  /**
+   * Optional css class of the label direction
+   * @return labelPositionClass
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Optional css class of the label direction")
+  @JsonProperty(LABEL_POSITION_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getLabelPositionClass() {
+    return labelPositionClass;
+  }
+
+
+  @JsonProperty(LABEL_POSITION_CLASS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setLabelPositionClass(String labelPositionClass) {
+    this.labelPositionClass = labelPositionClass;
   }
 
   public SmartWidgetDefinition style(Style style) {
@@ -1170,6 +1232,8 @@ public class SmartWidgetDefinition {
         Objects.equals(this.showLabel, smartWidgetDefinition.showLabel) &&
         Objects.equals(this.cssClass, smartWidgetDefinition.cssClass) &&
         Objects.equals(this.cssLabelClass, smartWidgetDefinition.cssLabelClass) &&
+        Objects.equals(this.isFloatLabel, smartWidgetDefinition.isFloatLabel) &&
+        Objects.equals(this.labelPositionClass, smartWidgetDefinition.labelPositionClass) &&
         Objects.equals(this.style, smartWidgetDefinition.style) &&
         Objects.equals(this.labelStyle, smartWidgetDefinition.labelStyle) &&
         Objects.equals(this.isPassword, smartWidgetDefinition.isPassword) &&
@@ -1194,7 +1258,7 @@ public class SmartWidgetDefinition {
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties, errorMessage, errorIcon, errorColor, sortDefinition);
+    return Objects.hash(type, inputMode, key, label, placeholder, prefix, suffix, mask, icon, iconColor, iconPosition, showLabel, cssClass, cssLabelClass, isFloatLabel, labelPositionClass, style, labelStyle, isPassword, values, childrenComponents, selection, direction, matrix, hint, widgetDescription, maxLength, valueChangeMode, showCharacterLimitSuffix, filterErrorMessage, toolbarId, properties, errorMessage, errorIcon, errorColor, sortDefinition);
   }
 
   @Override
@@ -1215,6 +1279,8 @@ public class SmartWidgetDefinition {
     sb.append("    showLabel: ").append(toIndentedString(showLabel)).append("\n");
     sb.append("    cssClass: ").append(toIndentedString(cssClass)).append("\n");
     sb.append("    cssLabelClass: ").append(toIndentedString(cssLabelClass)).append("\n");
+    sb.append("    isFloatLabel: ").append(toIndentedString(isFloatLabel)).append("\n");
+    sb.append("    labelPositionClass: ").append(toIndentedString(labelPositionClass)).append("\n");
     sb.append("    style: ").append(toIndentedString(style)).append("\n");
     sb.append("    labelStyle: ").append(toIndentedString(labelStyle)).append("\n");
     sb.append("    isPassword: ").append(toIndentedString(isPassword)).append("\n");

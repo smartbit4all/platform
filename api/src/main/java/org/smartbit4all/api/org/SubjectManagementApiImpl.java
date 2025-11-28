@@ -111,13 +111,18 @@ public class SubjectManagementApiImpl extends PrimaryApiImpl<SubjectContribution
       if (sessionUri != null && userUri != null) {
         StoredReference<SubjectList> subjectListRef =
             collectionApi.reference(sessionUri, SCHEMA, modelName, SubjectList.class);
-        if (!subjectListRef.exists()) {
-          List<Subject> subjectsOfUser = getSubjectsOfUser(modelName, userUri);
-          subjectListRef.set(new SubjectList().items(subjectsOfUser));
-          return subjectsOfUser;
-        } else {
-          return subjectListRef.get().getItems();
+        if (subjectListRef.exists()) {
+          SubjectList subjectList = subjectListRef.get();
+          if (objectApi.equalsIgnoreVersion(userUri, subjectList.getUserUri())) {
+            return subjectList.getItems();
+          }
         }
+        List<Subject> subjectsOfUser = getSubjectsOfUser(modelName, userUri);
+        subjectListRef.set(
+            new SubjectList()
+                .items(subjectsOfUser)
+                .userUri(userUri));
+        return subjectsOfUser;
       }
     }
     return Collections.emptyList();

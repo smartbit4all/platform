@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,12 +37,16 @@ import jakarta.validation.Valid;
 @Schema(description = "A list of subjects belongs to a given subject model. ")
 @JsonPropertyOrder({
   SubjectList.MODEL,
+  SubjectList.USER_URI,
   SubjectList.ITEMS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SubjectList {
   public static final String MODEL = "model";
   private String model;
+
+  public static final String USER_URI = "userUri";
+  private URI userUri;
 
   public static final String ITEMS = "items";
   private List<@Valid Subject> items = new ArrayList<>();
@@ -75,6 +80,34 @@ public class SubjectList {
   @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public void setModel(String model) {
     this.model = model;
+  }
+
+  public SubjectList userUri(URI userUri) {
+    
+    this.userUri = userUri;
+    return this;
+  }
+
+  /**
+   * Get userUri
+   * @return userUri
+   */
+  @jakarta.annotation.Nullable
+  @Valid
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(USER_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public URI getUserUri() {
+    return userUri;
+  }
+
+
+  @JsonProperty(USER_URI)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setUserUri(URI userUri) {
+    this.userUri = userUri;
   }
 
   public SubjectList items(List<@Valid Subject> items) {
@@ -124,12 +157,13 @@ public class SubjectList {
     }
     SubjectList subjectList = (SubjectList) o;
     return Objects.equals(this.model, subjectList.model) &&
+        Objects.equals(this.userUri, subjectList.userUri) &&
         Objects.equals(this.items, subjectList.items);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(model, items);
+    return Objects.hash(model, userUri, items);
   }
 
   @Override
@@ -137,6 +171,7 @@ public class SubjectList {
     StringBuilder sb = new StringBuilder();
     sb.append("class SubjectList {\n");
     sb.append("    model: ").append(toIndentedString(model)).append("\n");
+    sb.append("    userUri: ").append(toIndentedString(userUri)).append("\n");
     sb.append("    items: ").append(toIndentedString(items)).append("\n");
     sb.append("}");
     return sb.toString();

@@ -68,7 +68,7 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   @Autowired
   private ObjectApi objectApi;
 
-  @Autowired
+  @Autowired(required = false)
   private SessionApi sessionApi;
 
   @Override
@@ -133,6 +133,10 @@ public class FilterExpressionApiImpl implements FilterExpressionApi {
   public List<String> describe(FilterExpressionFieldList filterExpressionFieldList, String locale) {
     final Locale loc;
     if (Strings.isNullOrEmpty(locale)) {
+      if (sessionApi == null) {
+        throw new IllegalStateException("Session API is not available in the application context!");
+      }
+
       loc = sessionApi.getLocale();
     } else {
       loc = Locale.forLanguageTag(locale);

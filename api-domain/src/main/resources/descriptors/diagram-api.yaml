@@ -141,6 +141,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/DiagramShape'
+        maintainAspectRatio:
+          type: boolean
+          default: true
+        style:
+          type: Style
     DiagramShape:
       type: object
       required: [shapeType]
