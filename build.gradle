@@ -1,5 +1,5 @@
 plugins {
-  id 'org.smartbit4all.platform.gradle.java' version '0.6.1' apply false
+  id 'org.smartbit4all.platform.gradle.java' version '0.7.0' apply false
   id "org.sonarqube" version "5.1.0.4882"
 }
 

@@ -1,6 +1,0 @@
-dependencies {
-	api project(':api')
-	api project(':ui-api')
-	
-    implementation 'io.swagger:swagger-annotations:1.5.22'
-}
