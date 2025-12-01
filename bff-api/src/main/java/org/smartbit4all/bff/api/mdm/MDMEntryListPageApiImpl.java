@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,8 +85,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.google.common.collect.Lists;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -591,7 +591,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       BranchedObjectEntry branchedObjectEntry =
           objectApi.asType(BranchedObjectEntry.class, r.getData());
       showEditorView(viewUuid, ctx, branchedObjectEntry, request.getCode());
-      fireActionPerformed(getValueFromGridRow(branchedObjectUriGetter, r), request, context);
+      fireActionPerformed(getUriFromGridRow(branchedObjectUriGetter, r), request, context);
     });
   }
 
@@ -878,14 +878,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   protected final void performActionOnEntry(PageContext context, String gridId, String rowId,
       Function<GridRow, String> uriPropertyGetter, BiConsumer<URI, PageContext> action) {
     performActionOnGridRow(context, gridId, rowId, (r, ctx) -> {
-      URI objectUri = getValueFromGridRow(uriPropertyGetter, r);
+      URI objectUri = getUriFromGridRow(uriPropertyGetter, r);
       if (objectUri != null) {
         action.accept(objectUri, context);
       }
     });
   }
 
-  private URI getValueFromGridRow(Function<GridRow, String> uriPropertyGetter, GridRow r) {
+  protected URI getUriFromGridRow(Function<GridRow, String> uriPropertyGetter, GridRow r) {
     Object valueFromGridRow =
         GridModels.getValueFromGridRow(r, uriPropertyGetter.apply(r));
     return valueFromGridRow instanceof URI ? (URI) valueFromGridRow
