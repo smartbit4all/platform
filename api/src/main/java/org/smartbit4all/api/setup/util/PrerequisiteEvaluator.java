@@ -99,10 +99,10 @@ public final class PrerequisiteEvaluator<E> {
           ? targetIdx
           : Math.min(v, targetIdx)));
       // because we inserted this item at the target index, everything with a higher index shifted
-      // to the right by 1. We increment the upper bound for all, not yet encountered items which
+      // to the right by 2. We increment the upper bound for all, not yet encountered items which
       // are bounded higher than this target index:
       boundHigh.keySet().forEach(it -> boundHigh.computeIfPresent(it, (key, v) -> (targetIdx > v)
-          ? v + 1
+          ? v + 2
           : v));
     }
 

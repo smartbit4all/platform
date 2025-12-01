@@ -43,6 +43,17 @@ class PrerequisiteEvaluatorTest {
   }
 
   @Test
+  void simpleBubblingWithSharedPrerequisitesOfPrerequisite() {
+    Map<String, Set<String>> pMap = Map.of(
+        "A", Set.of("C"),
+        "B", Set.of("D"),
+        "C", Set.of("B"),
+        "D", Collections.emptySet());
+    List<String> result = PrerequisiteEvaluator.of(pMap).evaluate(it -> true);
+    assertThat(result).containsExactlyInAnyOrder("D", "B", "C", "A").first().isEqualTo("D");
+  }
+
+  @Test
   void twoMemberCycle_yieldsAnIllegalStateExceptionToBeThrown() {
     Map<String, Set<String>> pMap = Map.of(
         "A", Collections.emptySet(),
