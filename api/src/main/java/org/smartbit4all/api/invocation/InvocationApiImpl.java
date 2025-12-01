@@ -367,6 +367,7 @@ public class InvocationApiImpl implements InvocationApi {
   private void addMandatoryScriptParams(Bindings bindings) {
     bindings.put("mdmApi", mdmApi);
     bindings.put("objectApi", objectApi);
+    bindings.put("invocationApi", self);
     bindings.put("log", log);
   }
 

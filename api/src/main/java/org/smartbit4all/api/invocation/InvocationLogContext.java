@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import org.smartbit4all.api.invocation.bean.InvocationCall;
 import org.smartbit4all.api.invocation.bean.InvocationCallLog;
+import org.smartbit4all.core.object.ObjectNode;
 
 /**
  * This object contains an {@link InvocationCallLog} object and register the start of invocation
@@ -144,7 +145,7 @@ public class InvocationLogContext {
       startCall = startCall(call, joinOnly, autoAddInvocations);
       createLog = createLog & (startCall != null);
     }
-    T result;
+    T result = null;
     InvocationCallLog callLog = null;
     try {
       result = action.get();
@@ -154,11 +155,40 @@ public class InvocationLogContext {
           finishCall == null ? null : finishCall.getStartCallLog(), e);
     } finally {
       if (callLog == null) {
-        InvocationCallStack finishCall = createLog ? finishCall() : null;
+        InvocationCallStack finishCall =
+            createLog
+                ? finishCall(
+                    (result instanceof ObjectNode) ? null : result)
+                : null;
         callLog = finishCall == null ? null : finishCall.getStartCallLog();
       }
     }
     return new InvocationCallResult<>(callLog, result);
+  }
+
+  // TODO execute and addLog methods should be merged into a single one
+  public final void addLog(InvocationCall call, Object result,
+      boolean joinOnly, boolean autoAddInvocations, boolean addIfAutoAddSet) {
+    boolean createLog = true;
+    if (addIfAutoAddSet) {
+      InvocationCallStack currentLogStack = currentCallStack.get();
+      if (currentLogStack != null) {
+        createLog = currentLogStack.isAutoAddInvocations();
+      }
+    }
+    InvocationCallStack startCall = null;
+    if (createLog) {
+      startCall = startCall(call, joinOnly, autoAddInvocations);
+      createLog = createLog & (startCall != null);
+    }
+    InvocationCallLog callLog = null;
+    if (callLog == null) {
+      InvocationCallStack finishCall =
+          createLog
+              ? finishCall(result)
+              : null;
+      callLog = finishCall == null ? null : finishCall.getStartCallLog();
+    }
   }
 
 }

@@ -160,8 +160,14 @@ public class InvocationCallStack {
         .append(formatMs(t.totalMs))
         .append(", self=")
         .append(formatMs(t.selfMs))
-        .append("]")
-        .append("\n");
+        .append("]");
+    if (log.getResult() != null) {
+      sb.append("[result=")
+          .append(log.getResult())
+          .append("]");
+    }
+
+    sb.append("\n");
     String curlCommand = (String) log.getParameters().get("integrationCall");
     if (curlCommand != null) {
       sb.append(indent)
