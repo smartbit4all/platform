@@ -63,6 +63,12 @@ components:
           type: FilterExpressionFieldList
         filterType:
           type: SmartFilterType
+        properties:
+          description: |
+            Additional properties the client may use to customise the appearance or behaviour of the
+            widget.
+          additionalProperties:
+            type: object
     LayoutDirection:
       type: string
       enum:
@@ -95,3 +101,10 @@ components:
           $ref: '#/components/schemas/SmartComponentLayoutDefinition'
         constraint:
           type: ViewConstraint
+
+    ToolbarProperties:
+      type: object
+      properties:
+        scrollable:
+          type: boolean
+          default: false

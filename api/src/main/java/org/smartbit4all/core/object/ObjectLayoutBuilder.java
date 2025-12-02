@@ -28,6 +28,7 @@ import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentWidgetT
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentWidgetDefinition;
+import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ToolbarProperties;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiActionConstraint;
@@ -175,20 +176,41 @@ public final class ObjectLayoutBuilder {
     return widget(ComponentWidgetType.TOOLBAR, toolbarIdentifier);
   }
 
-  private static SmartComponentLayoutDefinition widget(ComponentWidgetType type,
-      String toolbarIdentifier) {
-    return widget(null, type, toolbarIdentifier);
+  public static SmartComponentLayoutDefinition toolbar(
+      String toolbarIdentifier,
+      ToolbarProperties toolbarProperties) {
+
+    Map<String, Object> properties = new HashMap<>();
+    properties.put(
+        ComponentWidgetType.TOOLBAR.getValue() + PROPERTIES_SUFFIX,
+        toolbarProperties);
+    return widget(null, ComponentWidgetType.TOOLBAR, toolbarIdentifier, properties);
   }
 
-  private static SmartComponentLayoutDefinition widget(String layoutIdentifier,
+  private static SmartComponentLayoutDefinition widget(ComponentWidgetType type,
+      String toolbarIdentifier) {
+    return widget(null, type, toolbarIdentifier, null);
+  }
+
+  private static SmartComponentLayoutDefinition widget(
+      String layoutIdentifier,
       ComponentWidgetType type,
       String widgetIdentifier) {
+    return widget(layoutIdentifier, type, widgetIdentifier, null);
+  }
+
+  private static SmartComponentLayoutDefinition widget(
+      String layoutIdentifier,
+      ComponentWidgetType type,
+      String widgetIdentifier,
+      Map<String, Object> properties) {
     return new SmartComponentLayoutDefinition()
         .identifier(layoutIdentifier)
         .type(ComponentType.WIDGET)
         .widget(new SmartComponentWidgetDefinition()
             .type(type)
-            .identifier(widgetIdentifier));
+            .identifier(widgetIdentifier)
+            .properties(properties));
   }
 
   /**

@@ -21,6 +21,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.HashMap;
+import java.util.Map;
 import org.smartbit4all.api.filterexpression.bean.FilterExpressionFieldList;
 import org.smartbit4all.api.filterexpression.bean.SmartFilterType;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.ComponentWidgetType;
@@ -36,7 +38,8 @@ import jakarta.validation.Valid;
   SmartComponentWidgetDefinition.TYPE,
   SmartComponentWidgetDefinition.IDENTIFIER,
   SmartComponentWidgetDefinition.FILTER_EXPRESSION_FIELD_LIST,
-  SmartComponentWidgetDefinition.FILTER_TYPE
+  SmartComponentWidgetDefinition.FILTER_TYPE,
+  SmartComponentWidgetDefinition.PROPERTIES
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
 public class SmartComponentWidgetDefinition {
@@ -51,6 +54,9 @@ public class SmartComponentWidgetDefinition {
 
   public static final String FILTER_TYPE = "filterType";
   private SmartFilterType filterType = null;
+
+  public static final String PROPERTIES = "properties";
+  private Map<String, Object> properties = new HashMap<>();
 
   public SmartComponentWidgetDefinition() {
   }
@@ -167,6 +173,41 @@ public class SmartComponentWidgetDefinition {
     this.filterType = filterType;
   }
 
+  public SmartComponentWidgetDefinition properties(Map<String, Object> properties) {
+    
+    this.properties = properties;
+    return this;
+  }
+
+  public SmartComponentWidgetDefinition putPropertiesItem(String key, Object propertiesItem) {
+    if (this.properties == null) {
+      this.properties = new HashMap<>();
+    }
+    this.properties.put(key, propertiesItem);
+    return this;
+  }
+
+  /**
+   * Additional properties the client may use to customise the appearance or behaviour of the widget. 
+   * @return properties
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Additional properties the client may use to customise the appearance or behaviour of the widget. ")
+  @JsonProperty(PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Map<String, Object> getProperties() {
+    return properties;
+  }
+
+
+  @JsonProperty(PROPERTIES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setProperties(Map<String, Object> properties) {
+    this.properties = properties;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -179,12 +220,13 @@ public class SmartComponentWidgetDefinition {
     return Objects.equals(this.type, smartComponentWidgetDefinition.type) &&
         Objects.equals(this.identifier, smartComponentWidgetDefinition.identifier) &&
         Objects.equals(this.filterExpressionFieldList, smartComponentWidgetDefinition.filterExpressionFieldList) &&
-        Objects.equals(this.filterType, smartComponentWidgetDefinition.filterType);
+        Objects.equals(this.filterType, smartComponentWidgetDefinition.filterType) &&
+        Objects.equals(this.properties, smartComponentWidgetDefinition.properties);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, identifier, filterExpressionFieldList, filterType);
+    return Objects.hash(type, identifier, filterExpressionFieldList, filterType, properties);
   }
 
   @Override
@@ -195,6 +237,7 @@ public class SmartComponentWidgetDefinition {
     sb.append("    identifier: ").append(toIndentedString(identifier)).append("\n");
     sb.append("    filterExpressionFieldList: ").append(toIndentedString(filterExpressionFieldList)).append("\n");
     sb.append("    filterType: ").append(toIndentedString(filterType)).append("\n");
+    sb.append("    properties: ").append(toIndentedString(properties)).append("\n");
     sb.append("}");
     return sb.toString();
   }
