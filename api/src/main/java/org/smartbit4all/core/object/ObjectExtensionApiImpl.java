@@ -334,7 +334,7 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
     extensionMap.branch(branchUri);
     final ObjectNode objectDescriptorNode = objectApi.load(extensionMap
         .uris()
-        .get(definitionName));
+        .get(definitionName), branchUri);
     objectDescriptorNode.modify(ObjectDescriptor.class, d -> {
 
       Map<String, URI> definitionProperties = d.getDefinitionProperties();
