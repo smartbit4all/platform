@@ -59,8 +59,10 @@ public class GroupEditorPageApiImpl extends PageApiImpl<GroupEditingModel>
     pageModel.getPossibleGroups()
         .forEach(g -> orgApi.removeSubGroup(pageModel.getGroup().getUri(), g.getUri()));
 
-    pageModel.getChildGroups().stream()
-        .forEach(g -> orgApi.addChildGroup(pageModel.getGroup(), orgApi.getGroup(g)));
+
+    Group group = pageModel.getGroup();
+    group.setChildren(pageModel.getChildGroups());
+    orgApi.updateGroup(group);
 
     viewApi.closeView(viewUuid);
   }
