@@ -202,6 +202,9 @@ public class ObjectMapHelper {
 
   public List<Map<String, Object>> getAsListOfMap(String key) {
     List<Object> list = getAsList(key, Object.class);
+    if (list == null) {
+      return null;
+    }
     return list.stream().map(o -> objectApi.toMapObject(o)).collect(Collectors.toList());
   }
 
