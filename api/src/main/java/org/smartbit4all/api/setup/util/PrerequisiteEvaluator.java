@@ -102,7 +102,7 @@ public final class PrerequisiteEvaluator<E> {
       // to the right by 2. We increment the upper bound for all, not yet encountered items which
       // are bounded higher than this target index:
       boundHigh.keySet().forEach(it -> boundHigh.computeIfPresent(it, (key, v) -> (targetIdx > v)
-          ? v + 2
+          ? v + 1
           : v));
     }
 
