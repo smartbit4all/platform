@@ -44,4 +44,7 @@ public interface VectorDBApi extends PrimaryApi<VectorDBContributionApi> {
   List<VectorSearchResultItem> search(ServiceConnection dbConnection, String collectionName,
       VectorValue searchVector, int limit, Map<String, Object> parameters);
 
+  List<VectorSearchResultItem> search(ServiceConnection dbConnection, List<String> collectionNames,
+      VectorValue searchVector, int limit, Map<String, Object> parameters);
+
 }

@@ -1,5 +1,6 @@
 package org.smartbit4all.api.collection;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -88,6 +89,24 @@ public final class VectorDBApiImpl extends PrimaryApiImpl<VectorDBContributionAp
     Objects.requireNonNull(contributionApi);
     return contributionApi.search(dbConnection, collectionName,
         searchVector, limit, parameters);
+  }
+
+  /**
+   * {@inheritDoc}
+   * 
+   * Implementation note: parameter limit value is per vector collection!
+   */
+  @Override
+  public List<VectorSearchResultItem> search(ServiceConnection dbConnection,
+      List<String> collectionNames,
+      VectorValue searchVector, int limit, Map<String, Object> parameters) {
+    Objects.requireNonNull(dbConnection);
+    VectorDBContributionApi contributionApi = getContributionApi(dbConnection.getApiName());
+    Objects.requireNonNull(contributionApi);
+    List<VectorSearchResultItem> results = new ArrayList<>();
+    collectionNames.forEach(collectionName -> results.addAll(
+        contributionApi.search(dbConnection, collectionName, searchVector, limit, parameters)));
+    return results;
   }
 
 }
