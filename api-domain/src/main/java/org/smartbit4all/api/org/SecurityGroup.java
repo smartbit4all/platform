@@ -38,8 +38,10 @@ public final class SecurityGroup {
   private String description;
 
   /**
-   * If set to true group should be unmodifiable.
+   * If set to true group should be unmodifiable. The code levele {@link SecurityGroup} is always
+   * builin!
    */
+  @Deprecated
   private boolean builtIn;
 
   /**
@@ -76,6 +78,7 @@ public final class SecurityGroup {
     return this;
   }
 
+  @Deprecated
   public SecurityGroup builtIn(boolean builtIn) {
     this.builtIn = builtIn;
     return this;
@@ -146,10 +149,12 @@ public final class SecurityGroup {
     this.title = name;
   }
 
+  @Deprecated
   public boolean isbuiltIn() {
     return builtIn;
   }
 
+  @Deprecated
   void setBuiltIn(boolean builtIn) {
     this.builtIn = builtIn;
   }
@@ -162,7 +167,8 @@ public final class SecurityGroup {
     this.checkForPrimaryAccount = checkForPrimaryAccount;
   }
 
-  public void setUsersOfPrimaryAccountSupplier(Function<URI, List<URI>> usersOfPrimaryAccountSupplier) {
+  public void setUsersOfPrimaryAccountSupplier(
+      Function<URI, List<URI>> usersOfPrimaryAccountSupplier) {
     this.usersOfPrimaryAccountSupplier = usersOfPrimaryAccountSupplier;
   }
 

@@ -1,7 +1,5 @@
 package org.smartbit4all.api.org;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -67,6 +65,8 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class OrgApiStorageImpl implements OrgApi {
 
@@ -318,15 +318,14 @@ public class OrgApiStorageImpl implements OrgApi {
               .name(securityGroup.getName())
               .title(securityGroup.getTitle())
               .description(securityGroup.getDescription())
-              .builtIn(securityGroup.isbuiltIn());
+              .builtIn(Boolean.TRUE);
       saveGroup(newGroup);
       return newGroup;
-    } else if (!(Objects.equals(group.getName(), securityGroup.getName())
-        && Objects.equals(group.getTitle(), securityGroup.getTitle())
+    } else if (!(Objects.equals(group.getTitle(), securityGroup.getTitle())
         && Objects.equals(group.getDescription(), securityGroup.getDescription())
-        && Objects.equals(group.getBuiltIn(), securityGroup.isbuiltIn()))) {
+        && Objects.equals(group.getBuiltIn(), securityGroup.isbuiltIn()))
+        && Boolean.TRUE.equals(group.getBuiltIn())) {
       group
-          .name(securityGroup.getName())
           .title(securityGroup.getTitle())
           .description(securityGroup.getDescription())
           .builtIn(securityGroup.isbuiltIn());
@@ -358,6 +357,9 @@ public class OrgApiStorageImpl implements OrgApi {
   private void updateSubGroupsOfSecurityGroups(Map<SecurityGroup, Group> analizedGroups) {
     for (Entry<SecurityGroup, Group> entry : analizedGroups.entrySet()) {
       Group mainGroup = entry.getValue();
+      if (!Boolean.TRUE.equals(mainGroup.getBuiltIn())) {
+        continue;
+      }
       List<URI> currentChildUris = new ArrayList<>(mainGroup.getChildren());
       List<URI> newChildUris = new ArrayList<>();
       boolean subGroupListHasChanged = false;
