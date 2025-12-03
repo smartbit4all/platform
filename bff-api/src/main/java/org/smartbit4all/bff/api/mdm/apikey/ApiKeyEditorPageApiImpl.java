@@ -128,7 +128,7 @@ public class ApiKeyEditorPageApiImpl extends MDMEntryEditPageApiImpl
             .enabled(isCreation),
         new ComponentConstraint()
             .dataName(ApiKey.SCOPE)
-            .mandatory(false)
+            .mandatory(true)
             .enabled(isCreation),
         new ComponentConstraint()
             .dataName(ApiKey.EXPIRATION)
