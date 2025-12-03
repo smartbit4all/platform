@@ -84,6 +84,22 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
   }
 
   @Override
+  public <T> List<T> enusreListExists(List<T> list) {
+    if (list == null) {
+      return new ArrayList<>();
+    }
+    return list;
+  }
+
+  @Override
+  public <T> Map<String, T> ensureMapExists(Map<String, T> map) {
+    if (map == null) {
+      return new HashMap<>();
+    }
+    return map;
+  }
+
+  @Override
   public <E> E listToObject(List<E> list) {
     if (isEmpty(list)) {
       return null;

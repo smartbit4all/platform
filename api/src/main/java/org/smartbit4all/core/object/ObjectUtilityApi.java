@@ -48,4 +48,8 @@ public interface ObjectUtilityApi {
   <E> List<E> setItemIntoList(Integer index, List<E> list, E item, String key);
 
   Boolean equals(Object o, Object ob);
+
+  <T> List<T> enusreListExists(List<T> list);
+
+  <T> Map<String, T> ensureMapExists(Map<String, T> map);
 }
