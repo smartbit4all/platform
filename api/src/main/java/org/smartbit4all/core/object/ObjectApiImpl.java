@@ -885,7 +885,7 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public Object setValueIntoObjectMap(Map<String, Object> map, Object newValue, String... paths) {
-    return processValueFromObjectMap(map, Optional.of(newValue), paths);
+    return processValueFromObjectMap(map, Optional.ofNullable(newValue), paths);
   }
 
   @Override
