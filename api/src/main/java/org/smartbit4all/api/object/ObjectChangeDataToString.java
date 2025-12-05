@@ -1,5 +1,6 @@
 package org.smartbit4all.api.object;
 
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -101,7 +102,15 @@ public class ObjectChangeDataToString {
         return dateTimeFormatter
             .format(offsetDateTime.atZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime());
       }
-    } catch (Exception e) {
+    } catch (Exception e1) {
+      try {
+        LocalDateTime localDateTime = objectApi.asType(LocalDateTime.class, date);
+        if (localDateTime != null) {
+          return dateTimeFormatter.format(localDateTime);
+        }
+      } catch (Exception e2) {
+
+      }
     }
     return date;
 
