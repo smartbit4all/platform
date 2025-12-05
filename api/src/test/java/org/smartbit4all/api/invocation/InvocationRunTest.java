@@ -24,7 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @SpringBootTest(classes = {
-    InvocationTestConfig.class,
+    InvocationTestStorageConfig.class,
+}, properties = {
+    "invocationregistry.refresh.fixeddelay=5000",
+    "applicationruntime.maintain.fixeddelay=2000",
+    "applicationsetup.schedule.initdelay=1000",
+    "applicationsetup.schedule.fixeddelay=200",
 })
 @TestMethodOrder(OrderAnnotation.class)
 public class InvocationRunTest {

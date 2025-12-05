@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -133,6 +134,9 @@ public class SessionManagementApiImpl implements SessionManagementApi {
       return storageInstance;
     }
   };
+
+  private final ConcurrentHashMap<URI, Session> sessionCache =
+      new ConcurrentHashMap<>();
 
   @Override
   public SessionInfoData startSession() {
@@ -531,12 +535,39 @@ public class SessionManagementApiImpl implements SessionManagementApi {
 
     Assert.notNull(technicalUserUri, "technicalUserUri cannot be null");
 
+    Session session = sessionCache.compute(technicalUserUri, (u, s) -> {
+      if (s != null) {
+        SessionUserEntry sessionEntry = getSession(s.getUri());
+        if (sessionEntry == null) {
+          log.warn("Unable to obtain technical session ({}) for user ({}). ", s, u);
+          s = null;
+        } else {
+          s = sessionEntry.getSession();
+        }
+      }
+      if (isExpiredSession(s)) {
+        return createNewTechnicalSession(u);
+      }
+      return s;
+    });
+
+    SessionAuthToken authToken = SessionAuthToken.create(session);
+    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+  }
+
+  private final boolean isExpiredSession(Session s) {
+    if (s == null || s.getExpiration() == null) {
+      return true;
+    }
+    return s.getExpiration().isBefore(OffsetDateTime.now());
+  }
+
+  private final Session createNewTechnicalSession(URI technicalUserUri) {
     User technicalUser = orgApi.getUser(technicalUserUri);
     if (technicalUser == null) {
       throw new IllegalArgumentException("The given technical user does not exist!");
     }
-
-
     OffsetDateTime expiration = OffsetDateTime.now().plusMinutes(timeoutMins);
     Session session = new Session();
     session.putParametersItem("sessionKind", TECHNICAL);
@@ -549,15 +580,13 @@ public class SessionManagementApiImpl implements SessionManagementApi {
     accountInfo.setKind(TECHNICAL);
     session.addAuthenticationsItem(accountInfo);
     URI sessionUri = storage.get().saveAsNew(session);
+    session.setUri(sessionUri);
     log.debug("Technical session saved!\n{}", session);
 
     String sid = createSid(sessionUri, expiration);
     storage.get().update(sessionUri, Session.class,
         s -> s.putParametersItem(SessionInfoData.SID, sid));
-
-    SessionAuthToken authToken = SessionAuthToken.create(session);
-    SecurityContextHolder.getContext().setAuthentication(authToken);
-
+    return session;
   }
 
   private URI getOrCreateSystemUser() {

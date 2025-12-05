@@ -1,18 +1,10 @@
 package org.smartbit4all.api.invocation;
 
 import org.smartbit4all.api.config.PlatformApiConfig;
-import org.smartbit4all.core.io.TestFileUtil;
-import org.smartbit4all.core.object.ObjectDefinitionApi;
 import org.smartbit4all.domain.config.ApplicationRuntimeStorageConfig;
-import org.smartbit4all.domain.data.storage.ObjectStorage;
-import org.smartbit4all.domain.data.storage.Storage;
-import org.smartbit4all.storage.fs.StorageFS;
-import org.smartbit4all.storage.fs.StorageTransactionManagerFS;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
@@ -23,6 +15,14 @@ public class InvocationTestConfig {
   public static final String GLOBAL_ASYNC_CHANNEL = "global";
 
   public static final String SECOND_ASYNC_CHANNEL = "second";
+
+  public static final String THIRD_ASYNC_CHANNEL = "third";
+
+  public static final String USER1 = "USER1";
+
+  public static final String USER2 = "USER2";
+
+  public static final String USER3 = "USER3";
 
   @Bean
   public TestApi testApi() {
@@ -61,11 +61,6 @@ public class InvocationTestConfig {
   }
 
   @Bean
-  ObjectStorage objectStorage(ObjectDefinitionApi objectApi) {
-    return new StorageFS(TestFileUtil.testFsRootFolder(), objectApi);
-  }
-
-  @Bean
   public AsyncInvocationChannel globalChannel() {
     return new AsyncInvocationChannelImpl(GLOBAL_ASYNC_CHANNEL);
   }
@@ -75,15 +70,10 @@ public class InvocationTestConfig {
     return new AsyncInvocationChannelImpl(SECOND_ASYNC_CHANNEL);
   }
 
-  @EventListener(ContextRefreshedEvent.class)
-  public void clearFS(ContextRefreshedEvent event) throws Exception {
-    TestFileUtil.clearTestDirectory();
-    System.out.println("Test FS cleared...");
-  }
-
-  @Bean(Storage.STORAGETX)
-  public StorageTransactionManagerFS transactionManager(StorageFS storageFS) {
-    return new StorageTransactionManagerFS(storageFS);
+  @Bean
+  public AsyncInvocationChannel thirdChannel() {
+    return new AsyncInvocationChannelImpl(THIRD_ASYNC_CHANNEL)
+        .technicalUserName(USER1);
   }
 
   @Bean

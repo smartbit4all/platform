@@ -63,4 +63,10 @@ public interface TestApi {
 
   InvocationResultDecision thirdStepOnError(AsyncInvocationRequest r, InvocationResult p);
 
+  Boolean immediate();
+
+  Boolean waitInMillis(Long millis);
+
+  Boolean finish();
+
 }

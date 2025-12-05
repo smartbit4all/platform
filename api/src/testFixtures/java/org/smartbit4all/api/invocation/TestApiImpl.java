@@ -2,6 +2,7 @@ package org.smartbit4all.api.invocation;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.smartbit4all.api.invocation.bean.AsyncInvocationRequest;
@@ -10,6 +11,7 @@ import org.smartbit4all.api.invocation.bean.InvocationResultDecision;
 import org.smartbit4all.api.invocation.bean.InvocationResultDecision.DecisionEnum;
 import org.smartbit4all.api.invocation.bean.TestDataBean;
 import org.smartbit4all.api.sample.bean.SampleCategory;
+import org.smartbit4all.api.session.SessionApi;
 import org.smartbit4all.core.object.ObjectApi;
 import org.smartbit4all.core.object.ObjectNode;
 import org.smartbit4all.core.utility.concurrent.FutureValue;
@@ -29,8 +31,15 @@ public class TestApiImpl implements TestApi {
 
   public static FutureValue<String> thirdResult = new FutureValue<>();
 
+  public static List<URI> technicalSessions = new ArrayList<>();
+
+  public static FutureValue<Long> finishFutureValue = new FutureValue<>();
+
   @Autowired
   private ObjectApi objectApi;
+
+  @Autowired(required = false)
+  private SessionApi sessionApi;
 
   @Override
   public void doMethod(String p1) {
@@ -65,17 +74,20 @@ public class TestApiImpl implements TestApi {
 
   @Override
   public String firstStep(String p) {
+    saveSessionUri();
     return p;
   }
 
   @Override
   public InvocationResultDecision firstStepOnError(AsyncInvocationRequest r, InvocationResult p) {
+    saveSessionUri();
     return new InvocationResultDecision().decision(DecisionEnum.CONTINUE)
         .scheduledAt(OffsetDateTime.now().plusSeconds(1));
   }
 
   @Override
   public String secondStep(String p, String postfix) {
+    saveSessionUri();
     String result = p + postfix;
     TestApiImpl.secondResult.setValue(result);
     return result;
@@ -83,6 +95,7 @@ public class TestApiImpl implements TestApi {
 
   @Override
   public String thirdStep(String p, String postfix) {
+    saveSessionUri();
     try {
       Thread.sleep(rnd.nextInt(1000));
     } catch (InterruptedException e) {
@@ -98,6 +111,7 @@ public class TestApiImpl implements TestApi {
 
   @Override
   public InvocationResultDecision thirdStepOnError(AsyncInvocationRequest r, InvocationResult p) {
+    saveSessionUri();
     return p.getError() != null ? new InvocationResultDecision().decision(DecisionEnum.RESCHEDULE)
         .scheduledAt(OffsetDateTime.now().plusSeconds(3))
         : new InvocationResultDecision().decision(DecisionEnum.CONTINUE);
@@ -110,6 +124,37 @@ public class TestApiImpl implements TestApi {
     categoryNode.setValue(parentName, SampleCategory.NAME);
     objectApi.save(categoryNode);
     return result;
+  }
+
+  private final void saveSessionUri() {
+    if (sessionApi != null) {
+      technicalSessions.add(sessionApi.getSessionUri());
+    }
+  }
+
+  @Override
+  public Boolean immediate() {
+    saveSessionUri();
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean waitInMillis(Long millis) {
+    saveSessionUri();
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return Boolean.TRUE;
+  }
+
+  @Override
+  public Boolean finish() {
+    saveSessionUri();
+    finishFutureValue.setValue(Long.valueOf(0));
+    return Boolean.TRUE;
   }
 
 }

@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = {
-    InvocationTestConfig.class,
+    InvocationTestStorageConfig.class,
     ScheduledJobTestConfig.class
 }, properties = {
     "applicationruntime.refreshruntime.fixeddelay=2000",
