@@ -115,6 +115,9 @@ components:
         useIconActions:
           type: boolean
           default: false
+        keepOriginalFileNames:
+          type: boolean
+          default: false
         toolbarPosition:
           $ref: '#/components/schemas/ToolbarPosition'
 

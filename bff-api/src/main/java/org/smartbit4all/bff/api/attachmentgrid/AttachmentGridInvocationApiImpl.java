@@ -158,13 +158,8 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
         AttachmentGridHelper.getDescriptorFromView(view, widgetId, objectApi);
     Object object = view.getParameters().get(
         descriptor.getGridWidgetId() + ATTACHMENT_GRID_ORIGINAL_LIST_POSTFIX);
-    List<BinaryContentData> originalList = objectApi.asType(List.class, object);
 
-    if (ObjectUtils.isEmpty(originalList)) {
-      descriptor.setAttachmentList(new ArrayList<>());
-    } else {
-      descriptor.setAttachmentList(originalList);
-    }
+    descriptor.setAttachmentList(new ArrayList<>());
 
     UiActions.remove(view, getSaveListAction(descriptor));
     UiActions.add(view, getSaveListAction(descriptor).disabled(true));
@@ -197,7 +192,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
           actionRequestHelper.getAsList(UiActions.INPUT2, UploadedFile.class);
       newAttachments.addAll(uploadedFiles.stream().map(uploadedFile -> {
         BinaryContentData bCData = generateUniqueFilename(
-            uploadedFile.getFilename(), existingFileNames)
+            uploadedFile.getFilename(), existingFileNames, descriptor)
                 .dataUri(objectApi.saveAsNew(
                     descriptor.getLogicalSchema(), uploadedFile.getData().asObject()))
                 .created(sessionApi.createActivityLog())
@@ -210,7 +205,7 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
       UploadedFile uploadedFile =
           actionRequestHelper.get(UiActions.INPUT2, UploadedFile.class);
       BinaryContentData bCData = generateUniqueFilename(
-          uploadedFile.getFilename(), existingFileNames)
+          uploadedFile.getFilename(), existingFileNames, descriptor)
               .dataUri(objectApi.saveAsNew(
                   descriptor.getLogicalSchema(), uploadedFile.getData().asObject()))
               .created(sessionApi.createActivityLog())
@@ -300,25 +295,35 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     descriptor.setAttachmentList(currentDocuments);
 
     View view = viewApi.getView(viewUuid);
-
-    if (!options.getAutoSave()) {
+    if (ObjectUtils.isEmpty(currentDocuments)) {
+      UiActions.remove(view, getSaveListAction(descriptor));
+      UiActions.add(view, getSaveListAction(descriptor).disabled(true));
+    } else if (!options.getAutoSave()) {
       UiActions.remove(view, getSaveListAction(descriptor));
       UiActions.add(view, getSaveListAction(descriptor).disabled(false));
     }
-    setGrid(descriptor);
 
+
+    setGrid(descriptor);
     if (options.getAutoSave()) {
       saveListRequest(viewUuid, request, widgetId);
     }
   }
 
   private BinaryContentData generateUniqueFilename(String uploadedFilename,
-      List<String> existingFileNames) {
+      List<String> existingFileNames, AttachmentGridDescriptor descriptor) {
+
 
     String regex = "^(.*?)(\\s*\\(\\d+\\))*\\s*\\.\\w+$";
 
     String baseName = uploadedFilename.replaceAll(regex, "$1");
     String extension = uploadedFilename.replaceAll("^.*\\.(.*)$", "$1");
+
+    if (Boolean.TRUE.equals(
+        descriptor.getOptions().getKeepOriginalFileNames())) {
+      return new BinaryContentData()
+          .fileName(uploadedFilename).extension(extension);
+    }
 
     List<String> baseFileNames = existingFileNames.stream()
         .map(filename -> filename.replaceAll(regex, "$1"))
@@ -355,10 +360,6 @@ public class AttachmentGridInvocationApiImpl implements AttachmentGridInvocation
     }
     AttachmentGridHelper.saveOriginalAttachmentList(descriptor, viewApi);
 
-    if (!options.getAutoSave()) {
-      UiActions.remove(view, getSaveListAction(descriptor));
-      UiActions.add(view, getSaveListAction(descriptor).disabled(true));
-    }
 
     if (viewApi.getView(viewUuid).getType().equals(ViewType.DIALOG)
         && options.getCloseOnSave().equals(Boolean.TRUE)) {

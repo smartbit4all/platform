@@ -216,6 +216,12 @@ public abstract class AttachmentGridBuilder<T extends AttachmentGridBuilder<T>> 
     return self();
   }
 
+  public T keepOriginalFileNames(Boolean value) {
+    Objects.requireNonNull(value, "value cannot be null!");
+    this.options.keepOriginalFileNames(value);
+    return self();
+  }
+
   public T toolbarPosition(ToolbarPosition toolbarPosition) {
     Objects.requireNonNull(toolbarPosition, "toolbarPosition cannot be null!");
     this.options.toolbarPosition(toolbarPosition);

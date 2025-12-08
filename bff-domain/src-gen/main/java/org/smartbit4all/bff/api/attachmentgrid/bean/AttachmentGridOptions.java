@@ -40,6 +40,7 @@ import jakarta.validation.Valid;
   AttachmentGridOptions.IS_MULTIPLE_INPUT,
   AttachmentGridOptions.DIALOG_TITLE,
   AttachmentGridOptions.USE_ICON_ACTIONS,
+  AttachmentGridOptions.KEEP_ORIGINAL_FILE_NAMES,
   AttachmentGridOptions.TOOLBAR_POSITION
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -70,6 +71,9 @@ public class AttachmentGridOptions {
 
   public static final String USE_ICON_ACTIONS = "useIconActions";
   private Boolean useIconActions = false;
+
+  public static final String KEEP_ORIGINAL_FILE_NAMES = "keepOriginalFileNames";
+  private Boolean keepOriginalFileNames = false;
 
   public static final String TOOLBAR_POSITION = "toolbarPosition";
   private ToolbarPosition toolbarPosition;
@@ -320,6 +324,33 @@ public class AttachmentGridOptions {
     this.useIconActions = useIconActions;
   }
 
+  public AttachmentGridOptions keepOriginalFileNames(Boolean keepOriginalFileNames) {
+    
+    this.keepOriginalFileNames = keepOriginalFileNames;
+    return this;
+  }
+
+  /**
+   * Get keepOriginalFileNames
+   * @return keepOriginalFileNames
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "")
+  @JsonProperty(KEEP_ORIGINAL_FILE_NAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public Boolean getKeepOriginalFileNames() {
+    return keepOriginalFileNames;
+  }
+
+
+  @JsonProperty(KEEP_ORIGINAL_FILE_NAMES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setKeepOriginalFileNames(Boolean keepOriginalFileNames) {
+    this.keepOriginalFileNames = keepOriginalFileNames;
+  }
+
   public AttachmentGridOptions toolbarPosition(ToolbarPosition toolbarPosition) {
     
     this.toolbarPosition = toolbarPosition;
@@ -366,12 +397,13 @@ public class AttachmentGridOptions {
         Objects.equals(this.isMultipleInput, attachmentGridOptions.isMultipleInput) &&
         Objects.equals(this.dialogTitle, attachmentGridOptions.dialogTitle) &&
         Objects.equals(this.useIconActions, attachmentGridOptions.useIconActions) &&
+        Objects.equals(this.keepOriginalFileNames, attachmentGridOptions.keepOriginalFileNames) &&
         Objects.equals(this.toolbarPosition, attachmentGridOptions.toolbarPosition);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(isAutoUpload, isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle, useIconActions, toolbarPosition);
+    return Objects.hash(isAutoUpload, isPreviewable, isDownloadable, isEditable, closeOnSave, autoSave, isMultipleInput, dialogTitle, useIconActions, keepOriginalFileNames, toolbarPosition);
   }
 
   @Override
@@ -387,6 +419,7 @@ public class AttachmentGridOptions {
     sb.append("    isMultipleInput: ").append(toIndentedString(isMultipleInput)).append("\n");
     sb.append("    dialogTitle: ").append(toIndentedString(dialogTitle)).append("\n");
     sb.append("    useIconActions: ").append(toIndentedString(useIconActions)).append("\n");
+    sb.append("    keepOriginalFileNames: ").append(toIndentedString(keepOriginalFileNames)).append("\n");
     sb.append("    toolbarPosition: ").append(toIndentedString(toolbarPosition)).append("\n");
     sb.append("}");
     return sb.toString();
