@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -885,15 +884,16 @@ public class ObjectApiImpl implements ObjectApi {
 
   @Override
   public Object setValueIntoObjectMap(Map<String, Object> map, Object newValue, String... paths) {
-    return processValueFromObjectMap(map, Optional.ofNullable(newValue), paths);
+    return processValueFromObjectMap(map, newValue, true, paths);
   }
 
   @Override
   public Object getValueFromObjectMap(Map<String, Object> map, String... paths) {
-    return processValueFromObjectMap(map, Optional.empty(), paths);
+    return processValueFromObjectMap(map, null, false, paths);
   }
 
-  public Object processValueFromObjectMap(Map<String, Object> map, Optional<Object> newValue,
+  private Object processValueFromObjectMap(Map<String, Object> map, Object newValue,
+      boolean modify,
       String... paths) {
     if (map == null) {
       return null;
@@ -902,42 +902,44 @@ public class ObjectApiImpl implements ObjectApi {
       String path = paths[0];
       Object value = map.get(path);
       if (paths.length == 1) {
-        if (newValue.isPresent()) {
-          map.put(path, newValue.get());
+        if (modify) {
+          map.put(path, newValue);
         }
         return value;
       }
-      if (value == null && newValue.isPresent()) {
+      if (value == null && modify) {
         value = new HashMap<>();
         map.put(path, value);
       }
-      return continueFromFirstValue(value, newValue, paths);
+      return continueFromFirstValue(value, newValue, modify, paths);
     }
     return map;
   }
 
   // paths[0] is value, and paths.length > 1, continue based on value's class
   @SuppressWarnings("unchecked")
-  private Object continueFromFirstValue(Object value, Optional<Object> newValue, String... paths) {
+  private Object continueFromFirstValue(Object value, Object newValue, boolean modify,
+      String... paths) {
     if (value == null) {
       return null;
     }
     String[] subPaths = Arrays.copyOfRange(paths, 1, paths.length);
     if (value instanceof Map) {
       Map<String, Object> subMap = (Map<String, Object>) value;
-      return processValueFromObjectMap(subMap, newValue, subPaths);
+      return processValueFromObjectMap(subMap, newValue, modify, subPaths);
     }
     if (value instanceof List) {
       List<Object> subList = (List<Object>) value;
-      return getValueFromObjectList(subList, newValue, subPaths);
+      return getValueFromObjectList(subList, newValue, modify, subPaths);
     }
     // TODO any other object - we may try to convert it to a map with it's classes
     // objectDefinition?
     Map<String, Object> objectAsMap = getObjectAsMap(value);
-    return processValueFromObjectMap(objectAsMap, newValue, subPaths);
+    return processValueFromObjectMap(objectAsMap, newValue, modify, subPaths);
   }
 
-  private Object getValueFromObjectList(List<Object> list, Optional<Object> newValue,
+  private Object getValueFromObjectList(List<Object> list, Object newValue,
+      boolean modify,
       String... paths) {
     if (list == null) {
       return null;
@@ -958,7 +960,7 @@ public class ObjectApiImpl implements ObjectApi {
       if (paths.length == 1) {
         return value;
       }
-      return continueFromFirstValue(value, newValue, paths);
+      return continueFromFirstValue(value, newValue, modify, paths);
     }
     return list;
   }
