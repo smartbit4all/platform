@@ -15,7 +15,7 @@ public interface SessionSubsciberApi {
 
   void loginFailed(URI sessionUri, String user, String reason);
 
-  void loginSucceeded(URI sessionUri, User user);
+  void loginSucceeded(URI sessionUri, User user, String authenticationClassName);
 
   void logout(URI sessionUri, AccountInfo accountInfo, User user);
 

@@ -29,7 +29,7 @@ public interface SessionPublisherApi {
 
   void fireOnLoginFailed(URI sessionUri, String user, String reason);
 
-  void fireOnLoginSucceeded(URI sessionUri, User user);
+  void fireOnLoginSucceeded(URI sessionUri, User user, String authenticationClassName);
 
   void fireOnLogout(URI sessionUri, AccountInfo accountInfo, User user);
 

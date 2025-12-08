@@ -19,7 +19,6 @@ import org.smartbit4all.sec.authprincipal.SessionAuthToken;
 import org.smartbit4all.sec.session.SessionPublisherApi;
 import org.smartbit4all.sec.utils.SecurityContextUtility;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -143,7 +142,7 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
     sessionManagementApi.setSessionUser(sessionUri, user.getUri());
     sessionManagementApi.addSessionAuthentication(sessionUri, accountInfo);
 
-    fireOnLoginSucceeded(null, user);
+    fireOnLoginSucceeded(null, user, authentication.getClass().getName());
 
     return createSessionAuthentication(originalAuthentication, user, sessionUri,
         sessionApi.getAuthentications());
@@ -213,9 +212,9 @@ public abstract class SessionHandlerAuthenticationProvider implements Authentica
         throws AuthenticationException;
   }
 
-  private void fireOnLoginSucceeded(URI sessionUri, User user) {
+  private void fireOnLoginSucceeded(URI sessionUri, User user, String authenticationClassName) {
     if (sessionPublisherApi != null) {
-      sessionPublisherApi.fireOnLoginSucceeded(sessionUri, user);
+      sessionPublisherApi.fireOnLoginSucceeded(sessionUri, user, authenticationClassName);
     }
     onLoginSucceeded.accept(user);
   }

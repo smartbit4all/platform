@@ -39,11 +39,11 @@ public class SessionPublisherApiImpl implements SessionPublisherApi {
   }
 
   @Override
-  public void fireOnLoginSucceeded(URI sessionUri, User user) {
+  public void fireOnLoginSucceeded(URI sessionUri, User user, String authenticationClassName) {
     invocationApi
         .publisher(SessionPublisherApi.class, SessionSubsciberApi.class,
             SessionPublisherApi.LOGIN_SUCCEEDED)
-        .publish(api -> api.loginSucceeded(sessionUri, user));
+        .publish(api -> api.loginSucceeded(sessionUri, user, authenticationClassName));
   }
 
   @Override
