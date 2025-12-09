@@ -2,7 +2,9 @@ package org.smartbit4all.api.invocation.restclient;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
@@ -24,6 +26,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClient.RequestBodySpec;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -173,6 +177,14 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
           binaryDataObject.getBinaryData().inputStream());
     } else if (body != null) {
       bodyObj = objectApi.mapper().setContext(contextObject).mapping(body).execute();
+      if (MediaType.APPLICATION_FORM_URLENCODED.equals(contentType)) {
+        Map<String, Object> mapObject = objectApi.toMapObject(bodyObj);
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        for (Entry<String, Object> entry : mapObject.entrySet()) {
+          formData.add(entry.getKey(), objectApi.asString(entry.getValue()));
+        }
+        bodyObj = formData;
+      }
     }
     return bodyObj;
   }
@@ -180,9 +192,17 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   private Map<String, String> constructQueryParamsMap(ObjectMappingDefinition queryParams,
       ContextObject contextObject) {
     if (queryParams != null) {
+
       Object queryParamsObj =
           objectApi.mapper().setContext(contextObject).mapping(queryParams).execute();
-      return objectApi.asMap(String.class, objectApi.toMapObject(queryParamsObj));
+
+      Map<String, String> result = new HashMap<>();
+      Map<String, Object> mapObject = objectApi.toMapObject(queryParamsObj);
+      for (Map.Entry<String, Object> entry : mapObject.entrySet()) {
+        Object value = entry.getValue();
+        result.put(entry.getKey(), objectApi.asString(value));
+      }
+      return result;
     }
     return Collections.emptyMap();
   }
