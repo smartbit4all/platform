@@ -20,6 +20,7 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.serialize.UriDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -71,7 +72,8 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
   }
 
   private static ObjectMapper setupObjectMapper() {
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper(
+        JsonFactory.builder().enable(JsonFactory.Feature.INTERN_FIELD_NAMES).build());
     objectMapper.registerModule(new JavaTimeModule());
     SimpleModule module = new SimpleModule();
     module.addDeserializer(LocalDate.class, ZonedLocalDateDeserializer.INSTANCE);
