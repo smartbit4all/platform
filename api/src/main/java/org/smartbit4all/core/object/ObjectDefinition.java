@@ -1,5 +1,7 @@
 package org.smartbit4all.core.object;
 
+import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.utility.StringConstant.intern;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -20,7 +22,6 @@ import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -182,7 +183,7 @@ public final class ObjectDefinition<T> {
   public ObjectDefinition(Class<T> clazz) {
     super();
     this.clazz = clazz;
-    this.qualifiedName = clazz.getName();
+    setQualifiedName(clazz.getName());
     meta = BeanMetaUtil.meta(clazz);
   }
 
@@ -195,7 +196,7 @@ public final class ObjectDefinition<T> {
   }
 
   final void setAlias(String alias) {
-    this.alias = alias;
+    this.alias = intern(alias);
   }
 
   public final ObjectSerializer getDefaultSerializer() {
@@ -359,7 +360,7 @@ public final class ObjectDefinition<T> {
         }
       } else {
         summariesByName.put(ObjectSummarySupplier.DEFAULT,
-            new ObjectSummarySupplier<T>(clazz, ObjectSummarySupplier.DEFAULT) {
+            new ObjectSummarySupplier<>(clazz, ObjectSummarySupplier.DEFAULT) {
 
               @Override
               public String apply(T t) {
@@ -421,7 +422,7 @@ public final class ObjectDefinition<T> {
   }
 
   final void setQualifiedName(String qualifiedName) {
-    this.qualifiedName = qualifiedName;
+    this.qualifiedName = intern(qualifiedName);
   }
 
   public final BeanMeta meta() {

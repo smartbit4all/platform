@@ -7,6 +7,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.form;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.multiSelectCombobox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.selectionDefinition;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
+import static org.smartbit4all.core.utility.StringConstant.intern;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -419,8 +420,8 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
 
     final ObjectNodeData data = new ObjectNodeData()
         .objectUri(null)
-        .qualifiedName(definition.getQualifiedName())
-        .storageSchema(storageSchema)
+        .qualifiedName(intern(definition.getQualifiedName()))
+        .storageSchema(intern(storageSchema))
         .objectAsMap(new ObjectMap(definition) /* new LinkedHashMap<>() */)
         .state(ObjectNodeState.NEW)
         .versionNr(null);

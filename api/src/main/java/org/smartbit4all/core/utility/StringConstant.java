@@ -14,13 +14,13 @@
  ******************************************************************************/
 package org.smartbit4all.core.utility;
 
+import static java.util.stream.Collectors.joining;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.joining;
 
 /**
  * An interface for the string constants. Do not implement this! We created it to avoid the direct
@@ -261,6 +261,13 @@ public class StringConstant {
     return sb.toString();
   }
 
+  public static final String intern(String string) {
+    if (string == null) {
+      return string;
+    }
+    return string.intern();
+  }
+
   /** Result of BOM detection. */
   public static final class BomMatch {
     public final Charset charset;
@@ -278,8 +285,9 @@ public class StringConstant {
    * @return BomMatch if a known BOM is found; otherwise {@code null}.
    */
   public static BomMatch detectBom(byte[] data) {
-    if (data == null)
+    if (data == null) {
       return null;
+    }
 
     // UTF-8: EF BB BF
     if (startsWith(data, (byte) 0xEF, (byte) 0xBB, (byte) 0xBF)) {
@@ -309,11 +317,13 @@ public class StringConstant {
    * the output.
    */
   public static String decodeWithBom(byte[] data) {
-    if (data == null)
+    if (data == null) {
       return null;
+    }
     BomMatch m = detectBom(data);
-    if (m == null)
+    if (m == null) {
       return null;
+    }
     return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
   }
 
@@ -322,8 +332,9 @@ public class StringConstant {
    * skipping BOM - If no BOM → decode as UTF-8 (Unicode default)
    */
   public static String decodePreferUnicode(byte[] data) {
-    if (data == null)
+    if (data == null) {
       return null;
+    }
     BomMatch m = detectBom(data);
     if (m != null) {
       return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
@@ -336,8 +347,9 @@ public class StringConstant {
    * Variant with a custom default when no BOM is present.
    */
   public static String decodeWithBomOrDefault(byte[] data, Charset defaultCharset) {
-    if (data == null)
+    if (data == null) {
       return null;
+    }
     BomMatch m = detectBom(data);
     if (m != null) {
       return new String(data, m.bomLength, data.length - m.bomLength, m.charset);
@@ -348,11 +360,13 @@ public class StringConstant {
   // -------- helpers --------
 
   private static boolean startsWith(byte[] data, byte... prefix) {
-    if (data.length < prefix.length)
+    if (data.length < prefix.length) {
       return false;
+    }
     for (int i = 0; i < prefix.length; i++) {
-      if (data[i] != prefix[i])
+      if (data[i] != prefix[i]) {
         return false;
+      }
     }
     return true;
   }

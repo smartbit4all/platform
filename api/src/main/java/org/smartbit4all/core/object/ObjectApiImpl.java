@@ -1,6 +1,7 @@
 package org.smartbit4all.core.object;
 
 import static java.util.stream.Collectors.toList;
+import static org.smartbit4all.core.utility.StringConstant.intern;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -520,8 +521,8 @@ public class ObjectApiImpl implements ObjectApi {
     boolean hasUri = definition.getUriGetter() != null;
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(hasUri ? definition.getUri(object) : null)
-        .qualifiedName(definition.getQualifiedName())
-        .storageSchema(storageScheme)
+        .qualifiedName(intern(definition.getQualifiedName()))
+        .storageSchema(intern(storageScheme))
         .objectAsMap(definition.toMap(object))
         .state(ObjectNodeState.NEW)
         .versionNr(null);
@@ -536,8 +537,8 @@ public class ObjectApiImpl implements ObjectApi {
 
     ObjectNodeData data = new ObjectNodeData()
         .objectUri(hasUri ? asType(URI.class, objectMap.get(ObjectDefinition.URI_PROPERTY)) : null)
-        .qualifiedName(definition.getQualifiedName())
-        .storageSchema(storageScheme)
+        .qualifiedName(intern(definition.getQualifiedName()))
+        .storageSchema(intern(storageScheme))
         .objectAsMap(objectMap)
         .state(ObjectNodeState.NEW)
         .versionNr(null);

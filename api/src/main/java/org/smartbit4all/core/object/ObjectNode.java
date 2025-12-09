@@ -2,6 +2,7 @@ package org.smartbit4all.core.object;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static org.smartbit4all.core.utility.StringConstant.intern;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -936,11 +937,10 @@ public class ObjectNode {
   private ObjectNodeData fromSnapshot(SnapshotData snapshot) {
     return new ObjectNodeData()
         .objectUri(snapshot.getObjectUri())
-        .qualifiedName(snapshot.getQualifiedName())
-        .storageSchema(snapshot.getStorageSchema())
+        .qualifiedName(intern(snapshot.getQualifiedName()))
+        .storageSchema(intern(snapshot.getStorageSchema()))
         .objectAsMap(convertObjectMap(snapshot))
         .versionNr(snapshot.getVersionNr())
-        .qualifiedName(snapshot.getQualifiedName())
         .references(fromSnapshotRef(snapshot.getReferences()))
         .referenceLists(fromSnapshotRefList(snapshot.getReferenceLists()))
         .referenceMaps(fromSnapshotRefMap(snapshot.getReferenceMaps()));
