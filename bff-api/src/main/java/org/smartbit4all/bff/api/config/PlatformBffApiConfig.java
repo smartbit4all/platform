@@ -36,6 +36,8 @@ import org.smartbit4all.bff.api.generic.InvalidSmartLinkPageApiImpl;
 import org.smartbit4all.bff.api.mdm.MDMEntryListPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApi;
 import org.smartbit4all.bff.api.mdm.apikey.ApiKeyEditorPageApiImpl;
+import org.smartbit4all.bff.api.mdm.apikey.UserApiKeyEditorPageApi;
+import org.smartbit4all.bff.api.mdm.apikey.UserApiKeyEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApi;
 import org.smartbit4all.bff.api.mdm.archiveprocess.StorageArchiceProcessEditorPageApiImpl;
 import org.smartbit4all.bff.api.mdm.invocation.JobDefinitionEditorPageApi;
@@ -255,6 +257,20 @@ public class PlatformBffApiConfig {
   public ProviderApiInvocationHandler<ApiKeyEditorPageApi> apiKeyEditorPageApiProvider(
       ApiKeyEditorPageApi api) {
     return Invocations.asProvider(ApiKeyEditorPageApi.class, api);
+  }
+
+
+  @Bean
+  @ConditionalOnBean(value = {MDMEntryListPageApi.class, ApiKeyInnerApi.class})
+  UserApiKeyEditorPageApi userApiKeyEditorPageApi() {
+    return new UserApiKeyEditorPageApiImpl();
+  }
+
+  @Bean
+  @ConditionalOnBean(UserApiKeyEditorPageApi.class)
+  public ProviderApiInvocationHandler<UserApiKeyEditorPageApi> userApiKeyEditorPageApiProvider(
+      UserApiKeyEditorPageApi api) {
+    return Invocations.asProvider(UserApiKeyEditorPageApi.class, api);
   }
 
   @Bean
