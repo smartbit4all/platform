@@ -6,6 +6,7 @@ import static org.smartbit4all.core.object.ObjectLayoutBuilder.widgetKey;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -43,7 +44,6 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
-import io.jsonwebtoken.lang.Collections;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
