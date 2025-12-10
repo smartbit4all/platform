@@ -78,6 +78,8 @@ public class ApiKeyConfig {
               .putValueByLocaleItem("en", "Api key"))
           .typeQualifiedName(ApiKey.class.getName())
           .searchIndexForEntries(API_KEYS + "_admin")
+          .addDisplayNamePropertyPathItem(ApiKey.USER)
+          .addDisplayNamePropertyPathItem(User.USERNAME)
           .addTableColumnsItem(
               new MDMTableColumnDescriptor()
                   .name(ApiKey.USER)

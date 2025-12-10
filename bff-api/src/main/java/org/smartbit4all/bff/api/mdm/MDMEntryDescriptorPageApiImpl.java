@@ -1,5 +1,6 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.toList;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textbox;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.textfield;
 import static org.smartbit4all.core.object.ObjectLayoutBuilder.toggle;
@@ -38,6 +39,7 @@ import org.smartbit4all.api.value.bean.GenericValue;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
@@ -52,7 +54,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryDescriptorPageApiImpl
     extends PageApiImpl<MDMEntryDescriptorPageModel>
@@ -70,6 +71,8 @@ public class MDMEntryDescriptorPageApiImpl
   protected LocaleSettingApi localeSettingApi;
   @Autowired
   protected SessionApi sessionApi;
+  @Autowired
+  private ViewPublisherApi viewPublisherApi;
 
   private ObjectMapper objectMapper = ObjectSerializerByObjectMapper.getObjectMapper();
 
@@ -325,6 +328,8 @@ public class MDMEntryDescriptorPageApiImpl
       masterDataManagementApi.modifyEntry(ctx.getDefinition().getName(), entryDescriptorToEdit,
           ctx.getMdmBranch());
     }
+    viewPublisherApi.fireActionPerformed(viewApi.getView(viewUuid), request, code, name,
+        getModel(viewUuid), clientModel);
     if (ctx.refreashActionsCallback != null) {
       try {
         invocationApi.invoke(ctx.refreashActionsCallback);
