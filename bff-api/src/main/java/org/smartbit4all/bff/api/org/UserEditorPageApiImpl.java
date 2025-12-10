@@ -25,6 +25,7 @@ import org.smartbit4all.api.userselector.bean.UserEditingModel;
 import org.smartbit4all.api.value.bean.Value;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.UiActions;
+import org.smartbit4all.api.view.ViewPublisherApi;
 import org.smartbit4all.api.view.bean.ComponentConstraint;
 import org.smartbit4all.api.view.bean.MessageData;
 import org.smartbit4all.api.view.bean.MessageOption;
@@ -42,6 +43,7 @@ import org.smartbit4all.core.object.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.ObjectUtils;
+import io.jsonwebtoken.lang.Collections;
 
 public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     implements UserEditorPageApi {
@@ -56,6 +58,8 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
   private UserSecurityCheckerApi userSecurityCheckerApi;
   @Autowired
   private InvocationApi invocationApi;
+  @Autowired
+  protected ViewPublisherApi viewPublisherApi;
 
   public UserEditorPageApiImpl() {
     super(UserEditingModel.class);
@@ -107,6 +111,12 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
     UserEditingModel model = getModel(viewUuid);
     model.getUser().password(newPassword);
     setModel(viewUuid, model);
+    // don't publish password
+    viewPublisherApi.fireActionPerformed(viewApi.getView(viewUuid),
+        new UiActionRequest().code(request.getCode()),
+        model.getUser().getUsername(), model.getUser().getName(),
+        Collections.emptyMap(),
+        Collections.emptyMap());
   }
 
   public void putLayoutIntoView(View view) {
@@ -232,6 +242,14 @@ public class UserEditorPageApiImpl extends PageApiImpl<UserEditingModel>
         }
       });
     }
+
+    UserEditingModel oldModel = getModel(viewUuid);
+    // don't publish password
+    oldModel.getUser().password(null);
+    clientModel.getUser().password(null);
+    viewPublisherApi.fireActionPerformed(viewApi.getView(viewUuid), request, user.getUsername(),
+        user.getName(), oldModel, clientModel);
+
     viewApi.closeView(viewUuid);
   }
 
