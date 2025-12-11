@@ -16,15 +16,16 @@ import java.util.UUID;
 import org.smartbit4all.api.config.PlatformViewNames;
 import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.invocation.InvocationApi;
-import org.smartbit4all.api.org.bean.User;
+import org.smartbit4all.api.org.OrgApi;
 import org.smartbit4all.api.security.bean.ApiKey;
 import org.smartbit4all.api.security.bean.ApiKeyScope;
 import org.smartbit4all.api.setting.LocaleSettingApi;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.LayoutDirection;
 import org.smartbit4all.api.smartcomponentlayoutdefinition.bean.SmartComponentLayoutDefinition;
 import org.smartbit4all.api.value.ValueSetApi;
-import org.smartbit4all.api.value.ValueSetApiImpl;
+import org.smartbit4all.api.value.Values;
 import org.smartbit4all.api.value.bean.Value;
+import org.smartbit4all.api.value.bean.ValueSetData;
 import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.ViewEventApi;
 import org.smartbit4all.api.view.bean.ClipboardData;
@@ -51,6 +52,7 @@ import org.smartbit4all.sec.apikey.ApiKeyApi;
 import org.smartbit4all.sec.apikey.ApiKeyConstants;
 import org.smartbit4all.sec.apikey.ApiKeyInnerApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import static java.util.stream.Collectors.toList;
 
 public class ApiKeyEditorPageApiImpl extends MDMEntryEditPageApiImpl
     implements ApiKeyEditorPageApi {
@@ -71,6 +73,8 @@ public class ApiKeyEditorPageApiImpl extends MDMEntryEditPageApiImpl
   protected ValueSetApi valueSetApi;
   @Autowired
   protected InvocationApi invocationApi;
+  @Autowired
+  protected OrgApi orgApi;
 
   @Override
   public Object initModel(View view) {
@@ -81,13 +85,21 @@ public class ApiKeyEditorPageApiImpl extends MDMEntryEditPageApiImpl
   }
 
   private void putValueSetsIntoView(View view) {
-    // Temporarily we are looking for a value set that contains all the possible users
-    ValueSet userValueSet = valueSetApi.getValueSetWithValues(
-        ValueSetApiImpl.GLOBAL_VALUESETS,
-        APIKEY_USERS_VALUE_SET,
-        view.getBranchUri(),
-        User.NAME);
+    List<Object> userValues = orgApi.getActiveUsers()
+        .stream()
+        .map(user -> new Value()
+            .displayValue(user.getName())
+            .objectUri(user.getUri()))
+        .sorted(Values.CASE_INSENSITIVE_ORDER)
+        .collect(toList());
+
+    ValueSet userValueSet = new ValueSet()
+        .valueSetName(APIKEY_USERS_VALUE_SET)
+        .valueSetData(new ValueSetData()
+            .keyProperty(Value.OBJECT_URI)
+            .values(userValues));
     view.putValueSetsItem(ApiKeyConstants.APIKEY_USERS, userValueSet);
+
 
     ValueSet scopeValueSet = valueSetApi.getValueSetWithValues(
         ApiKeyApi.SCHEMA,
