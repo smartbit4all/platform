@@ -1,11 +1,13 @@
 package org.smartbit4all.api.invocation.restclient;
 
 import java.net.URI;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,7 @@ import org.smartbit4all.api.object.bean.ObjectMappingDefinition;
 import org.smartbit4all.core.object.ContextObject;
 import org.smartbit4all.core.object.ObjectApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -45,6 +48,10 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
   private DynamicRestRequestCacheProperties requestCacheProperties;
   @Autowired
   private Cache<String, ResponseEntity<Object>> dynamicRestRequestCache;
+  @Value("${app.dynamicrest.timeout:30s}")
+  private Duration timeout;
+
+  private final ConcurrentHashMap<ServiceConnection, RestClient> cache = new ConcurrentHashMap<>();
 
   @Override
   public ResponseEntityObject callDynamicRest(String serviceConnectionName,
@@ -93,7 +100,7 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     Map<String, String> headerMap = constructHeaderMap(header, contextObject);
     Map<String, String> queryParamsMap = constructQueryParamsMap(queryParams, contextObject);
 
-    RestClient restClient = RestClientHelper.getRestClient(serviceConnection);
+    RestClient restClient = getRestClient(serviceConnection);
 
     // TODO HttpMethod parameter, contentType? uri endpoint or endpoint + path param. Headers?
     /*
@@ -220,6 +227,11 @@ public class DynamicRestCallerApiImpl implements DynamicRestCallerApi {
     Map<String, Object> objectAsMap = lookupResult.getItems().get(0).getObjectAsMap();
     return objectApi.asType(ServiceConnection.class,
         objectAsMap);
+  }
+
+  public RestClient getRestClient(ServiceConnection connection) {
+    return cache.computeIfAbsent(connection,
+        k -> RestClientHelper.createClient(connection, timeout));
   }
 
 }
