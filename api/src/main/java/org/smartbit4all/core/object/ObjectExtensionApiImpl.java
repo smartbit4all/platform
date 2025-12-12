@@ -47,6 +47,7 @@ import org.smartbit4all.core.utility.StringConstant;
 import org.smartbit4all.domain.meta.EntityDefinition;
 import org.smartbit4all.domain.service.entity.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.ObjectUtils;
 import com.google.common.base.Strings;
 
 public class ObjectExtensionApiImpl implements ObjectExtensionApi {
@@ -468,6 +469,27 @@ public class ObjectExtensionApiImpl implements ObjectExtensionApi {
           return registerObjectDefinition(definitionName, definition, res);
         })
         .orElse(null);
+  }
+
+  @Override
+  public List<ObjectPropertyDescriptor> getProperties(ObjectDescriptor objectDescriptor,
+      boolean includeDefinition, boolean includeExtension) {
+    List<ObjectPropertyDescriptor> objectProperyDescriptors = new ArrayList<>();
+    if (includeDefinition && !ObjectUtils.isEmpty(objectDescriptor.getDefinitionProperties())) {
+      objectProperyDescriptors.addAll(
+          objectDescriptor.getDefinitionProperties().values().stream()
+              .map(objectApi::load)
+              .map(n -> n.getObject(ObjectPropertyDescriptor.class))
+              .collect(Collectors.toList()));
+    }
+
+    if (includeExtension && !ObjectUtils.isEmpty(objectDescriptor.getExtensionProperties())) {
+      objectProperyDescriptors
+          .addAll(objectDescriptor.getExtensionProperties().values().stream().map(objectApi::load)
+              .map(n -> n.getObject(ObjectPropertyDescriptor.class))
+              .collect(Collectors.toList()));
+    }
+    return objectProperyDescriptors;
   }
 
   private URI describe(ObjectDefinition<?> definition) {

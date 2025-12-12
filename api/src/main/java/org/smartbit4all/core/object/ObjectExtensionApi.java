@@ -241,6 +241,9 @@ public interface ObjectExtensionApi {
 
   EntityDefinition entityDefinition(URI objectDescriptorUri);
 
+  List<ObjectPropertyDescriptor> getProperties(ObjectDescriptor objectDescriptor,
+      boolean includeDefinition, boolean includeExtension);
+
   // -----------------------------------------------------------------------------------------------
   // Static factory methods for property descriptors:
 
