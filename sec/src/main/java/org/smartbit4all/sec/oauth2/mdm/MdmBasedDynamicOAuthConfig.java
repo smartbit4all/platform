@@ -55,11 +55,11 @@ public class MdmBasedDynamicOAuthConfig {
   }
 
   @Bean
-  public OAuth2SessionAuthSuccessHandler oauth2SessionAuthSuccessHandler() {
+  public OAuth2SessionAuthSuccessHandler oauth2SessionAuthSuccessHandler(OrgUserHandler<OAuth2AuthenticationToken> dynamicOAuthOrgUserHandler) {
     OAuth2SessionAuthSuccessHandler oAuth2SessionAuthSuccessHandler =
         new OAuth2SessionAuthSuccessHandler(successfullRedirectPath);
     oAuth2SessionAuthSuccessHandler.setCreateMissingUser(true);
-    oAuth2SessionAuthSuccessHandler.setOrgUserHandler(dynamicOAuthOrgUserHandler());
+    oAuth2SessionAuthSuccessHandler.setOrgUserHandler(dynamicOAuthOrgUserHandler);
 
     return oAuth2SessionAuthSuccessHandler;
   }
