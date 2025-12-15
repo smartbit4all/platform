@@ -1,10 +1,13 @@
 package org.smartbit4all.api.contentaccess;
 
+import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryData;
 import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
+import org.smartbit4all.api.sb4starter.bean.SB4Command;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 
@@ -42,4 +45,13 @@ public interface ContentAccessApi {
   void upload(UUID uuid, BinaryData binaryData) throws Exception;
 
   UUID share(BinaryContentData binaryContentData) throws Exception;
+
+  /**
+   * Share an sb4Starter object which is runnable with the Docu360Starter.
+   * 
+   * @param commands Sb4Starter commands.
+   * @param baseUri Base uri of the server application.
+   * @return Openable link which can be processed by the browser if the Docu360Starter is installed.
+   */
+  URI shareSb4StarterFile(List<SB4Command> commands, URI baseUri);
 }

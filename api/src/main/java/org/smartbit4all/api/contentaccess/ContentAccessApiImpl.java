@@ -1,8 +1,11 @@
 package org.smartbit4all.api.contentaccess;
 
 import java.net.URI;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.attachment.bean.BinaryContentData;
 import org.smartbit4all.api.binarydata.BinaryContent;
 import org.smartbit4all.api.binarydata.BinaryContentApi;
@@ -11,14 +14,23 @@ import org.smartbit4all.api.binarydata.BinaryDataObject;
 import org.smartbit4all.api.contentaccess.bean.ContentAccessEventData;
 import org.smartbit4all.api.contentaccess.bean.Direction;
 import org.smartbit4all.api.objectshare.ObjectShareApi;
+import org.smartbit4all.api.sb4starter.bean.SB4Command;
+import org.smartbit4all.api.sb4starter.bean.SB4Starter;
+import org.smartbit4all.core.object.ObjectApi;
+import org.smartbit4all.core.object.ObjectSerializer;
 import org.smartbit4all.domain.data.storage.Storage;
 import org.smartbit4all.domain.data.storage.StorageApi;
 import org.smartbit4all.domain.data.storage.StorageObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Consumer;
 import io.reactivex.rxjava3.subjects.PublishSubject;
 
 public class ContentAccessApiImpl implements ContentAccessApi {
+
+  private static final Logger log = LoggerFactory.getLogger(ContentAccessApiImpl.class);
 
   private ObjectShareApi objectShareApi;
 
@@ -28,6 +40,19 @@ public class ContentAccessApiImpl implements ContentAccessApi {
   private BinaryContentApi binaryContentApi;
 
   private PublishSubject<ContentAccessEventData> publisher;
+
+  @Autowired
+  @Qualifier("objectMapperSerializer")
+  private ObjectSerializer serializer;
+
+  @Autowired
+  private ObjectApi objectApi;
+
+  @Value("${sb4starter.url.host:sb4starter}")
+  private String sb4starterUrlHost;
+
+  @Value("${openapi.contentAccess.base-path:}")
+  private String contentAccessBasePath;
 
   public ContentAccessApiImpl(
       ObjectShareApi objectShareApi,
@@ -61,10 +86,11 @@ public class ContentAccessApiImpl implements ContentAccessApi {
 
   @Override
   public UUID share(BinaryContentData binaryContentData) throws Exception {
-    return objectShareApi.registerUri(getStorage().saveAsNew(new BinaryContent().dataUri(binaryContentData.getDataUri())
-        .fileName(binaryContentData.getFileName()).extension(binaryContentData.getExtension())
-        .mimeType(binaryContentData.getMimeType())
-        .size(binaryContentData.getSize())));
+    return objectShareApi.registerUri(
+        getStorage().saveAsNew(new BinaryContent().dataUri(binaryContentData.getDataUri())
+            .fileName(binaryContentData.getFileName()).extension(binaryContentData.getExtension())
+            .mimeType(binaryContentData.getMimeType())
+            .size(binaryContentData.getSize())));
   }
 
   @Override
@@ -116,6 +142,42 @@ public class ContentAccessApiImpl implements ContentAccessApi {
       storage = storageApi.get(SCHEME);
     }
     return storage;
+  }
+
+
+  @Override
+  public URI shareSb4StarterFile(List<SB4Command> commands, URI baseUri) {
+    UUID sb4StarterId = UUID.randomUUID();
+    // keep working directory should be configurable?
+    SB4Starter sb4Starter = new SB4Starter()
+        .id(sb4StarterId)
+        .keepWorkingDirectory(false);
+
+    sb4Starter.commands(commands);
+    try {
+      URI sb4StarterUri = saveSB4Starter(sb4Starter);
+      BinaryContentData sb4StarterData = new BinaryContentData()
+          .fileName(UUID.randomUUID() + ".sb4starter")
+          .dataUri(sb4StarterUri);
+
+      UUID sb4StarterSharedUUID = share(sb4StarterData);
+
+      URI contentAccessBaseUri = URI.create(baseUri + contentAccessBasePath);
+
+      return URI
+          .create(sb4starterUrlHost + ":?url=" + contentAccessBaseUri + "&uuid="
+              + sb4StarterSharedUUID);
+    } catch (Exception e) {
+      log.error("Cannot create sb4starter object ", e);
+      throw new IllegalStateException("Unable to create sb4starterobject.", e);
+    }
+  }
+
+
+  private URI saveSB4Starter(SB4Starter sb4Starter) {
+    BinaryData serializedSb4Starter = serializer.serialize(sb4Starter, SB4Starter.class);
+    BinaryDataObject sb4StarterObject = serializedSb4Starter.asObject();
+    return objectApi.saveAsNew(SCHEME, sb4StarterObject);
   }
 
 }
