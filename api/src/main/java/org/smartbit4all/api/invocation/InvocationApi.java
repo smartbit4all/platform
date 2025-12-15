@@ -12,6 +12,7 @@ import org.smartbit4all.api.invocation.bean.FutureAwait;
 import org.smartbit4all.api.invocation.bean.InvocationBatchRequest;
 import org.smartbit4all.api.invocation.bean.InvocationBatchResult;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
+import org.smartbit4all.api.invocation.bean.InvocationPredicate;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.api.invocation.bean.InvocationRequestDefinition;
 import org.smartbit4all.api.invocation.bean.InvocationResult;
@@ -319,5 +320,14 @@ public interface InvocationApi {
    * @return The {@link InvocationLogContext} that provides tracing functions for the invocations.
    */
   InvocationLogContext callLog();
+
+  /**
+   * Evaluate a predicate with the given context.
+   * 
+   * @param ctx
+   * @param predicate
+   * @return
+   */
+  boolean evaluate(ContextObject ctx, InvocationPredicate predicate);
 
 }

@@ -782,7 +782,8 @@ public class InvocationApiImpl implements InvocationApi {
    * @param predicate
    * @return
    */
-  private final boolean evaluate(ContextObject ctx, InvocationPredicate predicate) {
+  @Override
+  public final boolean evaluate(ContextObject ctx, InvocationPredicate predicate) {
     ObjectMappingDefinition valueMapping = predicate.getDefinition();
     Object value = objectApi.mapper().mapping(valueMapping).setContext(ctx).execute();
     return Boolean.TRUE.equals(value);
