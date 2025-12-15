@@ -127,6 +127,17 @@ public class ObjectUtilityApiImpl implements ObjectUtilityApi {
   }
 
   @Override
+  public Map<String, Object> putItemToMap(Map<String, Object> map, String key, Object value) {
+    if (map == null) {
+      map = new HashMap<>();
+    }
+    if (key != null) {
+      map.put(key, value);
+    }
+    return map;
+  }
+
+  @Override
   public Map<String, Object> diminuteMap(Map<String, Object> map, List<String> remainingKeys) {
     Map<String, Object> newMap = new HashMap<>();
     map.entrySet().forEach(e -> {

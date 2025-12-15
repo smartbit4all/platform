@@ -1,5 +1,6 @@
 package org.smartbit4all.api.invocation;
 
+import static java.util.stream.Collectors.toList;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -15,6 +16,8 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartbit4all.api.invocation.bean.InvocationParameter;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
 import org.smartbit4all.core.object.ObjectApi;
@@ -22,7 +25,6 @@ import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import static java.util.stream.Collectors.toList;
 
 /**
  * The developer api for the invocation.
@@ -54,6 +56,8 @@ public class Invocations {
   private static final String regexStackTrace = "^(.*)\\.([^(]+)\\(([^:]*):?([0-9]*)\\)$";
 
   private static final Pattern pattern = Pattern.compile(regexStackTrace);
+
+  private static final Logger log = LoggerFactory.getLogger(Invocations.class);
 
   private Invocations() {
     super();
@@ -232,7 +236,13 @@ public class Invocations {
         value = objectApi.asMap(getTypeClassByName(request, innerType),
             (Map<String, ?>) value);
       } else {
-        value = objectApi.asType(typeClass, value);
+        try {
+          value = objectApi.asType(typeClass, value);
+        } catch (Exception e) {
+          log.error("The value {} of class {}, could not be transformed to {}", value,
+              value.getClass().getName(), typeClass.getName());
+          throw e;
+        }
       }
 
     }
