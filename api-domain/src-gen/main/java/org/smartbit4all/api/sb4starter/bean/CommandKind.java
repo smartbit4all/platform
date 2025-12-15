@@ -40,7 +40,9 @@ public enum CommandKind {
   
   CONTENT_ACCESS_UPLOAD("ContentAccessUpload"),
   
-  EXPAND_SYSTEM_VARIABLE("ExpandSystemVariable");
+  EXPAND_SYSTEM_VARIABLE("ExpandSystemVariable"),
+  
+  BARCODE_PRINT("BarcodePrint");
 
   private String value;
 

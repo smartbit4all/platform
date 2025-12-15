@@ -29,7 +29,7 @@ components:
 
     SB4Command:
       type: object
-      required: [id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands]
+      required: [id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands, parameters]
       additionalProperties: false
       properties:
         id:
@@ -49,6 +49,10 @@ components:
         command:
           type: string
           nullable: true
+        parameters:
+          type: object
+          additionalProperties:
+            type: object
         successfulExitCodes:
           type: array
           items:
@@ -68,6 +72,7 @@ components:
         - ExecuteCommand
         - ContentAccessUpload
         - ExpandSystemVariable
+        - BarcodePrint
         
     SB4File:
       type: object

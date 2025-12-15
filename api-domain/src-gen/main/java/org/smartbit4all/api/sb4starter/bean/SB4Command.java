@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.smartbit4all.api.sb4starter.bean.CommandKind;
 import org.smartbit4all.api.sb4starter.bean.SB4File;
@@ -42,6 +44,7 @@ import jakarta.validation.Valid;
   SB4Command.REST_URL,
   SB4Command.SB4_FILES,
   SB4Command.COMMAND,
+  SB4Command.PARAMETERS,
   SB4Command.SUCCESSFUL_EXIT_CODES,
   SB4Command.ON_ERROR_COMMANDS
 })
@@ -61,6 +64,9 @@ public class SB4Command {
 
   public static final String COMMAND = "command";
   private String command;
+
+  public static final String PARAMETERS = "parameters";
+  private Map<String, Object> parameters = new HashMap<>();
 
   public static final String SUCCESSFUL_EXIT_CODES = "successfulExitCodes";
   private List<Integer> successfulExitCodes = new ArrayList<>();
@@ -223,6 +229,39 @@ public class SB4Command {
     this.command = command;
   }
 
+  public SB4Command parameters(Map<String, Object> parameters) {
+    
+    this.parameters = parameters;
+    return this;
+  }
+
+  public SB4Command putParametersItem(String key, Object parametersItem) {
+    this.parameters.put(key, parametersItem);
+    return this;
+  }
+
+  /**
+   * Get parameters
+   * @return parameters
+   */
+  @jakarta.annotation.Nonnull
+  @NotNull
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "")
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+
+  public Map<String, Object> getParameters() {
+    return parameters;
+  }
+
+
+  @JsonProperty(PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  public void setParameters(Map<String, Object> parameters) {
+    this.parameters = parameters;
+  }
+
   public SB4Command successfulExitCodes(List<Integer> successfulExitCodes) {
     
     this.successfulExitCodes = successfulExitCodes;
@@ -310,13 +349,14 @@ public class SB4Command {
         Objects.equals(this.restUrl, sb4Command.restUrl) &&
         Objects.equals(this.sb4Files, sb4Command.sb4Files) &&
         Objects.equals(this.command, sb4Command.command) &&
+        Objects.equals(this.parameters, sb4Command.parameters) &&
         Objects.equals(this.successfulExitCodes, sb4Command.successfulExitCodes) &&
         Objects.equals(this.onErrorCommands, sb4Command.onErrorCommands);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, commandKind, restUrl, sb4Files, command, successfulExitCodes, onErrorCommands);
+    return Objects.hash(id, commandKind, restUrl, sb4Files, command, parameters, successfulExitCodes, onErrorCommands);
   }
 
   @Override
@@ -328,6 +368,7 @@ public class SB4Command {
     sb.append("    restUrl: ").append(toIndentedString(restUrl)).append("\n");
     sb.append("    sb4Files: ").append(toIndentedString(sb4Files)).append("\n");
     sb.append("    command: ").append(toIndentedString(command)).append("\n");
+    sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    successfulExitCodes: ").append(toIndentedString(successfulExitCodes)).append("\n");
     sb.append("    onErrorCommands: ").append(toIndentedString(onErrorCommands)).append("\n");
     sb.append("}");
