@@ -33,6 +33,8 @@ public interface ObjectUtilityApi {
 
   <T> T getItemFromMap(Map<String, T> map, String key);
 
+  Map<String, Object> putItemToMap(Map<String, Object> map, String key, Object value);
+
   Map<String, Object> diminuteMap(Map<String, Object> map, List<String> remainingKeys);
 
   List<Map<String, Object>> toMaps(List<Object> objects);
