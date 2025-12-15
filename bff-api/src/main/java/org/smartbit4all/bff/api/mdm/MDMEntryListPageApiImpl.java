@@ -1,7 +1,5 @@
 package org.smartbit4all.bff.api.mdm;
 
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +27,8 @@ import org.smartbit4all.api.formdefinition.bean.SmartWidgetDefinition;
 import org.smartbit4all.api.grid.bean.GridModel;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.grid.bean.GridRow;
+import org.smartbit4all.api.grid.bean.GridSelectionMode;
+import org.smartbit4all.api.grid.bean.GridSelectionType;
 import org.smartbit4all.api.grid.bean.GridView;
 import org.smartbit4all.api.invocation.InvocationApi;
 import org.smartbit4all.api.invocation.bean.InvocationRequest;
@@ -85,6 +85,8 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.google.common.collect.Lists;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -348,12 +350,19 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
   }
 
   protected GridModel createGridModel(View view, PageContext context, List<String> columns) {
+
+    boolean isAdmin = context.isAdmin();
+    boolean branchActive = context.getEntryApi().hasBranch();
+    boolean branchingEnabled = context.getBranchingStrategy() != MDMBranchingStrategy.NONE;
+    boolean entryEditingEnabled = branchActive || !branchingEnabled;
+
     GridModel entryGridModel =
         gridModelApi.createGridModel(context.searchIndexAdmin.getDefinition().getDefinition(),
             columns,
             context.getDefinition().getName(), context.getEntryDescriptor().getName());
     GridModels.hideColumns(entryGridModel, BranchedObjectEntry.ORIGINAL_URI,
         BranchedObjectEntry.BRANCH_URI);
+
     if (columns.contains(MDMConstants.PROPERTY_URI)) {
       GridModels.hideColumns(entryGridModel, MDMConstants.PROPERTY_URI);
     }
@@ -375,6 +384,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       entryGridModel.setView(gridViewOptions.get(0));
       entryGridModel.setAvailableViews(new ArrayList<>(gridViewOptions));
     }
+
+    if (Boolean.TRUE.equals(isAdmin) && Boolean.TRUE.equals(entryEditingEnabled)) {
+      entryGridModel.getView().getDescriptor().selectionMode(GridSelectionMode.MULTIPLE);
+      entryGridModel.getView().getDescriptor().selectionType(GridSelectionType.CHECKBOX);
+    }
+
     entryGridModel.qualifier(context.entryDescriptor.getName());
     gridModelApi.initGridInView(view.getUuid(), WIDGET_ENTRY_GRID, entryGridModel);
     // BranchedObjectEntry.BRANCHING_STATE should be handled after init
@@ -399,6 +414,12 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     gridModelApi.addGridPageCallback(view.getUuid(), WIDGET_ENTRY_GRID, invocationApi
         .builder(MDMEntryListPageApi.class)
         .build(api -> api.addWidgetEntryGridActions(null, view.getUuid())));
+
+    gridModelApi.addSelectionChangeListener(view.getUuid(), WIDGET_ENTRY_GRID,
+        invocationApi.builder(MDMEntryListPageApi.class)
+            .build(api -> api.handleGridSelectionChange(
+                view.getUuid(),
+                WIDGET_ENTRY_GRID)));
 
     return entryGridModel;
   }
@@ -579,6 +600,8 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     context.setInactives(!context.inactives);
     getModel(viewUuid).setPageTitle(getPageTitle(context));
     refreshActions(context);
+
+    clearSelection(viewUuid);
     refreshGrid(context);
   }
 
@@ -928,6 +951,14 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
           Objects.equals(GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE),
               BranchedObjectEntry.BranchingStateEnum.NEW);
 
+      boolean inactive = !ctx.inactives && !newOnBranch && deletedOnBranch;
+
+      if (Boolean.TRUE.equals(isAdmin)
+          && Boolean.TRUE.equals(entryEditingEnabled)
+          && Boolean.TRUE.equals(inactive)) {
+        row.selectable(Boolean.FALSE);
+      }
+
       UiActionBuilder uiActions = UiActions.builder();
       if (approvingEnabled) {
         boolean canEdit = canEdit(isAdmin, ctx.isUnderApproval(), ctx.isCurrentApprover());
@@ -1034,6 +1065,86 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
 
   protected boolean canEdit(boolean isAdmin, boolean underApproval, boolean isApprover) {
     return (isAdmin && !underApproval) || (isApprover && underApproval);
+  }
+
+  @Override
+  public void activateSelected(UUID viewUuid, UiActionRequest request) {
+    setActiveState(viewUuid, request, Boolean.TRUE);
+  }
+
+  @Override
+  public void inactivateSelected(UUID viewUuid, UiActionRequest request) {
+    setActiveState(viewUuid, request, Boolean.FALSE);
+  }
+
+  protected void setActiveState(UUID viewUuid, UiActionRequest request, Boolean activate) {
+    List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, WIDGET_ENTRY_GRID);
+    PageContext context = getContextByViewUUID(viewUuid);
+
+    selectedRows.stream()
+        .filter(row -> {
+
+          Object oBranchingState =
+              GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
+          boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
+          boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
+          boolean inactive = !context.inactives && !newOnBranch && deletedOnBranch;
+
+          return activate ? inactive : !inactive;
+        })
+        .map(row -> getUriFromGridRow(branchedObjectUriGetter, row))
+        .forEach(uri -> {
+          if (Boolean.TRUE.equals(activate)) {
+            context.getEntryApi().restore(uri);
+          } else if (Boolean.FALSE.equals(activate)) {
+            context.getEntryApi().remove(uri);
+          }
+          fireActionPerformed(uri, request, context);
+        });
+
+    clearSelection(viewUuid);
+    refreshGrid(context);
+  }
+
+  @Override
+  public void handleGridSelectionChange(UUID viewUuid, String gridId) {
+    View view = viewApi.getView(viewUuid);
+    List<GridRow> selectedRows = gridModelApi.getSelectedRows(viewUuid, gridId);
+
+    if (ObjectUtils.isEmpty(selectedRows)) {
+      UiActions.remove(view,
+          ACTIVATE_SELECTED,
+          INACTIVATE_SELECTED);
+      return;
+    }
+
+    PageContext context = getContextByViewUUID(viewUuid);
+    if (Boolean.TRUE.equals(context.inactives)) {
+      UiActions.add(view, ACTION_ACTIVATE_SELECTED.get()
+          .descriptor(getActivateSelectedDescriptor()));
+    } else {
+      UiActions.add(view, ACTION_INACTIVATE_SELECTED.get()
+          .descriptor(getInactivateSelectedDescriptor()));
+    }
+  }
+
+  protected UiActionDescriptor getActivateSelectedDescriptor() {
+    return new UiActionDescriptor()
+        .color(UiActions.Color.PRIMARY)
+        .type(UiActionButtonType.RAISED)
+        .title(localeSettingApi.get(ACTIVATE_SELECTED));
+  }
+
+  protected UiActionDescriptor getInactivateSelectedDescriptor() {
+    return new UiActionDescriptor()
+        .color(UiActions.Color.PRIMARY)
+        .type(UiActionButtonType.RAISED)
+        .title(localeSettingApi.get(INACTIVATE_SELECTED));
+  }
+
+
+  protected void clearSelection(UUID viewUuid) {
+    gridModelApi.selectAllRow(viewUuid, WIDGET_ENTRY_GRID, false);
   }
 
 }

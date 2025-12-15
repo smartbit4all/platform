@@ -2,6 +2,7 @@ package org.smartbit4all.bff.api.mdm;
 
 import java.net.URI;
 import java.util.UUID;
+import java.util.function.Supplier;
 import org.smartbit4all.api.grid.bean.GridPage;
 import org.smartbit4all.api.mdm.MDMActions;
 import org.smartbit4all.api.mdm.MDMConstants;
@@ -11,6 +12,7 @@ import org.smartbit4all.api.view.PageApi;
 import org.smartbit4all.api.view.PageApiImpl;
 import org.smartbit4all.api.view.annotation.ActionHandler;
 import org.smartbit4all.api.view.annotation.WidgetActionHandler;
+import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.bff.api.searchpage.bean.SearchPageModel;
@@ -298,5 +300,25 @@ public interface MDMEntryListPageApi extends PageApi<SearchPageModel> {
   GridPage addWidgetEntryGridActions(GridPage page, UUID viewUuid);
 
   void entryDescriptorPageCallback(UUID viewUuid);
+
+  String INACTIVATE_SELECTED = "inactivateSelected";
+  Supplier<UiAction> ACTION_INACTIVATE_SELECTED =
+      () -> new UiAction()
+          .model(true)
+          .code(INACTIVATE_SELECTED);
+
+  @ActionHandler(INACTIVATE_SELECTED)
+  void inactivateSelected(UUID viewUuid, UiActionRequest request);
+
+  String ACTIVATE_SELECTED = "activateSelected";
+  Supplier<UiAction> ACTION_ACTIVATE_SELECTED =
+      () -> new UiAction()
+          .model(true)
+          .code(ACTIVATE_SELECTED);
+
+  @ActionHandler(ACTIVATE_SELECTED)
+  void activateSelected(UUID viewUuid, UiActionRequest request);
+
+  void handleGridSelectionChange(UUID viewUuid, String gridId);
 
 }

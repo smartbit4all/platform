@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.UiActionRequest;
 import org.smartbit4all.api.view.bean.View;
 import org.smartbit4all.api.view.bean.ViewState;
@@ -310,6 +311,10 @@ public abstract class PageApiImpl<M> implements PageApi<M> {
 
   protected void cacheClear(UUID viewUuid) {
     viewContextService.getCache(viewUuid).clear();
+  }
+
+  protected DeviceInfo getDeviceInfo(UUID viewUuid) {
+    return viewContextService.getCurrentViewContextEntry().getDeviceInfo();
   }
 
 }

@@ -37,6 +37,7 @@ import jakarta.validation.Valid;
   DeviceInfo.DEVICE_TYPE,
   DeviceInfo.USER_AGENT,
   DeviceInfo.IP_ADDRESS,
+  DeviceInfo.COMPONENT_LIBRARY,
   DeviceInfo.PARAMETERS
 })
 @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.8.0")
@@ -52,6 +53,9 @@ public class DeviceInfo {
 
   public static final String IP_ADDRESS = "ipAddress";
   private String ipAddress;
+
+  public static final String COMPONENT_LIBRARY = "componentLibrary";
+  private String componentLibrary;
 
   public static final String PARAMETERS = "parameters";
   private Map<String, Object> parameters = new HashMap<>();
@@ -168,6 +172,33 @@ public class DeviceInfo {
     this.ipAddress = ipAddress;
   }
 
+  public DeviceInfo componentLibrary(String componentLibrary) {
+    
+    this.componentLibrary = componentLibrary;
+    return this;
+  }
+
+  /**
+   * The component library of the client (Material, PrimeNg).
+   * @return componentLibrary
+   */
+  @jakarta.annotation.Nullable
+
+  @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "The component library of the client (Material, PrimeNg).")
+  @JsonProperty(COMPONENT_LIBRARY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+
+  public String getComponentLibrary() {
+    return componentLibrary;
+  }
+
+
+  @JsonProperty(COMPONENT_LIBRARY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public void setComponentLibrary(String componentLibrary) {
+    this.componentLibrary = componentLibrary;
+  }
+
   public DeviceInfo parameters(Map<String, Object> parameters) {
     
     this.parameters = parameters;
@@ -214,12 +245,13 @@ public class DeviceInfo {
         Objects.equals(this.deviceType, deviceInfo.deviceType) &&
         Objects.equals(this.userAgent, deviceInfo.userAgent) &&
         Objects.equals(this.ipAddress, deviceInfo.ipAddress) &&
+        Objects.equals(this.componentLibrary, deviceInfo.componentLibrary) &&
         Objects.equals(this.parameters, deviceInfo.parameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(deviceId, deviceType, userAgent, ipAddress, parameters);
+    return Objects.hash(deviceId, deviceType, userAgent, ipAddress, componentLibrary, parameters);
   }
 
   @Override
@@ -230,6 +262,7 @@ public class DeviceInfo {
     sb.append("    deviceType: ").append(toIndentedString(deviceType)).append("\n");
     sb.append("    userAgent: ").append(toIndentedString(userAgent)).append("\n");
     sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
+    sb.append("    componentLibrary: ").append(toIndentedString(componentLibrary)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("}");
     return sb.toString();

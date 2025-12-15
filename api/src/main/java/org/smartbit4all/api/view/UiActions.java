@@ -66,6 +66,13 @@ public final class UiActions {
     public static final String SUCCESS = "success";
   }
 
+  public static class ComponentLibrary {
+    private ComponentLibrary() {}
+
+    public static final String MATERIAL = "material";
+    public static final String PRIMENG = "primeng";
+  }
+
   private UiActions() {}
 
   public static UiActionBuilder builder() {
