@@ -520,10 +520,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ClipboardData'
-        deviceInfo:
-          type: array
-          items:
-            $ref: '#/components/schemas/DeviceInfo'
     ViewContextChange:
       type: object
       description: The same session can be valid / used in multiple UIs, this object represents a UI.

@@ -302,3 +302,12 @@ components:
           type: ImageResource
         uploadDescriptor:
           type: UiActionUploadDescriptor
+    DateFieldProperties:
+      type: object
+      properties:
+        minDate:
+          type: string
+          format: date-time
+        maxDate:
+          type: string
+          format: date-time

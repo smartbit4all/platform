@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import org.smartbit4all.api.formdefinition.bean.DateFieldProperties;
 import org.smartbit4all.api.formdefinition.bean.FileUploaderProperties;
 import org.smartbit4all.api.formdefinition.bean.ImageProperties;
 import org.smartbit4all.api.formdefinition.bean.SelectionDefinition;
@@ -416,11 +417,33 @@ public final class ObjectLayoutBuilder {
         .label(label);
   }
 
+  public static SmartWidgetDefinition datePicker(String key, String label,
+      DateFieldProperties properties) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.DATE_PICKER)
+        .key(key)
+        .label(label)
+        .putPropertiesItem(
+            SmartFormWidgetType.DATE_PICKER.getValue() + PROPERTIES_SUFFIX,
+            properties);
+  }
+
   public static SmartWidgetDefinition datetimePicker(String key, String label) {
     return new SmartWidgetDefinition()
         .type(SmartFormWidgetType.DATE_TIME_PICKER)
         .key(key)
         .label(label);
+  }
+
+  public static SmartWidgetDefinition datetimePicker(String key, String label,
+      DateFieldProperties properties) {
+    return new SmartWidgetDefinition()
+        .type(SmartFormWidgetType.DATE_TIME_PICKER)
+        .key(key)
+        .label(label)
+        .putPropertiesItem(
+            SmartFormWidgetType.DATE_TIME_PICKER.getValue() + PROPERTIES_SUFFIX,
+            properties);
   }
 
   public static SmartWidgetDefinition radioButtonGroup(String key, String label,
