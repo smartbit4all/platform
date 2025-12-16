@@ -20,11 +20,13 @@ import org.smartbit4all.core.io.utility.FileIO;
 import org.smartbit4all.core.object.serialize.UriDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateDeserializer;
 import org.smartbit4all.core.object.serialize.ZonedLocalDateTimeDeserializer;
+import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -92,6 +94,19 @@ public class ObjectSerializerByObjectMapper implements ObjectSerializer {
 
   public static final ObjectMapper getObjectMapper() {
     return setupObjectMapper();
+  }
+
+  public static final ObjectWriter getPrettyWriter() {
+    return setupObjectMapper().writerWithDefaultPrettyPrinter();
+  }
+
+  public static final String getValueAsString(Object o) {
+    try {
+      return getPrettyWriter().writeValueAsString(o);
+    } catch (JsonProcessingException e) {
+      log.error(e.getMessage(), e);
+      return StringConstant.EMPTY;
+    }
   }
 
   public static final <T> T deepCopy(T object, Class<T> type) {
