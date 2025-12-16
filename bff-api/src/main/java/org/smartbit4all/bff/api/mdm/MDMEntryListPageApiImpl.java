@@ -57,6 +57,7 @@ import org.smartbit4all.api.view.UiActions;
 import org.smartbit4all.api.view.UiActions.UiActionBuilder;
 import org.smartbit4all.api.view.ViewContexts;
 import org.smartbit4all.api.view.ViewPublisherApi;
+import org.smartbit4all.api.view.bean.DeviceInfo;
 import org.smartbit4all.api.view.bean.ImageResource;
 import org.smartbit4all.api.view.bean.UiAction;
 import org.smartbit4all.api.view.bean.UiActionButtonType;
@@ -1007,7 +1008,7 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
       String icon;
       Map<String, Object> map = (Map<String, Object>) row.getData();
       BranchingStateEnum state = (BranchingStateEnum) map.get(BranchedObjectEntry.BRANCHING_STATE);
-      icon = setIconToEntry(state);
+      icon = setIconToEntry(ctx.view.getUuid(), state);
       if (icon != null) {
         row.putIconsItem(BranchedObjectEntry.BRANCHING_STATE,
             Arrays.asList(new ImageResource()
@@ -1037,24 +1038,53 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     return page;
   }
 
-  protected String setIconToEntry(BranchingStateEnum state) {
+  protected String setIconToEntry(UUID viewUuid, BranchingStateEnum state) {
     String icon;
+    DeviceInfo deviceInfo = getDeviceInfo(viewUuid);
+    String componentLibrary = null;
+    if (deviceInfo != null) {
+      componentLibrary = deviceInfo.getComponentLibrary();
+    }
+
     switch (state) {
       case NEW:
-        icon = "add_circle";
+        icon = getNewSateIcon(viewUuid, componentLibrary);
         break;
       case MODIFIED:
-        icon = "tag";
+        icon = getModifiedSateIcon(viewUuid, componentLibrary);
         break;
       case DELETED:
-        icon = "cancel";
+        icon = getDeletedSateIcon(viewUuid, componentLibrary);
         break;
-
       default:
-        icon = "radio_button_unchecked";
+        icon = getDefaulSateIcon(viewUuid, componentLibrary);
         break;
     }
     return icon;
+  }
+
+  protected String getNewSateIcon(UUID viewUuid, String componentLibrary) {
+    return componentLibrary.equals(UiActions.ComponentLibrary.PRIMENG)
+        ? "plus-circle"
+        : "add_circle";
+  }
+
+  protected String getModifiedSateIcon(UUID viewUuid, String componentLibrary) {
+    return componentLibrary.equals(UiActions.ComponentLibrary.PRIMENG)
+        ? "hashtag"
+        : "tag";
+  }
+
+  protected String getDeletedSateIcon(UUID viewUuid, String componentLibrary) {
+    return componentLibrary.equals(UiActions.ComponentLibrary.PRIMENG)
+        ? "times-circle"
+        : "cancel";
+  }
+
+  protected String getDefaulSateIcon(UUID viewUuid, String componentLibrary) {
+    return componentLibrary.equals(UiActions.ComponentLibrary.PRIMENG)
+        ? "circle"
+        : "radio_button_unchecked";
   }
 
   private UiAction createUiActionWithDescriptor(String actionCode) {
