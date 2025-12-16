@@ -1,5 +1,7 @@
 package org.smartbit4all.bff.api.mdm;
 
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toList;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,8 +88,6 @@ import org.smartbit4all.domain.meta.Property;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import com.google.common.collect.Lists;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toList;
 
 public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     implements MDMEntryListPageApi {
@@ -1044,6 +1044,9 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     String componentLibrary = null;
     if (deviceInfo != null) {
       componentLibrary = deviceInfo.getComponentLibrary();
+    }
+    if (componentLibrary == null) {
+      componentLibrary = StringConstant.EMPTY;
     }
 
     switch (state) {
