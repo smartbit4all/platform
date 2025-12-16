@@ -1112,16 +1112,22 @@ public class MDMEntryListPageApiImpl extends PageApiImpl<SearchPageModel>
     PageContext context = getContextByViewUUID(viewUuid);
 
     selectedRows.stream()
-        .filter(row -> {
-
-          Object oBranchingState =
-              GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
-          boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
-          boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
-          boolean inactive = !context.inactives && !newOnBranch && deletedOnBranch;
-
-          return activate ? inactive : !inactive;
-        })
+        // .filter(row -> {
+        //
+        // Object oBranchingState =
+        // GridModels.getValueFromGridRow(row, BranchedObjectEntry.BRANCHING_STATE);
+        // boolean newOnBranch = BranchingStateEnum.NEW.equals(oBranchingState);
+        // boolean deletedOnBranch = BranchingStateEnum.DELETED.equals(oBranchingState);
+        //
+        // boolean inactive = !newOnBranch && deletedOnBranch;
+        // if (context.inactives) {
+        //
+        // return inactive;
+        // } else {
+        //
+        // return !inactive;
+        // }
+        // })
         .map(row -> getUriFromGridRow(branchedObjectUriGetter, row))
         .forEach(uri -> {
           if (Boolean.TRUE.equals(activate)) {
