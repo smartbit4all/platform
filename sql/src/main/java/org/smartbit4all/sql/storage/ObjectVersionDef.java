@@ -134,4 +134,9 @@ public interface ObjectVersionDef extends EntityDefinition {
   @Join(source = ENTRY_ID, target = ObjectEntryDef.ID)
   ObjectEntryDef objectEntry();
 
+  @ReferenceEntity
+  @Join(source = ENTRY_ID, target = ObjectEntryDef.ID)
+  @Join(source = VERSION, target = ObjectEntryDef.VERSION)
+  ObjectEntryDef objectEntryVersioned();
+
 }
