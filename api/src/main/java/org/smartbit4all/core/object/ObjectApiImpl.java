@@ -52,7 +52,7 @@ public class ObjectApiImpl implements ObjectApi {
 
   private static final Logger log = LoggerFactory.getLogger(ObjectApiImpl.class);
 
-  @Value("${smartbit4all.objectapi.useReadCache:false}")
+  @Value("${smartbit4all.objectapi.useReadCache:true}")
   private boolean useReadCache;
 
   @Autowired
