@@ -1,7 +1,5 @@
 package org.smartbit4all.core.object;
 
-import static java.util.stream.Collectors.toList;
-import static org.smartbit4all.core.utility.StringConstant.intern;
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -22,6 +20,8 @@ import org.smartbit4all.api.object.bean.PropertyDefinitionData;
 import org.smartbit4all.api.storage.bean.StorageStrategy;
 import org.smartbit4all.core.utility.StringConstant;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import static org.smartbit4all.core.utility.StringConstant.intern;
+import static java.util.stream.Collectors.toList;
 
 /**
  * This definition must exists for every api objects managed by the given module. It contains the
@@ -307,7 +307,7 @@ public final class ObjectDefinition<T> {
       return defaultSerializer.fromString(s, clazz);
     } catch (IOException e) {
       throw new IllegalArgumentException(
-          "Unable to read " + clazz + " object from the following string: " + s);
+          "Unable to read " + clazz + " object from the following string: " + s, e);
     }
   }
 
