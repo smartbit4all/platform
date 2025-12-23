@@ -50,6 +50,8 @@ public interface VectorCollection {
 
   void delete(Collection<String> ids);
 
+  void deleteCollection();
+
   void clear();
 
   List<VectorSearchResultItem> search(Object obj, int limit, Map<String, Object> parameters);

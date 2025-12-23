@@ -120,6 +120,11 @@ public class VectorCollectionImpl implements VectorCollection {
     vectorDBApi.createCollection(vectorDBService, collectionName);
   }
 
+  @Override
+  public void deleteCollection() {
+    vectorDBApi.deleteCollection(vectorDBService, collectionName);
+  }
+
   @SuppressWarnings({"unchecked", "rawtypes"})
   final VectorValue embed(Object obj) {
     Objects.requireNonNull(obj, "Unable to use null in vector db.");
